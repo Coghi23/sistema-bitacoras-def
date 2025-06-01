@@ -1,6 +1,5 @@
 *.log
 .DS_Store
-.env
 .env.backup
 .env.production
 .phpactor.json
@@ -24,3 +23,4 @@ Homestead.yaml
 npm-debug.log
 Thumbs.db
 yarn-error.log
+
