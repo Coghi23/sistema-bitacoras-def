@@ -11,7 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('estadoevento', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_usuario')->constrained('usuario')->onDelete('cascade');
+            $table->foreignId('id_evento')->constrained('evento')->onDelete('cascade');
+            $table->string('observacion',255);
+            $table->timestamp('fecha');
+            $table->string('estado',20);
+            $table->tinyInteger('condicion')->default(1);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -19,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('estadoevento');
     }
 };
