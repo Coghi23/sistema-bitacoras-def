@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('id_evento')->constrained('evento')->onDelete('cascade');
             $table->string('observacion',255);
             $table->timestamp('fecha');
-            $table->string('estado',20);
+            $table->boolean('estado');
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps();
         });
