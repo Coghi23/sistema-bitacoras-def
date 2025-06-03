@@ -13,7 +13,6 @@ return new class extends Migration
     {
        Schema::create('profesores', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('usuario_id')->unique()->constrained('=usuarios')->onDelete('cascade');   
             $table->timestamps();
         });
     }
@@ -23,6 +22,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('profesores');
     }
 };
