@@ -11,7 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('bitacora', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('recinto_id')->constrained();
+            $table->boolean('condicion')->default(true);
+        });
     }
 
     /**
@@ -19,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('bitacora');
     }
 };
