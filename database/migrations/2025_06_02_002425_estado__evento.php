@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('estadoevento', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_usuario')->constrained('usuario')->onDelete('cascade');
+            $table->foreignId('id_usuario')->constrained('users')->onDelete('cascade');
             $table->foreignId('id_evento')->constrained('evento')->onDelete('cascade');
             $table->string('observacion',255);
             $table->timestamp('fecha');
