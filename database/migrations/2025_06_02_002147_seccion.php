@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("secciones", function (Blueprint $table) {
+        Schema::create("seccion", function (Blueprint $table) {
             $table->id();
             $table->string('nombre',55);
             $table->tinyInteger('condicion')->default(1);
