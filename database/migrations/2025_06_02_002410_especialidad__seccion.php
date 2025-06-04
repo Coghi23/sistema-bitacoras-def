@@ -11,7 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create("especialidad_seccion", function (Blueprint $table) {
+
+            $table->id();
+            $table->foreignId('id_especialidad')->constrained('especialidad')->onDelete('set null');
+            $table->foreignId('id_seccion')->constrained('seccion')->onDelete('set null');
+            $table->boolean('condicion');
+
+            $table->timestamps();
+
+        });
     }
 
     /**
@@ -19,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('especialidad_seccion');
     }
 };
