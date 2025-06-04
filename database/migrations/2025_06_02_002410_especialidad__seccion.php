@@ -16,7 +16,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_especialidad')->constrained('especialidad')->onDelete('set null');
             $table->foreignId('id_seccion')->constrained('seccion')->onDelete('set null');
-            $table->boolean('condicion');
+            $table->tinyInteger('condicion')->default(1);
 
             $table->timestamps();
 

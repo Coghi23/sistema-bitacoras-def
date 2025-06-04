@@ -20,7 +20,7 @@ return new class extends Migration
            $table->foreignId('id_recinto')->constrained('recinto')->onDelete('cascade');
            $table->foreignId('id_subareaseccion')->constrained('subareaseccion')->onDelete('cascade');
            $table->foreignId('id_profesor')->constrained('profesor')->onDelete('cascade');
-           $table->boolean('condicion')->default(true);
+          $table->tinyInteger('condicion')->default(1);
            $table->timestamps();
            
         });

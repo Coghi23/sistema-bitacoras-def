@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('bitacora', function (Blueprint $table) {
             $table->id();
             $table->foreignId('recinto_id')->constrained();
-            $table->boolean('condicion')->default(true);
+            $table->tinyInteger('condicion')->default(1);
         });
     }
 

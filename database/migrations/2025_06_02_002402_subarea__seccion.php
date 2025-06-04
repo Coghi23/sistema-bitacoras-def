@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_subarea')->constrained('subarea')->onDelete('cascade');
             $table->foreignId('id_seccion')->constrained('seccion')->onDelete('cascade');
-            $table->boolean('condicion')->default(true);
+            $table->tinyInteger('condicion')->default(1);
             $table->timestamps();
         });
     }

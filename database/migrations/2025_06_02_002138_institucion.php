@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('institucion', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->boolean('condicion')->default(true);
+            $table->tinyInteger('condicion')->default(1);
         });
     }
 

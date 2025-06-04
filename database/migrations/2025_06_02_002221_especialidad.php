@@ -17,7 +17,7 @@ return new class extends Migration
         $table->id();
         $table->foreignId('id_institucion')->nullable()->constrained('institucion')->onDelete('set null');
         $table->string('nombre', 50);
-        $table->boolean('condicion');
+       $table->tinyInteger('condicion')->default(1);
 
         $table->timestamps();
 

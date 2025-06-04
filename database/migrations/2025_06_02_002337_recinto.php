@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nombre');
             $table->string('tipo');
             $table->string('estado');
-            $table->boolean('condicion')->default(true);
+            $table->tinyInteger('condicion')->default(1);
         });
     }
 
