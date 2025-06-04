@@ -11,7 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create(('evento'), function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_bitacora')->constrained('bitacora')->onDelete('cascade');
+            $table->foreignId('id_profesor')->constrained('profesor')->onDelete('cascade');
+            $table->timestamp('fecha');
+            $table->string('observacion',255);
+            $table->string('prioridad',255);
+            $table->boolean('confirmacion');
+            $table->tinyInteger('condicion')->default(1);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -19,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        //
+        Schema::dropIfExists('evento');
     }
 };
