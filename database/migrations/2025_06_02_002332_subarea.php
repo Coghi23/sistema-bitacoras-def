@@ -11,7 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::table("subarea", function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('id_especialidad')->constrained('especialidad')->onDelete('cascade');
+            $table->string('nombre',55);
+            $table->tinyInteger('condicion')->default(1);
+        });
     }
 
     /**
