@@ -19,9 +19,23 @@ class Especialidade extends Model
         'condicion'
     ];
 
-    // Relación con Institución
+    // Relación con Institución (única foreign key directa en la tabla)
     public function institucion()
     {
         return $this->belongsTo(Institucion::class, 'id_institucion');
+    }
+
+    // Relación many-to-many con Profesor (tabla intermedia: especialidadprofesor)
+    public function profesores()
+    {
+        return $this->belongsToMany(Profesor::class, 'especialidadprofesor');
+    }
+
+    // Relación many-to-many con Seccion (tabla intermedia: especialidad_seccion)
+    public function secciones()
+    {
+        return $this->belongsToMany(Seccion::class, 'especialidad_seccion', 'id_especialidad', 'id_seccion')
+                    ->withPivot('condicion')
+                    ->withTimestamps();
     }
 }
