@@ -13,7 +13,7 @@ class Institucion extends Model
 
     protected $fillable = [
         'nombre',
-        'condicion',
+        'condicion'
     ];
 
     public function especialidad(){
