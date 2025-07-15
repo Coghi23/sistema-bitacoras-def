@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create("especialidad_seccion", function (Blueprint $table) {
 
             $table->id();
-            $table->foreignId('id_especialidad')->constrained('especialidad')->onDelete('set null');
-            $table->foreignId('id_seccion')->constrained('seccion')->onDelete('set null');
+            $table->foreignId('id_especialidad')->nullable()->constrained('especialidad')->onDelete('set null');
+            $table->foreignId('id_seccion')->nullable()->constrained('seccion')->onDelete('set null');
             $table->tinyInteger('condicion')->default(1);
 
             $table->timestamps();

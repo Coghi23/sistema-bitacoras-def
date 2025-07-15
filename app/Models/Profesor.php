@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,10 +17,10 @@ class Profesor extends Model
     {
         return $this->belongsTo(User::class);
     }
-
+    
     public function especialidades()
     {
-        return $this->belongstoMany(Especialidad::class);
+        return $this->belongsToMany(Especialidad::class);
     }
 
     public function horarios()

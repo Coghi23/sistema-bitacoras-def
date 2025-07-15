@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recinto', function (Blueprint $table) {
+        Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institucion_id')->constrained('institucion');
-            $table->string('nombre');
-            $table->string('tipo');
-            $table->string('estado');
-            $table->tinyInteger('condicion')->default(1);
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recinto');
+        Schema::dropIfExists('users');
     }
 };

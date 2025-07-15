@@ -27,8 +27,8 @@ class Recinto extends Model
     }
 
     // Un recinto *puede tener* múltiples horarios
-    public function horarios()
+    /*public function horarios()
     {
         return $this->hasMany(Horario::class);
-    }
+    }*/
 }

@@ -15,7 +15,7 @@ class Subarea extends Model
     }
 
     public function secciones(){
-        return $this->belongsToMany(Seccione::class, 'subareaseccion', 'id_subarea', 'id_seccion')
+        return $this->belongsToMany(Seccion::class, 'subareaseccion', 'id_subarea', 'id_seccion')
                ->withPivot('condicion')
                ->withTimestamps();
     }

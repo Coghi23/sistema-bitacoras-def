@@ -11,18 +11,10 @@ class Institucion extends Model
 
     use HasFactory;
 
-    public function 
-
-    protected $fillable = 'institucion'[
+    protected $fillable = [
         'nombre',
         'condicion',
     ];
-
-    public function usuarioInstitucion(){
-
-        return $this->hasMany(UsuarioInstitucion::class);
-
-    }
 
     public function especialidad(){
 

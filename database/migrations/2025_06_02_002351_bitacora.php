@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('bitacora', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('recinto_id')->constrained();
+            $table->foreignId('recinto_id')->constrained('recinto');
             $table->tinyInteger('condicion')->default(1);
+            $table->timestamps(); // Adding timestamps for created_at and updated_at
         });
     }
 

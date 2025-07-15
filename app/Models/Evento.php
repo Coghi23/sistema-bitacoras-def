@@ -24,6 +24,6 @@ class Evento extends Model
 
     public function profesor()
     {
-        return $this->belongsTo(Profesore::class);
+        return $this->belongsTo(Profesor::class);
     }
 }

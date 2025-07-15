@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('especialidadprofesor', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('especialidad_id')->unique()->constrained('especialidad')->onDelete('cascade');
-            $table->foreignId('profesor_id')->unique()->constrained('profesor')->onDelete('cascade');    
+            $table->foreignId('especialidad_id')->constrained('especialidad')->onDelete('cascade');
+            $table->foreignId('profesor_id')->constrained('profesor')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        chema::dropIfExists('especialidadprofesor');
+        Schema::dropIfExists('especialidadprofesor');
     }
 };
