@@ -11,11 +11,9 @@ class Institucion extends Model
 
     use HasFactory;
 
-    public function 
-
-    protected $fillable = 'institucion'[
+    protected $fillable = [
         'nombre',
-        'condicion',
+        'condicion'
     ];
 
     public function usuarioInstitucion(){
