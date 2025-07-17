@@ -47,34 +47,7 @@
             </div>
         </div>
 
-        <!-- Modal Editar Institución -->
-        <div class="modal fade" id="modalEditarInstitucion" tabindex="-1" aria-labelledby="modalEditarInstitucionLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header modal-header-custom">
-                        <button class="btn-back" data-bs-dismiss="modal">
-                            <i class="bi bi-arrow-left"></i>
-                        </button>
-                        <h5 class="modal-title">Editar Institución</h5>
-                    </div>
-                    <div class="modal-body px-4 py-4">
-                        <form action="{{ route('institucion.update', ['institucion' => $institucion]) }}" method="post">
-                            @method('PATCH')
-                            @csrf
-                            <input  required type="text" name="nombre" id="nombre" class="form-control input-estilo">
-                            <div class="mb-3">
-                                <label for="editarNombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
-                                <input type="text" name="nombre" id="editarNombreInstitucion" class="form-control" value="{{old('nombre',$institucion->nombre)}}" placeholder="Ingrese el nombre de usuario" 
-                                placeholder="Ingrese el nuevo nombre de la Institución" required>
-                            </div>
-                            <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-crear">Guardar Cambios</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+        
 
         <div class="table-responsive">
             <table class="table align-middle table-hover">
@@ -87,15 +60,45 @@
                 <tbody>
                     @foreach ($instituciones as $institucion)
                         <tr>
-                            <td class="text-center">{{ $institucion->nombre }}</td>
+                            <td class="text-center">{{ $institucion->nombre ?? 'N/A'}}</td>
                             <td class="text-center">
-                                <button class="btn btn-link text-info p-0 me-2 btn-editar" 
-                                    data-bs-toggle="modal" data-bs-target="#modalEditarInstitucion"
-                                    data-id="{{ $institucion->id }}" data-nombre="{{ $institucion->nombre }}">
+                                <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}">
                                     <i class="bi bi-pencil"></i>
                                 </button>
                             </td>
                         </tr>
+
+                        <!-- Modal Editar Institución -->
+                        <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-labelledby="modalEditarInstitucionLabel-{{ $institucion->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header modal-header-custom">
+                                        <button class="btn-back" data-bs-dismiss="modal">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <h5 class="modal-title">Editar Institución</h5>
+                                    </div>
+                                    <div class="modal-body px-4 py-4">
+                                        <form id="formEditarInstitucion" action="{{ route('institucion.update',['institucion' => $institucion]) }}" method="post">
+                                            @method('PATCH')
+                                            @csrf
+                                            <input type="hidden" name="id" id="editarIdInstitucion" class="form-control input-estilo">
+
+                                            <div class="mb-3">
+                                                <label for="editarNombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
+                                                <input type="text" name="nombre" id="editarNombreInstitucion" class="form-control" value="{{ old('nombre',$institucion->nombre) }}" 
+                                                placeholder="Ingrese el nuevo nombre de la Institución" required>
+                                            </div>
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-crear">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     @endforeach
                 </tbody>
             </table>
@@ -106,20 +109,7 @@
 @endsection
 
 @push('scripts')
-<script>
-    var editarModal = document.getElementById('modalEditarInstitucion');
-    editarModal.addEventListener('show.bs.modal', function (event) {
-        var button = event.relatedTarget;
-        var id = button.getAttribute('data-id');
-        var nombre = button.getAttribute('data-nombre');
 
-        var form = document.getElementById('formEditarInstitucion');
-        form.action = '/institucion/' + id;
-
-        document.getElementById('editarIdInstitucion').value = id;
-        document.getElementById('editarNombreInstitucion').value = nombre; // <-- Esta línea es clave
-    });
-</script>
 
 <script src="{{ asset('js/Sidebar.js') }}"></script>
 <script src="{{ asset('js/modals-create-institucion.js') }}"></script>

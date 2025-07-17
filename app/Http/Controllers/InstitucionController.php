@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Http\Requests\UpdateInstitucionRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Contracts\View\View;
 use App\Http\Requests\StoreInstitucionRequest;
 use App\Models\Institucione;
 use Exception;
@@ -62,11 +63,10 @@ class InstitucionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Institucione $institucione): \Illuminate\Contracts\View\View
+    public function edit(Institucione $institucion)
     {
-        
-        return view('institucion.edit', compact('institucione'));
-
+        $instituciones = Institucione::with('especialidad')->get();
+        return view('institucion.index', compact('instituciones', 'institucion'));
     }
 
     /**
