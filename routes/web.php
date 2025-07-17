@@ -7,6 +7,4 @@ Route::get('/', function () {
 });
 
 
-Route::resources([
-    'institucion' => InstitucionController::class,
-]);
+Route::resource('institucion', InstitucionController::class);

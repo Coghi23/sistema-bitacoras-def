@@ -1,12 +1,11 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\UpdateInstitucionRequest;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreInstitucionRequest;
 use App\Models\Institucione;
-use Illuminate\Http\Request;
 use Exception;
-use Illuminate\Session\Store;
 
 class InstitucionController extends Controller
 {
@@ -73,16 +72,32 @@ class InstitucionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateInstitucionRequest $request, Institucione $institucion)
     {
-        //
+        try {
+            DB::beginTransaction();
+            $institucion->update($request->validated());
+            DB::commit();
+
+            
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Hubo un problema al actualizar la institución.']);
+        }
+
+        return redirect()->route('institucion.index')
+        ->with('success', 'Institución actualizada correctamente.');
+
     }
+    
+        
+    
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        //
+        
     }
 }

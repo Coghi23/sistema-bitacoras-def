@@ -58,13 +58,14 @@
                         <h5 class="modal-title">Editar Institución</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
-                        <form id="formEditarInstitucion" method="POST">
+                        <form action="{{ route('institucion.update', ['institucion' => $institucion]) }}" method="post">
+                            @method('PATCH')
                             @csrf
-                            @method('PUT')
-                            <input type="hidden" name="id" id="editarIdInstitucion">
+                            <input  required type="text" name="nombre" id="nombre" class="form-control input-estilo">
                             <div class="mb-3">
                                 <label for="editarNombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
-                                <input type="text" name="nombre" id="editarNombreInstitucion" class="form-control" placeholder="Ingrese el nuevo nombre de la Institución" required>
+                                <input type="text" name="nombre" id="editarNombreInstitucion" class="form-control" value="{{old('nombre',$institucion->nombre)}}" placeholder="Ingrese el nombre de usuario" 
+                                placeholder="Ingrese el nuevo nombre de la Institución" required>
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Guardar Cambios</button>
@@ -106,20 +107,17 @@
 
 @push('scripts')
 <script>
-    // Pasar datos al modal Editar Institución al abrirlo
     var editarModal = document.getElementById('modalEditarInstitucion');
     editarModal.addEventListener('show.bs.modal', function (event) {
         var button = event.relatedTarget;
         var id = button.getAttribute('data-id');
         var nombre = button.getAttribute('data-nombre');
 
-        var modal = this;
-        modal.querySelector('#editarIdInstitucion').value = id;
-        modal.querySelector('#editarNombreInstitucion').value = nombre;
+        var form = document.getElementById('formEditarInstitucion');
+        form.action = '/institucion/' + id;
 
-        // Actualizar acción del formulario según id
-        var form = modal.querySelector('#formEditarInstitucion');
-        form.action = '/instituciones/' + id; // Ajusta la URL según rutas Laravel
+        document.getElementById('editarIdInstitucion').value = id;
+        document.getElementById('editarNombreInstitucion').value = nombre; // <-- Esta línea es clave
     });
 </script>
 
