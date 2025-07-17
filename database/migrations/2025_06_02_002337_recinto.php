@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('recinto', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('institucion_id')->constrained('institucion');
+            $table->foreignId('institucion_id')->constrained('institucione');
             $table->string('nombre');
             $table->string('tipo');
             $table->string('estado');

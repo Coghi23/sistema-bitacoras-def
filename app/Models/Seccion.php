@@ -10,7 +10,7 @@ class Seccion extends Model
     use HasFactory;
 
     public function especialidades(){
-        return $this->belongsToMany(Especialidad::class, 'especialidad_seccion', 'id_seccion', 'id_especialidad')
+        return $this->belongsToMany(Especialidade::class, 'especialidad_seccion', 'id_seccion', 'id_especialidad')
             ->withPivot('condicion')
             ->withTimestamps();
     }

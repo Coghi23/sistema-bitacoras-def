@@ -11,7 +11,7 @@ class Subarea extends Model
     use HasFactory;
 
     public function especialidad(){
-        return $this->belongsTo(Especialidad::class);
+        return $this->belongsTo(Especialidade::class);
     }
 
     public function secciones(){

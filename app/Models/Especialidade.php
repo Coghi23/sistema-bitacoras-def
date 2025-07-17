@@ -3,7 +3,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Especialidad extends Model
+class Especialidade extends Model
 {
     use HasFactory;
 
@@ -20,7 +20,7 @@ class Especialidad extends Model
     // Relación con Institución (única foreign key directa en la tabla)
     public function institucion()
     {
-        return $this->belongsTo(Institucion::class, 'id_institucion');
+        return $this->belongsTo(Institucione::class, 'id_institucion');
     }
 
     // Relación many-to-many con Profesor (tabla intermedia: especialidadprofesor)

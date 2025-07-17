@@ -1,0 +1,19 @@
+.modal-toast .modal-content {
+  border-radius: 18px;
+  box-shadow: 0 2px 16px #0002;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 320px;
+  border: none;
+}
+
+.modal-toast-icon {
+  margin-bottom: 16px;
+}
+
+.modal-toast-msg {
+  font-weight: 500;
+  font-size: 24px;
+}

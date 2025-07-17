@@ -23,7 +23,7 @@ class Recinto extends Model
     // Un recinto *pertenece a* una institución via institucion_id
     public function institucion()
     {
-        return $this->belongsTo(Institucion::class);
+        return $this->belongsTo(Institucione::class);
     }
 
     // Un recinto *puede tener* múltiples horarios

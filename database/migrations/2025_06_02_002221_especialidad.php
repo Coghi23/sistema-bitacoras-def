@@ -15,9 +15,9 @@ return new class extends Migration
         Schema::create("especialidad", function (Blueprint $table) {
 
         $table->id();
-        $table->foreignId('id_institucion')->nullable()->constrained('institucion')->onDelete('set null');
+        $table->foreignId('id_institucion')->constrained('institucione')->onDelete('cascade');
         $table->string('nombre', 50);
-       $table->tinyInteger('condicion')->default(1);
+        $table->tinyInteger('condicion')->default(1);
 
         $table->timestamps();
 

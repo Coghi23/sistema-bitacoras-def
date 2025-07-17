@@ -20,7 +20,7 @@ class Profesor extends Model
     
     public function especialidades()
     {
-        return $this->belongsToMany(Especialidad::class);
+        return $this->belongsToMany(Especialidade::class);
     }
 
     public function horarios()

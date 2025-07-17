@@ -16,9 +16,9 @@ class EstadoEvento extends Model
         'estado'
     ];
 
-    public function usuario()
+    public function user()
     {
-        return $this->belongsTo(Usuario::class);
+        return $this->belongsTo(User::class);
     }
 
     public function evento()

@@ -21,10 +21,10 @@ class Horario extends Model
         return $this->belongsTo(Recinto::class, 'idRecinto');
     }
 
-    public function subareaSeccion()
+    /*public function subareaSeccion()
     {
         return $this->belongsTo(SubareaSeccion::class, 'idSubareaSeccion');
-    }
+    }*/
 
     public function profesor()
     {
