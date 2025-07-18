@@ -7,7 +7,7 @@ btn.addEventListener('click', (e) => {
   visible = !visible;
   submenu.style.display = visible ? 'block' : 'none';
   if (visible) {
-    submenu.style.top = '${btn.offsetTop}px';
+    submenu.style.top = `${btn.offsetTop}px`;
   }
 });
 

@@ -98,6 +98,19 @@ class InstitucionController extends Controller
      */
     public function destroy(string $id)
     {
-        
+        $message = '';
+        $institucion = Institucione::find($id);
+        if ($institucion->condicion == 1)
+        {
+            Institucione::where('id',$institucion->id)
+            ->delete();
+            $message = 'Institución eliminada';
+        } else {
+            Institucione::where('id',$institucion->id)
+            ->update(['condicion' => 1
+            ]);
+            $message = 'Institución restaurada';
+        }
+        return redirect()->route('institucion.index')->with('success', $message);
     }
 }

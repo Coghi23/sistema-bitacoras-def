@@ -22,7 +22,7 @@ class UpdateInstitucionRequest extends FormRequest
     public function rules(): array
     {
         $institucion = $this->route('institucion');
-        $institucion = $institucion->id;
+        $institucionId = $institucion->id;
         return [
             'nombre' => 'required|string|max:255'
         ];

@@ -1,0 +1,92 @@
+.mensaje-eliminar-confirmacion, .mensaje-eliminar-exito {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1080; /* Más alto que el modal */
+  background: white;
+  padding: 25px 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+  text-align: center;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  opacity: 0;
+  pointer-events: none;
+  width: 320px;
+  max-width: 90vw;
+}
+
+.mensaje-eliminar-confirmacion.visible, .mensaje-eliminar-exito.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.mensaje-eliminar-confirmacion {
+  transform: translate(-50%, -50%) scale(0.8);
+}
+
+.mensaje-eliminar-confirmacion .contenido-mensaje p {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 10px;
+  color: #444;
+}
+
+.mensaje-eliminar-confirmacion .botones-confirmacion {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.btn-azul {
+  background-color: #0d47a1; /* Azul oscuro */
+  color: white;
+  border: none;
+  padding: 8px 28px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  user-select: none;
+  min-width: 80px;
+}
+
+.mensaje-eliminar-exito .contenido-mensaje p {
+  color: #0d47a1;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.oculto {
+  display: none !important;
+}
+
+/* Texto azul en el mensaje de confirmación */
+.mensaje-eliminar-confirmacion .contenido-mensaje p {
+  color: #0d47a1; /* Azul igual que éxito */
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+.mensaje-eliminar-confirmacion .btn-azul {
+  background-color: #0d47a1; /* Azul oscuro */
+  color: white;
+  border: none;
+  padding: 6px 40px;      /* Menos alto (6px arriba/abajo) y más ancho (40px lados) */
+  border-radius: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  min-width: 12px;       /* Más ancho mínimo */
+  height: 32px;           /* Altura fija más pequeña */
+  line-height: 1.2;
+}
+
+.mensaje-eliminar-confirmacion, .mensaje-eliminar-exito {
+  width: 400px;       /* Antes 320px, ahora más ancho */
+  max-width: 95vw;    /* Un poco más ancho que antes */
+}

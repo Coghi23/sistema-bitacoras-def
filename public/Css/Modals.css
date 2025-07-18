@@ -10,6 +10,12 @@
     border-radius: 12px 12px 0 0;
 }
 
+.bi-exclamation{
+    color: #f8bebe;
+    font-size: 1.2rem;
+    margin-right: 5px;
+}
+
 /* Botón de volver */
 .btn-back {
     background-color: #fdd835;
@@ -214,6 +220,7 @@
 }
 
 /* ----------- BOTÓN CREAR ---------- */
+
 .btn-crear,
 .modal-body .btn-crear {
     background-color: #00b0ff;
@@ -230,6 +237,25 @@
 }
 .btn-crear:hover {
     background-color: #0091ea;
+    color: white;
+}
+
+.btn-modificar{
+    background-color: #0091ea;
+    color: white;
+     border-radius: 25px;
+      font-weight: bold;
+    padding: 0.6rem 2.3rem;
+    border: none;
+    font-size: 1.2rem;
+    transition: background-color 0.3s;
+    font-family: 'Poppins',sans-serif;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.btn-modificar:hover {
+    background-color: #134496;
     color: white;
 }
 

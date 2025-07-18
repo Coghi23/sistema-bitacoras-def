@@ -1,36 +1,25 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="es">
 
 <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    
-    <title>Bitácoras HHC - @yield('title')</title>
-
-    <!-- Bootstrap CSS -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Bitácoras</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
-
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet" />
-
-    <!-- Estilos personalizados -->
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
-    <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
-    <link rel="stylesheet" href="{{ asset('Css/Footer.css') }}">
+    
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
-
-    @stack('css')
 </head>
 
 <body>
 
-    
 
-    {{-- Sidebar y contenido --}}
-    <div>
-        <div id="sidebar-navbar">
+
+
+    <div id="sidebar-navbar">
         <div class="topbar">
             <button class="hamburger d-md-none" onclick="toggleSidebar()">
                 <i class="bi bi-list"></i>
@@ -53,7 +42,7 @@
                 <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
             </div>
 
-            <a href="{{ url('index.html') }}" class="sidebar-item">
+            <a href="{{ asset('index.html') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
@@ -69,8 +58,8 @@
                 <a href="#" class="submenu-item" style="text-decoration: none;"><i class="bi bi-person"></i> Docentes</a>
                 <a href="#" class="submenu-item" style="text-decoration: none;"><i class="bi bi-tools"></i> Soporte</a>
                 <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
-                <a href="{{ asset('institucion') }}" class="submenu-item"style="text-decoration: none;"><i class="bi bi-bank"></i>Institución</a>
-                <a href="{{ asset('sub-area') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
+                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
+                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
                 <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
             </div>
 
@@ -95,7 +84,6 @@
             </a>
         </div>
     </div>
-    </div>
 
     <div class="wrapper">
         <div class="main-content p-4">
@@ -103,30 +91,10 @@
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-
-    <!-- Inicializador de DataTables -->
-    <script>
-        $(function () {
-            let tabla = $('#datatablesSimple');
-            if (tabla.length) {
-                tabla.DataTable({
-                    responsive: true,
-                    language: {
-                        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-                    }
-                });
-                console.log("DataTables inicializado correctamente");
-            }
-        });
-    </script>
-    <!-- JS personalizados -->
     <script src="{{ asset('JS/Sidebar.js') }}"></script>
-
-    @stack('js')
+    <script src="{{ asset('JS/modals-create-especialidad.js') }}"></script>
+    <script src="{{ asset('JS/modals-edit-especialidad.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
 </body>
 
 </html>
