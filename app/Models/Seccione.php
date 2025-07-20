@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Seccion extends Model
+class Seccione extends Model
 {
     use HasFactory;
 
@@ -21,5 +21,5 @@ class Seccion extends Model
             ->withTimestamps();
     }
 
-    protected $fillable =['nombre', 'condicion'];
+    protected $fillable =['nombre'];
 }

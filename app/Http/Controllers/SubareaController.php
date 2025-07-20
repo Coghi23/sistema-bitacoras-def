@@ -2,7 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use App\Models\Subarea; 
+use Illuminate\Support\Facades\Validator;
+use App\Http\Requests\StoreSubareaRequest;
+use App\Http\Requests\UpdateSubareaRequest;
+use Exception; 
 
 class SubareaController extends Controller
 {
@@ -11,7 +17,8 @@ class SubareaController extends Controller
      */
     public function index()
     {
-        //
+        $subareas=Subarea::with('especialidad')->get();
+        return view('subarea.index', ['subareas' => $subareas]);
     }
 
     /**
@@ -19,15 +26,22 @@ class SubareaController extends Controller
      */
     public function create()
     {
-        //
+        return view('subarea.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreSubareaRequest $request)
     {
-        //
+        try {
+            DB::beginTransaction();
+            Subarea::create($request->validated());
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollBack();
+        }
+        return redirect()->route('subarea.index')->with('success', 'Subárea creada correctamente.');
     }
 
     /**
@@ -41,17 +55,21 @@ class SubareaController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Subarea $subarea)
     {
-        //
+        $subarea->load('especialidad');
+         return view('subarea.edit', compact('subarea'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateSubareaRequest $request, Subarea $subarea)
     {
-        //
+        Subarea::where('id', $subarea->id)
+            ->update($request->validated());
+        return redirect()->route('subarea.index')->with('success', 'Subárea actualizada correctamente.');
+
     }
 
     /**
@@ -59,6 +77,23 @@ class SubareaController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $message='';
+        $subarea=Subarea::find($id);
+        if($subarea->condicion==1){
+            Subarea::where('id', $subarea->id)
+            ->update([
+                'condicion' => 0
+            ]);
+            $message = 'Subárea eliminada correctamente.';
+        }
+        else{
+            Subarea::where('id', $subarea->id)
+            ->update([
+                'condicion' => 1
+            ]);
+            $message = 'Subárea restaurada correctamente.';
+        }
+        return redirect()->route('subarea.index')->with('success', $message);
+
     }
 }
