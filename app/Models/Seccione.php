@@ -9,6 +9,8 @@ class Seccione extends Model
 {
     use HasFactory;
 
+    protected $table = 'seccione';
+
     public function especialidades(){
         return $this->belongsToMany(Especialidade::class, 'especialidad_seccion', 'id_seccion', 'id_especialidad')
             ->withPivot('condicion')

@@ -15,7 +15,7 @@ return new class extends Migration
 
             $table->id();
             $table->foreignId('id_especialidad')->nullable()->constrained('especialidad')->onDelete('set null');
-            $table->foreignId('id_seccion')->nullable()->constrained('seccion')->onDelete('set null');
+            $table->foreignId('id_seccion')->nullable()->constrained('seccione')->onDelete('set null');
             $table->tinyInteger('condicion')->default(1);
 
             $table->timestamps();

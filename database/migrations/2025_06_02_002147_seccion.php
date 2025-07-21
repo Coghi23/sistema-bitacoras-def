@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create("seccion", function (Blueprint $table) {
+        Schema::create("seccione", function (Blueprint $table) {
             $table->id();
             $table->string('nombre',55);
             $table->tinyInteger('condicion')->default(1);
@@ -23,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('seccion');
+        Schema::dropIfExists('seccione');
     }
 };

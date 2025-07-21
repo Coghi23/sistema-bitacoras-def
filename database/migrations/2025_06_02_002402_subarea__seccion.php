@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subareaseccion', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_subarea')->constrained('subarea')->onDelete('cascade');
-            $table->foreignId('id_seccion')->constrained('seccion')->onDelete('cascade');
+            $table->foreignId('id_seccion')->constrained('seccione')->onDelete('cascade');
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps();
         });
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subarea_seccion');
+        Schema::dropIfExists('subareaseccion');
     }
 };

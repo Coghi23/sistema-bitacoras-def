@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\InstitucionController;
+use App\Http\Controllers\SeccionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -8,3 +9,4 @@ Route::get('/', function () {
 
 
 Route::resource('institucion', InstitucionController::class);
+Route::resource('seccion', SeccionController::class);
