@@ -54,19 +54,6 @@
             </div>
         </div>
 
-       
-
-
-
-
-
-
-
-
-
-     
-
-
        <div class="table-responsive">
     <table class="table align-middle table-hover">
         <thead>
@@ -79,22 +66,25 @@
         <tbody>
             @foreach ($especialidades as $especialidad)
                 <tr>
-                    <td class="text-center">{{ $especialidad->nombre }}</td>
-                    <td class="text-center">{{ $especialidad->institucion->nombre }}</td>
-                    <td class="text-center">
-                        <button class="btn btn-link text-info p-0 me-2 btn-editar" 
-                            data-bs-toggle="modal" 
-                            data-bs-target="#modalEditarEspecialidad-{{ $especialidad->id }}"
-                            data-id="{{ $especialidad->id }}" 
-                            data-nombre="{{ $especialidad->nombre }}"
-                            data-institucion="{{ $especialidad->institucion->id }}"
-                            aria-label="Editar Especialidad">
-                            <i class="bi bi-pencil" style="font-size: 1.8rem;"></i>
-                        </button>
-                        <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Eliminar Especialidad">
-                            <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
-                        </button>
-                    </td>
+                    @if ($especialidad->condicion == 1)
+                        <td class="text-center">{{ $especialidad->nombre }}</td>
+                        <td class="text-center">{{ $especialidad->institucion->nombre }}</td>
+                        <td class="text-center">
+                            <button class="btn btn-link text-info p-0 me-2 btn-editar" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#modalEditarEspecialidad-{{ $especialidad->id }}"
+                                data-id="{{ $especialidad->id }}" 
+                                data-nombre="{{ $especialidad->nombre }}"
+                                data-institucion="{{ $especialidad->institucion->id }}"
+                                aria-label="Editar Especialidad">
+                                <i class="bi bi-pencil" style="font-size: 1.8rem;"></i>
+                            </button>
+                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Eliminar Especialidad">
+                                <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
+                            </button>
+                        </td>
+                    @endif
+                    
                 </tr>
 
 
