@@ -103,7 +103,8 @@ class InstitucionController extends Controller
         if ($institucion->condicion == 1)
         {
             Institucione::where('id',$institucion->id)
-            ->delete();
+            ->update(['condicion' => 0
+            ]);
             $message = 'Institución eliminada';
         } else {
             Institucione::where('id',$institucion->id)

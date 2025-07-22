@@ -60,17 +60,20 @@
                 <tbody>
                     @foreach ($instituciones as $institucion)
                         <tr>
-                            <td class="text-center">{{ $institucion->nombre }}</td>
-                            <td class="text-center">
-                                <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Eliminar Institución">
-                                        <i class="bi bi-trash"></i>
-                                </button>
-                            </td>
+                            @if ($institucion->condicion == 1)
+                                <td class="text-center">{{ $institucion->nombre }}</td>
+                                <td class="text-center">
+                                    <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Eliminar Institución">
+                                            <i class="bi bi-trash"></i>
+                                    </button>
+                                </td>
+                            @endif
+                            
                         </tr>
 
                         <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-labelledby="modalEditarInstitucionLabel-{{ $institucion->id }}" aria-hidden="true">
