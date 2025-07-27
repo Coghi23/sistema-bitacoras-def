@@ -24,7 +24,8 @@ class UpdateSubareaRequest extends FormRequest
         $subarea = $this->route('subarea');
         $subareaId = $subarea->id;
         return [
-            'nombre' => 'required|string|max:55'
+            'nombre' => 'required|string|max:55',
+            'id_especialidad' => 'required|integer|exists:especialidad,id',
         ]; 
     }
 }

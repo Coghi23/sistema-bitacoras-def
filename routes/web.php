@@ -1,6 +1,6 @@
 <?php
 use App\Http\Controllers\InstitucionController;
-
+use App\Http\Controllers\SubareaController;
 use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\EspecialidadController;
 
@@ -14,6 +14,8 @@ Route::get('/', function () {
 Route::resource('institucion', InstitucionController::class);
 
 Route::resource('seccion', SeccionController::class);
+
+Route::resource('subarea', SubareaController::class);
 
 Route::resource('especialidad', EspecialidadController::class);
 

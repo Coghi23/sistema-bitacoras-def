@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Subarea; 
+use App\Models\Especialidade;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreSubareaRequest;
 use App\Http\Requests\UpdateSubareaRequest;
@@ -17,8 +18,9 @@ class SubareaController extends Controller
      */
     public function index()
     {
-        $subareas=Subarea::with('especialidad')->get();
-        return view('subarea.index', ['subareas' => $subareas]);
+        $subareas = Subarea::with('especialidad')->get();
+        $especialidades = Especialidade::all();
+        return view('subarea.index', compact('subareas', 'especialidades'));
     }
 
     /**
@@ -36,10 +38,11 @@ class SubareaController extends Controller
     {
         try {
             DB::beginTransaction();
-            Subarea::create($request->validated());
+            $subarea = Subarea::create($request->validated());
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
+            return back()->withErrors(['error' => 'Hubo un problema al guardar la subárea: ' . $e->getMessage()]);
         }
         return redirect()->route('subarea.index')->with('success', 'Subárea creada correctamente.');
     }

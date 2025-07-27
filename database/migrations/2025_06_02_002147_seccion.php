@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nombre',55);
             $table->tinyInteger('condicion')->default(1);
+            $table->timestamps();
         });
     }
 

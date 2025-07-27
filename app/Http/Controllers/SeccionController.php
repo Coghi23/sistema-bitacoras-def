@@ -18,7 +18,7 @@ class SeccionController extends Controller
     public function index()
     {
         $secciones= Seccione::all();
-        return view('seccion.index', ['secciones' => $secciones]);
+        return view('seccion.index', compact('secciones'));
     }
 
     /**
@@ -36,11 +36,12 @@ class SeccionController extends Controller
     {
         try{
             DB::beginTransaction();
-            Seccione::create($request->validated());
+            $seccion = Seccione::create($request->validated());
             DB::commit();
         }
         catch(Exception $e){
             DB::rollBack();
+            return back()->withErrors(['error' => 'Hubo un problema al guardar la sección: ' . $e->getMessage()]);
         }
         return redirect()->route('seccion.index')->with('success', 'Sección creada correctamente.');
     }

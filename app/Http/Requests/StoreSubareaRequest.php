@@ -23,6 +23,7 @@ class StoreSubareaRequest extends FormRequest
     {
         return [
             'nombre' => 'required|string|max:55',
+            'id_especialidad' => 'required|integer|exists:especialidad,id',
         ];
     }
 }
