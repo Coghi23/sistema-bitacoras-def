@@ -6,6 +6,7 @@ use App\Http\Requests\StoreRecintoRequest;
 use App\Http\Requests\UpdateRecintoRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Institucione;
+use App\Http\Requests;
 use Exception;
 
 
@@ -17,9 +18,9 @@ class RecintoController extends Controller
      */
     public function index()
     {
-         $recinto=Recinto::with('institucion')->get();
-         $institucion=Institucione::all();
-        return view('recinto.index', ['institucion' => $institucion]);
+        $recintos = Recinto::with('institucion')->get();
+        $instituciones = Institucione::all();
+        return view('recinto.index', compact('recintos', 'instituciones'));
 
     }
 
@@ -35,11 +36,11 @@ class RecintoController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store()
+    public function store(StoreRecintoRequest $request)
     {
         try {
             DB::beginTransaction();
-            Subarea::create($request->validated());
+            Recinto::create($request->validated());
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();

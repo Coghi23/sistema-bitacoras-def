@@ -7,12 +7,10 @@
     <div class="main-content">
         <div class="row mb-5 mt-4">
             <div class="col-8 col-sm-8 col-md-8 text-center mt-3">
-                <form method="GET" action="{{ route('recintos.index') }}">
-                    <div class="position-relative search-box shadow-sm ">
-                        <i class="bi bi-search"></i>
-                        <input aria-label="Buscar recintos" type="search" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar" class="form-control search-input"/>
-                    </div>
-                </form>
+                <div class="position-relative search-box shadow-sm ">
+                    <i class="bi bi-search"></i>
+                    <input aria-label="Buscar recintos" type="search" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar" class="form-control search-input"/>
+                </div>
             </div>
             <div class="col-4 col-sm-4 col-md-2 text-center mt-3">
                 <div class="dropdown">
@@ -21,9 +19,9 @@
                         Filtros
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('recintos.index', ['estado' => 'disponible']) }}">Disponible</a></li>
-                        <li><a class="dropdown-item" href="{{ route('recintos.index', ['estado' => 'en_uso']) }}">En uso</a></li>
-                        <li><a class="dropdown-item" href="{{ route('recintos.index', ['estado' => 'mantenimiento']) }}">En mantenimiento</a></li>
+                        <li><a class="dropdown-item" href="">Disponible</a></li>
+                        <li><a class="dropdown-item" href="">En uso</a></li>
+                        <li><a class="dropdown-item" href="">En mantenimiento</a></li>
                     </ul>
                 </div>
             </div>
@@ -43,12 +41,12 @@
             <div class="row align-items-center filter-tabs rounded-3 mb-4 altura-lg altura-md altura-sm" id="filterTabs">
                 <div class="tab-indicator"></div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recintos.index') }}">
+                    <a href="">
                         <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
                     </a>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recintos.index', ['tipo' => 'laboratorio']) }}">
+                    <a href="">
                         <button class="btn tab-btn {{ request('tipo') == 'laboratorio' ? 'active' : '' }}" type="button" style="width: 100%;">
                             <i class="fas fa-desktop"></i>
                             Laboratorios
@@ -56,7 +54,7 @@
                     </a>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recintos.index', ['tipo' => 'taller']) }}">
+                    <a href="">
                         <button class="btn tab-btn {{ request('tipo') == 'taller' ? 'active' : '' }}" type="button" style="width: 100%;">
                             <i class="fas fa-wrench"></i>
                             Talleres
@@ -64,7 +62,7 @@
                     </a>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3 text-center border rounded-4 btn-tabs ">
-                    <a href="{{ route('recintos.index', ['tipo' => 'movil']) }}">
+                    <a href="">
                         <button class="btn tab-btn {{ request('tipo') == 'movil' ? 'active' : '' }}" type="button" style="width: 100%;">
                             <i class="fas fa-laptop"></i>
                             Laboratorios móviles
@@ -188,7 +186,7 @@
                         <option value="mantenimiento" {{ $recinto->estado == 'mantenimiento' ? 'selected' : '' }}>En mantenimiento</option>
                         </select>
                     </div>
-                    <div class="mb-3" id="profesorField-{{ $recinto->id }}" style="display:{{ $recinto->profesor ? 'block' : 'none' }};">
+                    <div class="mb-3" id="profesorField-{{ $recinto->id }}">
                         <label for="profesorRecinto-{{ $recinto->id }}" class="form-label mb-1">Profesor</label>
                         <input type="text" class="form-control" id="profesorRecinto-{{ $recinto->id }}" name="profesor" value="{{ $recinto->profesor }}">
                     </div>
@@ -209,88 +207,69 @@
                 </div>
             </div>
             </div>
-            <script>
-            document.getElementById('tipoRecinto-{{ $recinto->id }}').addEventListener('change', function() {
-                var profesorField = document.getElementById('profesorField-{{ $recinto->id }}');
-                if (this.value === 'laboratorio' || this.value === 'movil' || this.value === 'taller') {
-                    profesorField.style.display = 'block';
-                } else {
-                    profesorField.style.display = 'none';
-                }
-            });
-            </script>
+        @endforeach
+            <!-- Modal Agregar Recinto -->
+
+            <div class="modal fade" id="modalAgregarRecinto" tabindex="-1" aria-labelledby="modalAgregarRecintoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 rounded-0" id="modalAgregarRecintoContent">
+                <div class="modal-header rounded-0 custom-header">
+                    <button type="button" class="btn p-0 me-3" data-bs-dismiss="modal" aria-label="Volver" style="color: #FFD600; font-size: 1.5rem; background: none; border: none;">
+                    <span class="icono-atras">
+                        <i><img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="external-ui-basic-ui-solid-adri-ansyah-26"/></i>
+                    </span>
+                    </button>
+                    <h3 class="flex-grow-1">Crear nuevo recinto</h3>
+                </div>
+                <div class="modal-body pb-0" style="border-bottom: 8px solid #003366;">
+                    <form id="formAgregarRecinto" action="{{ route('recintos.store') }}" method="POST">
+                    @csrf
+                    <div class="mb-3">
+                        <label for="tipoRecinto" class="form-label mb-1">Tipo</label>
+                        <select class="form-select" id="tipoRecinto" name="tipo" required>
+                        <option value="">Seleccione un tipo</option>
+                        <option value="laboratorio">Laboratorio</option>
+                        <option value="taller">Taller</option>
+                        <option value="movil">Laboratorio móvil</option>
+                        </select>
                     </div>
+                    <div class="mb-3">
+                        <label for="nombreRecinto" class="form-label mb-1">Nombre</label>
+                        <input type="text" class="form-control" id="nombreRecinto" name="nombre" placeholder="Nombre del recinto" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estadoRecinto" class="form-label mb-1">Estado</label>
+                        <select class="form-select" id="estadoRecinto" name="estado" required>
+                        <option value="">Seleccione un estado</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="en_uso">En uso</option>
+                        <option value="mantenimiento">En mantenimiento</option>
+                        </select>
+                    </div>
+                    <div class="mb-3" id="profesorField" style="display:none;">
+                        <label for="profesorRecinto" class="form-label mb-1">Profesor</label>
+                        <input type="text" class="form-control" id="profesorRecinto" name="profesor" placeholder="Nombre del profesor">
+                    </div>
+                    <div class="mb-3">
+                        <label for="institucionRecinto" class="form-label mb-1">Institución</label>
+                        <select class="form-select" id="institucionRecinto" name="institucion" required>
+                        <option value="">Seleccione una Institución</option>
+                        <option value="COVAO Diurno">COVAO Diurno</option>
+                        <option value="COVAO Nocturno">COVAO Nocturno</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
+                        <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-guardar rounded-pill px-4">Guardar</button>
+                    </div>
+                    </form>
+                </div>
                 </div>
             </div>
-
-<!-- Modal Agregar Recinto -->
-
-<div class="modal fade" id="modalAgregarRecinto" tabindex="-1" aria-labelledby="modalAgregarRecintoLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-0" id="modalAgregarRecintoContent">
-      <div class="modal-header rounded-0 custom-header">
-        <button type="button" class="btn p-0 me-3" data-bs-dismiss="modal" aria-label="Volver" style="color: #FFD600; font-size: 1.5rem; background: none; border: none;">
-          <span class="icono-atras">
-            <i><img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="external-ui-basic-ui-solid-adri-ansyah-26"/></i>
-          </span>
-        </button>
-        <h3 class="flex-grow-1">Crear nuevo recinto</h3>
-      </div>
-      <div class="modal-body pb-0" style="border-bottom: 8px solid #003366;">
-        <form id="formAgregarRecinto" action="{{ route('recintos.store') }}" method="POST">
-          @csrf
-          <div class="mb-3">
-            <label for="tipoRecinto" class="form-label mb-1">Tipo</label>
-            <select class="form-select" id="tipoRecinto" name="tipo" required>
-              <option value="">Seleccione un tipo</option>
-              <option value="laboratorio">Laboratorio</option>
-              <option value="taller">Taller</option>
-              <option value="movil">Laboratorio móvil</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="nombreRecinto" class="form-label mb-1">Nombre</label>
-            <input type="text" class="form-control" id="nombreRecinto" name="nombre" placeholder="Nombre del recinto" required>
-          </div>
-          <div class="mb-3">
-            <label for="estadoRecinto" class="form-label mb-1">Estado</label>
-            <select class="form-select" id="estadoRecinto" name="estado" required>
-              <option value="">Seleccione un estado</option>
-              <option value="disponible">Disponible</option>
-              <option value="en_uso">En uso</option>
-              <option value="mantenimiento">En mantenimiento</option>
-            </select>
-          </div>
-          <div class="mb-3" id="profesorField" style="display:none;">
-            <label for="profesorRecinto" class="form-label mb-1">Profesor</label>
-            <input type="text" class="form-control" id="profesorRecinto" name="profesor" placeholder="Nombre del profesor">
-          </div>
-          <div class="mb-3">
-            <label for="institucionRecinto" class="form-label mb-1">Institución</label>
-            <select class="form-select" id="institucionRecinto" name="institucion" required>
-              <option value="">Seleccione una Institución</option>
-              <option value="COVAO Diurno">COVAO Diurno</option>
-              <option value="COVAO Nocturno">COVAO Nocturno</option>
-            </select>
-          </div>
-          <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
-            <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-guardar rounded-pill px-4">Guardar</button>
-          </div>
-        </form>
-      </div>
+            </div>
+            
+        </div>
     </div>
-  </div>
 </div>
-<script>
-document.getElementById('tipoRecinto').addEventListener('change', function() {
-    var profesorField = document.getElementById('profesorField');
-    if (this.value === 'laboratorio' || this.value === 'movil' || this.value === 'taller') {
-        profesorField.style.display = 'block';
-    } else {
-        profesorField.style.display = 'none';
-    }
-});
-</script>
-
 @endsection
+
