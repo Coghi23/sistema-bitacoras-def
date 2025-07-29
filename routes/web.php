@@ -3,7 +3,7 @@ use App\Http\Controllers\InstitucionController;
 use App\Http\Controllers\SubareaController;
 use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\EspecialidadController;
-
+use App\Http\Controllers\RecintoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,3 +19,4 @@ Route::resource('subarea', SubareaController::class);
 
 Route::resource('especialidad', EspecialidadController::class);
 
+Route::resource('recinto', RecintoController::class);

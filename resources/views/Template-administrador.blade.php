@@ -68,10 +68,7 @@
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
             </a>
 
-            <a href="{{ url('recintos.html') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Recintos">Recintos</div>
-            </a>
+            <a href="{{ asset('recinto') }}" class="sidebar-item"><div class="icon-circle"><i class="bi bi-building-fill"></i></div><div class="label" data-bs-toggle="tooltip" title="Recintos">Recintos</div></a>
 
             <a href="{{ url('reportes.html') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
