@@ -20,7 +20,6 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="">Disponible</a></li>
-                        <li><a class="dropdown-item" href="">En uso</a></li>
                         <li><a class="dropdown-item" href="">En mantenimiento</a></li>
                     </ul>
                 </div>
@@ -73,79 +72,43 @@
         </div>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             @foreach($recintos as $recinto)
-            <div class="col d-flex">
-                <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
-                    <div class="card-body pb-2 p-2">
-                        <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
-                            <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
-                                {{ ucfirst($recinto->tipo) }}
-                            </span>
-                            @if($recinto->estado == 'disponible')
-                                <span class="badge bg-success text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Disponible</span>
-                            @elseif($recinto->estado == 'en_uso')
-                                <span class="badge bg-primary text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">En uso</span>
-                            @else
-                                <span class="badge bg-danger text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Mantenimiento</span>
-                            @endif
-                        </div>
-                        <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
-                        <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                            <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion }}
-                        </div>
-                        <div class="mb-3 text-secondary" style="font-size:0.93em;">
-                            <i class="fas fa-user me-1"></i>Profesor: {{ $recinto->profesor ?? '' }}
-                        </div>
-                    </div>
-                    <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
-                        <button class="btn btn-outline-secondary btn-sm rounded-5 px-2 w-100"
-                                data-bs-toggle="modal" data-bs-target="#historialModal-{{ $recinto->id }}" style="font-size:0.85em;">
-                            Historial de uso
-                        </button>
-                        <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"
-                                data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <form action="{{ route('recintos.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Desea eliminar este recinto?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Historial de Uso -->
-            <div class="modal fade" id="historialModal-{{ $recinto->id }}" tabindex="-1" aria-labelledby="historialModalLabel-{{ $recinto->id }}" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" style="min-width: 50px; max-width: 600px;">
-                    <div class="modal-content border-0 rounded-0" style="width: 100%; margin: auto;">
-                        <div class="modal-header py-3 px-4 rounded-0" style="background: #163374; border-bottom: 4px solid #FFD600;">
-                            <button type="button" class="btn p-0 me-3" data-bs-dismiss="modal" aria-label="Volver" style="color: #FFD600; font-size: 1.5rem; background: none; border: none;">
-                                <i class="bi bi-arrow-left"></i>
-                            </button>
-                            <h5 class="modal-title text-white fw-bold flex-grow-1" id="historialModalLabel-{{ $recinto->id }}" style="font-size: 1.35rem;">
-                                Historial de uso de {{ $recinto->nombre }}
-                            </h5>
-                        </div>
-                        <div class="modal-body px-4 py-3" style="background: #fff; max-height: 85vh; min-height: 70vh; overflow-y: auto;">
-                            <div class="d-flex flex-column gap-3 small">
-                                @forelse($recinto->historial as $evento)
-                                    <div>
-                                        <strong>{{ $evento->fecha }}</strong> - {{ $evento->descripcion }}
-                                    </div>
-                                @empty
-                                    <div>No hay historial disponible.</div>
-                                @endforelse
+                @if ($recinto->condicion == 1)
+                    <div class="col d-flex">
+                        <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
+                            <div class="card-body pb-2 p-2">
+                                <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
+                                    <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
+                                        {{ ucfirst($recinto->tipo) }}
+                                    </span>
+                                    @if($recinto->estado == 'disponible')
+                                        <span class="badge bg-success text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Disponible</span>
+                                    @else
+                                        <span class="badge bg-danger text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Mantenimiento</span>
+                                    @endif
+                                </div>
+                                <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
+                                <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                    <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
+                                </div>
+                            </div>
+                            <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
+                                <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"
+                                        data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Desea eliminar este recinto?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
-                        <div class="modal-footer rounded-0 justify-content-end py-1"
-                             style="background: #ffffff; border-bottom: 8px solid #003366;">
-                            <button type="button" class="btn btn-primary rounded-pill px-5 fw-semibold" data-bs-dismiss="modal">Cerrar</button>
-                        </div>
                     </div>
-                </div>
-            </div>
+
+                @endif
+          
 
             <!-- Modal Editar Recinto -->
             
@@ -161,7 +124,7 @@
                     <h3 class="flex-grow-1">Editar recinto</h3>
                 </div>
                 <div class="modal-body pb-0" style="border-bottom: 8px solid #003366;">
-                    <form id="formEditarRecinto-{{ $recinto->id }}" action="{{ route('recintos.update', $recinto->id) }}" method="POST">
+                    <form id="formEditarRecinto-{{ $recinto->id }}" action="{{ route('recinto.update', $recinto->id) }}" method="POST">
                     @csrf
                     @method('PATCH')
                     <div class="mb-3">
@@ -182,20 +145,20 @@
                         <select class="form-select" id="estadoRecinto-{{ $recinto->id }}" name="estado" required>
                         <option value="">Seleccione un estado</option>
                         <option value="disponible" {{ $recinto->estado == 'disponible' ? 'selected' : '' }}>Disponible</option>
-                        <option value="en_uso" {{ $recinto->estado == 'en_uso' ? 'selected' : '' }}>En uso</option>
                         <option value="mantenimiento" {{ $recinto->estado == 'mantenimiento' ? 'selected' : '' }}>En mantenimiento</option>
                         </select>
                     </div>
-                    <div class="mb-3" id="profesorField-{{ $recinto->id }}">
-                        <label for="profesorRecinto-{{ $recinto->id }}" class="form-label mb-1">Profesor</label>
-                        <input type="text" class="form-control" id="profesorRecinto-{{ $recinto->id }}" name="profesor" value="{{ $recinto->profesor }}">
-                    </div>
                     <div class="mb-3">
                         <label for="institucionRecinto-{{ $recinto->id }}" class="form-label mb-1">Institución</label>
-                        <select class="form-select" id="institucionRecinto-{{ $recinto->id }}" name="institucion" required>
-                        <option value="">Seleccione una Institución</option>
-                        <option value="COVAO Diurno" {{ $recinto->institucion == 'COVAO Diurno' ? 'selected' : '' }}>COVAO Diurno</option>
-                        <option value="COVAO Nocturno" {{ $recinto->institucion == 'COVAO Nocturno' ? 'selected' : '' }}>COVAO Nocturno</option>
+                        <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="editarInstitucion" class="form-control selectpicker show-tick">
+                            @if(isset($instituciones))
+                                @foreach ($instituciones as $institucion)
+                                    <option value="{{$institucion->id}}" 
+                                        {{ (isset($especialidad) && $especialidad->id_institucion == $institucion->id) || old('id_institucion') == $institucion->id ? 'selected' : '' }}>
+                                        {{$institucion->nombre}}
+                                    </option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
@@ -222,47 +185,47 @@
                     <h3 class="flex-grow-1">Crear nuevo recinto</h3>
                 </div>
                 <div class="modal-body pb-0" style="border-bottom: 8px solid #003366;">
-                    
-                    @csrf
-                    <div class="mb-3">
-                        <label for="tipoRecinto" class="form-label mb-1">Tipo</label>
-                        <select class="form-select" id="tipoRecinto" name="tipo" required>
-                        <option value="">Seleccione un tipo</option>
-                        <option value="laboratorio">Laboratorio</option>
-                        <option value="taller">Taller</option>
-                        <option value="movil">Laboratorio móvil</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="nombreRecinto" class="form-label mb-1">Nombre</label>
-                        <input type="text" class="form-control" id="nombreRecinto" name="nombre" placeholder="Nombre del recinto" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="estadoRecinto" class="form-label mb-1">Estado</label>
-                        <select class="form-select" id="estadoRecinto" name="estado" required>
-                        <option value="">Seleccione un estado</option>
-                        <option value="disponible">Activo</option>
-                        <option value="mantenimiento">En mantenimiento</option>
-                        </select>
-                    </div>
-                    <div class="mb-3" id="profesorField" style="display:none;">
-                        <label for="profesorRecinto" class="form-label mb-1">Profesor</label>
-                        <input type="text" class="form-control" id="profesorRecinto" name="profesor" placeholder="Nombre del profesor">
-                    </div>
-                    <div class="mb-3">
-                        <label for="institucionRecinto" class="form-label mb-1">Institución</label>
-                        
-                          <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="id_institucion" class="form-control selectpicker show-tick" required>
-                                    <option value="">Seleccione una institución</option>
-                                    @foreach ($instituciones as $institucion)
-                                        <option value="{{$institucion->id}}" {{ old('id_institucion') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
-                                    @endforeach
-                        </select>
-                    </div>
-                    <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
-                        <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-guardar rounded-pill px-4">Guardar</button>
-                    </div>
+                    <form action="{{ route('recinto.store') }}" method="POST">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="nombreRecinto" class="form-label mb-1">Nombre</label>
+                            <input type="text" class="form-control" id="nombreRecinto" name="nombre" placeholder="Nombre del recinto" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipoRecinto" class="form-label mb-1">Tipo</label>
+                            <select class="form-select" id="tipoRecinto" name="tipo" required>
+                            <option value="">Seleccione un tipo</option>
+                            <option value="laboratorio">Laboratorio</option>
+                            <option value="taller">Taller</option>
+                            <option value="movil">Laboratorio móvil</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="estadoRecinto" class="form-label mb-1">Estado</label>
+                            <select class="form-select" id="estadoRecinto" name="estado" required>
+                            <option value="">Seleccione un estado</option>
+                            <option value="disponible">Activo</option>
+                            <option value="mantenimiento">En mantenimiento</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="profesorField" style="display:none;">
+                            <label for="profesorRecinto" class="form-label mb-1">Profesor</label>
+                            <input type="text" class="form-control" id="profesorRecinto" name="profesor" placeholder="Nombre del profesor">
+                        </div>
+                        <div class="mb-3">
+                            <label for="institucionRecinto" class="form-label mb-1">Institución</label>
+                            
+                            <select data-size="4" title="Seleccione una institución" data-live-search="true" name="institucion_id" id="institucion_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione una institución</option>
+                                @foreach ($instituciones as $institucion)
+                                    <option value="{{$institucion->id}}" {{ old('institucion_id') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
+                            <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-guardar rounded-pill px-4">Crear</button>
+                        </div>
                     </form>
                 </div>
                 </div>

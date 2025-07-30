@@ -27,9 +27,8 @@ class UpdateRecintoRequest extends FormRequest
         return [
             'nombre' => 'required|string|max:55',
             'estado' => 'required|string|max:55',
-            'tipo' => 'required|string|max:55'
-
-
+            'tipo' => 'required|string|max:55',
+            'institucion_id' => 'required|exists:institucione,id'
         ]; 
     }
 }
