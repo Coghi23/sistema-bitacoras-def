@@ -17,12 +17,16 @@ class RecintoController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        $recintos = Recinto::with('institucion')->get();
-        $instituciones = Institucione::all();
-        return view('recinto.index', compact('recintos', 'instituciones'));
-
-    }
+{
+    $tipo = request('tipo');
+    $recintos = Recinto::with('institucion')
+        ->when($tipo, function ($query) use ($tipo) {
+            $query->where('tipo', $tipo);
+        })
+        ->get();
+    $instituciones = Institucione::all();
+    return view('recinto.index', compact('recintos', 'instituciones'));
+}
 
     /**
      * Show the form for creating a new resource.

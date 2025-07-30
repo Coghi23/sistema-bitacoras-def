@@ -40,12 +40,12 @@
             <div class="row align-items-center filter-tabs rounded-3 mb-4 altura-lg altura-md altura-sm" id="filterTabs">
                 <div class="tab-indicator"></div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="">
-                        <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
+                    <a href="{{ route('recinto.index') }}"> <!-- Todos -->
+                         <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
                     </a>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="">
+                    <a href="{{ route('recinto.index', ['tipo' => 'laboratorio']) }}">
                         <button class="btn tab-btn {{ request('tipo') == 'laboratorio' ? 'active' : '' }}" type="button" style="width: 100%;">
                             <i class="fas fa-desktop"></i>
                             Laboratorios
@@ -53,15 +53,15 @@
                     </a>
                 </div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="">
+                    <a href="{{ route('recinto.index', ['tipo' => 'taller']) }}">
                         <button class="btn tab-btn {{ request('tipo') == 'taller' ? 'active' : '' }}" type="button" style="width: 100%;">
                             <i class="fas fa-wrench"></i>
                             Talleres
                         </button>
                     </a>
                 </div>
-                <div class="col-12 col-sm-6 col-md-3 text-center border rounded-4 btn-tabs ">
-                    <a href="">
+                <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
+                    <a href="{{ route('recinto.index', ['tipo' => 'movil']) }}">
                         <button class="btn tab-btn {{ request('tipo') == 'movil' ? 'active' : '' }}" type="button" style="width: 100%;">
                             <i class="fas fa-laptop"></i>
                             Laboratorios móviles
@@ -150,7 +150,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="institucionRecinto-{{ $recinto->id }}" class="form-label mb-1">Institución</label>
-                        <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="editarInstitucion" class="form-control selectpicker show-tick">
+                        <select data-size="4" title="Seleccione una institución" data-live-search="true" name="institucion_id" id="editarInstitucion" class="form-control selectpicker show-tick">
                             @if(isset($instituciones))
                                 @foreach ($instituciones as $institucion)
                                     <option value="{{$institucion->id}}" 
