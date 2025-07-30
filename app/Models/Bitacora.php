@@ -19,6 +19,34 @@ class Bitacora extends Model
     
     }
 
+    public function docente()
+    {
+    
+        return $this->belongsTo(Profesor::class, 'id_profesor');
+    
+    }
+
+    public function seccion()
+    {
+    
+        return $this->belongsTo(Seccion::class, 'id_seccion');
+    
+    }
+
+    public function subarea()
+    {
+    
+        return $this->belongsTo(Subarea::class, 'id_subarea');
+    
+    }
+
+    public function horario()
+    {
+    
+        return $this->belongsTo(Horario::class, 'id_horario');
+    
+    }
+
     public function evento(){
 
         return $this->hasMany(Evento::class, 'id_bitacora');
