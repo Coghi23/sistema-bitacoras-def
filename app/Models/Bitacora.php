@@ -9,6 +9,10 @@ class Bitacora extends Model
     
     protected $fillable = [
         'id_recinto',
+        'id_profesor',
+        'id_seccion',
+        'id_subarea',
+        'id_horario',
         'condicion',
     ];
 
@@ -19,7 +23,7 @@ class Bitacora extends Model
     
     }
 
-    public function docente()
+    public function profesor()
     {
     
         return $this->belongsTo(Profesor::class, 'id_profesor');

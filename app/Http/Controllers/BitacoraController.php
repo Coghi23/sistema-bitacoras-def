@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Bitacora;
 use Illuminate\Http\Request;
 
 class BitacoraController extends Controller
@@ -11,7 +11,15 @@ class BitacoraController extends Controller
      */
     public function index()
     {
-        
+        $bitacoras = Bitacora::with('recinto','profesor','seccione','subarea','horario','evento')->get();
+        $recintos = Recinto::all();
+        $profesores = Profesor::all();
+        $seccione = Seccion::all();
+        $subareas = Subarea::all();
+        $horarios = Horario::all();
+        $eventos = Evento::all();
+
+        return view('bitacora.index', compact('bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos'));
     }
 
     /**
@@ -19,7 +27,7 @@ class BitacoraController extends Controller
      */
     public function create()
     {
-        //
+        
     }
 
     /**
@@ -27,7 +35,7 @@ class BitacoraController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        
     }
 
     /**
@@ -35,7 +43,7 @@ class BitacoraController extends Controller
      */
     public function show(string $id)
     {
-        //
+        
     }
 
     /**
