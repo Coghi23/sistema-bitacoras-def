@@ -19,8 +19,22 @@
                         Filtros
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="">Disponible</a></li>
-                        <li><a class="dropdown-item" href="">En mantenimiento</a></li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->except('estado'))) }}">
+                                Todos
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => 'disponible'])) }}">
+                                Disponible
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => 'mantenimiento'])) }}">
+                                En mantenimiento
+                            </a>
+                        </li>
+                        
                     </ul>
                 </div>
             </div>
