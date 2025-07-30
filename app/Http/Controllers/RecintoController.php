@@ -45,7 +45,7 @@ class RecintoController extends Controller
         } catch (Exception $e) {
             DB::rollBack();
         }
-        return redirect()->route('recinto.index')->with('success', 'Recinto creada correctamente.');
+        return redirect()->route('recinto.index')->with('success', 'Recinto creado correctamente.');
     }
 
     /**
