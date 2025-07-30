@@ -42,7 +42,7 @@
                 <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
             </div>
 
-            <a href="{{ asset('index.html') }}" class="sidebar-item">
+            <a href="{{ route('dashboard') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
@@ -78,10 +78,15 @@
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>
 
-            <a href="{{ url('login.html') }}" class="sidebar-item mt-auto mb-3">
-                <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
-            </a>
+            <div class="mt-auto mb-3" style="width:100%;">
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <a href="#" onclick="this.closest('form').submit();return false;" class="sidebar-item" style="width:100%;">
+                        <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
 

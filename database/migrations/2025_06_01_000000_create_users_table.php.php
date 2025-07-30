@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('cedula', 35)->notNullable();
+            $table->boolean('condicion')->default(true);
             $table->timestamps();
         });
     }
