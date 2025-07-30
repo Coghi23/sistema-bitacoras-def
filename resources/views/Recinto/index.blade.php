@@ -222,7 +222,7 @@
                     <h3 class="flex-grow-1">Crear nuevo recinto</h3>
                 </div>
                 <div class="modal-body pb-0" style="border-bottom: 8px solid #003366;">
-                    <form id="formAgregarRecinto" action="{{ route('recintos.store') }}" method="POST">
+                    
                     @csrf
                     <div class="mb-3">
                         <label for="tipoRecinto" class="form-label mb-1">Tipo</label>
@@ -241,8 +241,7 @@
                         <label for="estadoRecinto" class="form-label mb-1">Estado</label>
                         <select class="form-select" id="estadoRecinto" name="estado" required>
                         <option value="">Seleccione un estado</option>
-                        <option value="disponible">Disponible</option>
-                        <option value="en_uso">En uso</option>
+                        <option value="disponible">Activo</option>
                         <option value="mantenimiento">En mantenimiento</option>
                         </select>
                     </div>
@@ -252,10 +251,12 @@
                     </div>
                     <div class="mb-3">
                         <label for="institucionRecinto" class="form-label mb-1">Institución</label>
-                        <select class="form-select" id="institucionRecinto" name="institucion" required>
-                        <option value="">Seleccione una Institución</option>
-                        <option value="COVAO Diurno">COVAO Diurno</option>
-                        <option value="COVAO Nocturno">COVAO Nocturno</option>
+                        
+                          <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="id_institucion" class="form-control selectpicker show-tick" required>
+                                    <option value="">Seleccione una institución</option>
+                                    @foreach ($instituciones as $institucion)
+                                        <option value="{{$institucion->id}}" {{ old('id_institucion') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
+                                    @endforeach
                         </select>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
