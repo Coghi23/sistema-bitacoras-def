@@ -8,7 +8,7 @@ use App\Http\Controllers\RecintoController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('Template-profesor');
+    return view('Template-administrador');
 });
 
 Route::resource('bitacora', BitacoraController::class);

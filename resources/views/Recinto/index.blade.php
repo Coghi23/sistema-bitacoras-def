@@ -54,7 +54,7 @@
             <div class="row align-items-center filter-tabs rounded-3 mb-4 altura-lg altura-md altura-sm" id="filterTabs">
                 <div class="tab-indicator"></div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index') }}"> <!-- Todos -->
+                    <a href="{{ route('recinto.index') }}">
                          <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
                     </a>
                 </div>
@@ -87,40 +87,41 @@
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             @foreach($recintos as $recinto)
                 @if ($recinto->condicion == 1)
-                    <div class="col d-flex">
-                        <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
-                            <div class="card-body pb-2 p-2">
-                                <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
-                                    <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
-                                        {{ ucfirst($recinto->tipo) }}
-                                    </span>
-                                    @if($recinto->estado == 'disponible')
-                                        <span class="badge bg-success text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Disponible</span>
-                                    @else
-                                        <span class="badge bg-danger text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Mantenimiento</span>
-                                    @endif
+                    @if(!request('tipo') || $recinto->tipo == request('tipo'))
+                        <div class="col d-flex">
+                            <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
+                                <div class="card-body pb-2 p-2">
+                                    <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
+                                        <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
+                                            {{ ucfirst($recinto->tipo) }}
+                                        </span>
+                                        @if($recinto->estado == 'disponible')
+                                            <span class="badge bg-success text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Disponible</span>
+                                        @else
+                                            <span class="badge bg-danger text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Mantenimiento</span>
+                                        @endif
+                                    </div>
+                                    <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
+                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                        <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
+                                    </div>
                                 </div>
-                                <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
-                                <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                                    <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
-                                </div>
-                            </div>
-                            <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
-                                <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"
-                                        data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Desea eliminar este recinto?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
-                                        <i class="bi bi-trash"></i>
+                                <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
+                                    <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"
+                                            data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
+                                        <i class="bi bi-pencil"></i>
                                     </button>
-                                </form>
+                                    <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Desea eliminar este recinto?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
+                    @endif
                 @endif
           
 
