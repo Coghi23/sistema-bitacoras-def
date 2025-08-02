@@ -55,8 +55,8 @@
             <div class="submenu-popover" id="submenu">
                 <div class="submenu-arrow"></div>
 
-                <a href="#" class="submenu-item" style="text-decoration: none;"><i class="bi bi-person"></i> Docentes</a>
-                <a href="#" class="submenu-item" style="text-decoration: none;"><i class="bi bi-tools"></i> Soporte</a>
+                <a href="{{ asset('usuario') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-person"></i> Docentes</a>
+                <a href="{{ asset('usuario') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-tools"></i> Soporte</a>
                 <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
                 <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
                 <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>

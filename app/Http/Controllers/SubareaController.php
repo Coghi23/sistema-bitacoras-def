@@ -16,9 +16,22 @@ class SubareaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subareas = Subarea::with('especialidad')->get();
+        $query = Subarea::with('especialidad');
+        
+        // Búsqueda por nombre de subarea o especialidad
+        if ($request->filled('busquedaSubarea')) {
+            $busqueda = $request->busquedaSubarea;
+            $query->where(function($q) use ($busqueda) {
+                $q->where('nombre', 'like', "%{$busqueda}%")
+                  ->orWhereHas('especialidad', function($q2) use ($busqueda) {
+                      $q2->where('nombre', 'like', "%{$busqueda}%");
+                  });
+            });
+        }
+        
+        $subareas = $query->get();
         $especialidades = Especialidade::all();
         return view('subarea.index', compact('subareas', 'especialidades'));
     }

@@ -13,11 +13,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Ejecutar seeders en orden específico
+        $this->call([
+            RolesSeeder::class,          // Primero crear roles y permisos
+            AdminUserSeeder::class,
+            ProfesorUserSeeder::class,
+            SoporteUserSeeder::class,
+            DirectorUserSeeder::class,
+        ]);
+
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
     }
 }
