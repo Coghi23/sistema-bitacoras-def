@@ -9,7 +9,10 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    return view('welcome');
+
+    //return view('welcome');
+    return view('Template-profesor');
+
 });
 
 // Rutas que requieren autenticación
