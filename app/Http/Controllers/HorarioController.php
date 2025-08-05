@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 use App\Models\Horario;
 use Illuminate\Http\Request;
 use App\Models\Recinto;
-use App\Models\SubareaSeccion;
+use App\Models\Subarea;
+use App\Models\Seccion;
 use App\Models\Profesor;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreHorarioRequest;
 use App\Http\Requests\UpdateHorarioRequest;
+use App\Models\Seccione;
 use Exception;
 
 class HorarioController extends Controller
@@ -24,7 +26,8 @@ class HorarioController extends Controller
     public function create()
     {
         $recintos = Recinto::all();
-        $subareas = SubareaSeccion::all();
+        $subareas = Subarea::all();
+        $secciones = Seccione::all();
         $profesores = Profesor::all();
         return view('horario.create', compact('recintos', 'subareas', 'profesores'));
     }
@@ -48,11 +51,12 @@ class HorarioController extends Controller
     public function edit(Horario $horario)
     {
         $recintos = Recinto::all();
-        $subareas = SubareaSeccion::all();
+        $subareas = Subarea::all();
+        $secciones = Seccione::all();
         $profesores = Profesor::all();
         $horario->load('recinto', 'subAreaSeccion', 'profesor');
 
-        return view('horario.edit', compact('horario', 'recintos', 'subareas', 'profesores'));
+        return view('horario.edit', compact('horario', 'recintos', 'subareas', 'secciones', 'profesores'));
     }
 
 

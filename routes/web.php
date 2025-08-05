@@ -6,6 +6,9 @@ use App\Http\Controllers\EspecialidadController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\RecintoController;
 use App\Http\Controllers\HorarioController;
+use App\Http\Controllers\TipoRecintoController;
+use App\Http\Controllers\EstadoRecintoController;
+use App\Http\Controllers\LlaveController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -25,3 +28,9 @@ Route::resource('especialidad', EspecialidadController::class);
 Route::resource('recinto', RecintoController::class);
 
 Route::resource('horario', HorarioController::class);
+
+Route::resource('tipoRecinto', TipoRecintoController::class);
+
+Route::resource('estadoRecinto', EstadoRecintoController::class);
+
+Route::resource('llave', LlaveController::class);

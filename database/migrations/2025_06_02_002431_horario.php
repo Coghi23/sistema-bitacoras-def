@@ -16,7 +16,8 @@ return new class extends Migration
            $table->boolean('tipoHorario')->default(true);
            $table->time('horaEntrada');
            $table->time('horaSalida');
-           $table->date('dia');
+           $table->date('fecha')->nullable();
+           $table->string('dia')->nullable();
            $table->foreignId('id_recinto')->constrained('recinto')->onDelete('cascade');
            $table->foreignId('id_subareaseccion')->constrained('subareaseccion')->onDelete('cascade');
            $table->foreignId('id_profesor')->constrained('profesor')->onDelete('cascade');
