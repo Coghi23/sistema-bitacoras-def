@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('horario', function (Blueprint $table) {
+        Schema::create('horarios', function (Blueprint $table) {
            $table->id();
            $table->boolean('tipoHorario')->default(true);
            $table->time('horaEntrada');

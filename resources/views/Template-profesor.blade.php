@@ -35,7 +35,7 @@
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
-            <a href="#" class="sidebar-item">
+            <a href="{{asset('bitacora')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Bitácora</div>
             </a>
