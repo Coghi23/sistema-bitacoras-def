@@ -1,0 +1,166 @@
+/* ------------------ Estilos Generales ------------------ */
+body {
+    height: 100vh;
+    background-image: url('../../Logos_Login/fondo-pagina.png'); 
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    font-family: 'Segoe UI', sans-serif; 
+    color: #134496;
+}
+
+/* ------------------ Títulos ------------------ */
+.inicio {
+    font-size: 30px;
+}
+
+.inicio2 {
+    font-size: 25px;
+}
+
+/* ------------------ Subrayado de Títulos ------------------ */
+.underline {
+    width: 50%;
+    height: 2px;
+    background-color: #EFC737;
+    margin: 4px;
+}
+
+.underline2 {
+    width: 90%;
+    height: 2px;
+    background-color: #EFC737;
+    margin: 4px;
+}
+
+/* ------------------ Card de Login ------------------ */
+.login-card {
+    background-image: url('../../Logos_Login/fondo-card.png'); 
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    padding: 50px;
+    max-width: 900px;
+    width: 100%;
+}
+
+/* ------------------ Logo ------------------ */
+.logo-container {
+    display: flex;
+    margin-bottom: 5px;
+}
+
+.logo {
+    max-height: 50px;
+}
+
+/* ------------------ Inputs ------------------ */
+.form-control {
+    background-color: #EBEBEB;
+    border: 1px;
+    border-radius: 10px;
+    margin: 5px;
+}
+
+.input-limitado {
+    max-width: 400px;
+    margin: 10px;
+}
+
+/* ------------------ Botones ------------------ */
+.btn-custom,
+.btn-custom3 {
+    background-color: #EFC737;
+    color: #134496;
+    font-weight: bold;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    height: 40px;
+    font-size: 14px;
+}
+
+.btn-custom {
+    width: 150px;
+}
+
+.btn-custom3 {
+    width: 200px;
+}
+
+/* ------------------ Enlace "¿Olvidaste la contraseña?" ------------------ */
+.olvidé-contraseña {
+    color: #134496;
+    text-decoration: underline;
+    margin-left: 40px;
+    font-size: 14px;
+}
+
+/* ------------------ Colores de iconos ------------------ */
+.biO,
+.biC {
+    color: #EFC737;
+}
+
+.biP {
+    color: #134496;
+}
+
+/* ------------------ Línea divisoria vertical ------------------ */
+.divider {
+    height: 40px;
+    width: 2px;
+    background-color: #134496;
+    margin: 0 8px;
+}
+
+/* ------------------ Etiquetas amarillas ------------------ */
+.label-amarillo {
+    color: #EFC737;
+}
+
+
+/* ------------------ Aviso de éxito  ------------------ */
+
+.popup-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.popup-card {
+  background-color: white;
+  padding: 40px 50px;
+  border-radius: 20px;
+  box-shadow: 0px 12px 30px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  max-width: 500px;
+  width: 90%;
+  animation: popup-fade 0.3s ease-in-out;
+}
+
+.popup-icon {
+  width: 70px;
+  margin-bottom: 20px;
+}
+
+.popup-text {
+  color:#134496;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.d-none {
+  display: none;
+}
+

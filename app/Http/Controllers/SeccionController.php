@@ -15,9 +15,17 @@ class SeccionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $secciones= Seccione::all();
+        $query = Seccione::query();
+        
+        // Búsqueda por nombre de sección
+        if ($request->filled('busquedaSeccion')) {
+            $busqueda = $request->busquedaSeccion;
+            $query->where('nombre', 'like', "%{$busqueda}%");
+        }
+        
+        $secciones = $query->get();
         return view('seccion.index', compact('secciones'));
     }
 

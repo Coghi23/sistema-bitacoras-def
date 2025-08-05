@@ -42,7 +42,7 @@
                 <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
             </div>
 
-            <a href="{{ asset('index.html') }}" class="sidebar-item">
+            <a href="{{ route('dashboard') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
@@ -55,12 +55,12 @@
             <div class="submenu-popover" id="submenu">
                 <div class="submenu-arrow"></div>
 
-                <a href="#" class="submenu-item" style="text-decoration: none;"><i class="bi bi-person"></i> Docentes</a>
-                <a href="#" class="submenu-item" style="text-decoration: none;"><i class="bi bi-tools"></i> Soporte</a>
+                <a href="{{ asset('usuario') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-person"></i> Docentes</a>
+                <a href="{{ asset('usuario') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-tools"></i> Soporte</a>
                 <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
                 <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
-                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
                 <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
+                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
             </div>
 
             <a href="{{ asset('horario') }}" class="sidebar-item">
@@ -75,10 +75,15 @@
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>
 
-            <a href="{{ url('login.html') }}" class="sidebar-item mt-auto mb-3">
-                <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
-            </a>
+            <div class="mt-auto mb-3" style="width:100%;">
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <a href="#" onclick="this.closest('form').submit();return false;" class="sidebar-item" style="width:100%;">
+                        <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
 
