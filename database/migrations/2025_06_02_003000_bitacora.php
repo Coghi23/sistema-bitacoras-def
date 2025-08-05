@@ -17,9 +17,9 @@ return new class extends Migration
             $table->foreignId('id_recinto')->constrained('recinto');
             $table->foreignId('id_seccion')->constrained('seccione');
             $table->foreignId('id_subarea')->constrained('subarea');
-            $table->foreignId('id_horario')->constrained('horario');
-            $table->timestamp('fecha');
-            $table->timestamp('hora_envio');
+            $table->foreignId('id_horario')->constrained('horarios');
+            $table->timestamp('fecha')->useCurrent();
+            $table->time('hora_envio');
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps(); 
         });

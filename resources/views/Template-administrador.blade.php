@@ -63,7 +63,7 @@
                 <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
             </div>
 
-            <a href="{{ url('horario.html') }}" class="sidebar-item">
+            <a href="{{ asset('horario') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
             </a>
