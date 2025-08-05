@@ -9,7 +9,7 @@ use App\Http\Controllers\HorarioController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('Template-administrador');
+    return view('Template-profesor');
 });
 
 Route::resource('bitacora', BitacoraController::class);
