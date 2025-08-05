@@ -47,21 +47,12 @@
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
 
-            <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Manejo de Personal">
-                <div class="icon-circle"><i class="bi bi-people-fill"></i></div>
-                <div class="label">Personal</div>
-            </div>
+            <a href="{{ asset('usuario') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-person"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
+            </a>
 
-            <div class="submenu-popover" id="submenu">
-                <div class="submenu-arrow"></div>
-
-                <a href="{{ asset('usuario') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-person"></i> Docentes</a>
-                <a href="{{ asset('usuario') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-tools"></i> Soporte</a>
-                <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
-                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
-                <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
-                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
-            </div>
+            
 
             <a href="{{ asset('horario') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
@@ -74,6 +65,21 @@
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>
+
+            <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Manejo de Personal">
+                <div class="icon-circle"><i class="bi bi-people-fill"></i></div>
+                <div class="label"></div>
+            </div>
+
+            <div class="submenu-popover" id="submenu">
+                <div class="submenu-arrow"></div>
+                
+                
+                <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
+                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
+                <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
+                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
+            </div>
 
             <div class="mt-auto mb-3" style="width:100%;">
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">
