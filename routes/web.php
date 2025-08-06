@@ -16,8 +16,8 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
 
-    //return view('welcome');
-    return view('Template-administrador');
+    return view('welcome');
+    //return view('Template-administrador');
     //return view('Template-profesor');
     //return view('Template-soporte');
     
@@ -61,9 +61,9 @@ Route::resource('horario', HorarioController::class);
     
     // Rutas para profesor
     Route::middleware('role:profesor')->group(function () {
-        Route::get('/Template-profesor', function () {
-            return view('Template-profesor');
-        })->name('Template.profesor');
+        Route::get('/template-profesor', function () {
+            return view('template-profesor');
+        })->name('template.profesor');
     });
     
     // Rutas para soporte
