@@ -7,6 +7,7 @@ use App\Http\Requests\StoreEspecialidadRequest;
 use App\Http\Requests\UpdateEspecialidadRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Institucione;
+use Illuminate\Http\Request;
 use Exception;
 
 
@@ -15,9 +16,22 @@ class EspecialidadController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $especialidades = Especialidade::with('institucion')->get();
+        $query = Especialidade::with('institucion');
+        
+        // Búsqueda por nombre de especialidad o institución
+        if ($request->filled('busquedaEspecialidad')) {
+            $busqueda = $request->busquedaEspecialidad;
+            $query->where(function($q) use ($busqueda) {
+                $q->where('nombre', 'like', "%{$busqueda}%")
+                  ->orWhereHas('institucion', function($q2) use ($busqueda) {
+                      $q2->where('nombre', 'like', "%{$busqueda}%");
+                  });
+            });
+        }
+        
+        $especialidades = $query->get();
         $instituciones = Institucione::where('condicion', 1)->get();
 
         return view('especialidad.index', compact('especialidades', 'instituciones'));
