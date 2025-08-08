@@ -14,9 +14,10 @@ class Recinto extends Model
 
     protected $fillable = [
         'institucion_id',
+        'llave_id',
         'nombre',
-        'tipo',
-        'estado',
+        'tipoRecinto_id',
+        'estadoRecinto_id',
         'condicion',
     ];
 
@@ -25,7 +26,20 @@ class Recinto extends Model
     {
         return $this->belongsTo(Institucione::class);
     }
+    public function llave()
+    {
+        return $this->belongsTo(Llave::class);
+    }
 
+    public function tipoRecinto()
+    {
+        return $this->belongsTo(TipoRecinto::class);
+    }
+
+    public function estadoRecinto()
+    {
+        return $this->belongsTo(EstadoRecinto::class);
+    }
     // Un recinto *puede tener* múltiples horarios
     /*public function horarios()
     {
