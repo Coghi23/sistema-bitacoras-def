@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
 
-    return view('Template-profesor');
+    
 
 
     return view('welcome');

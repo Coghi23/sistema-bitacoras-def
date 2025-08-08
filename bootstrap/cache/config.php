@@ -478,10 +478,10 @@
         'transport' => 'smtp',
         'scheme' => NULL,
         'url' => NULL,
-        'host' => '127.0.0.1',
+        'host' => 'sandbox.smtp.mailtrap.io',
         'port' => '2525',
-        'username' => NULL,
-        'password' => NULL,
+        'username' => '98356b0ce9b8f2',
+        'password' => '648f63a10aa8e2',
         'timeout' => NULL,
         'local_domain' => 'sistema-bitacoras-def.test',
       ),
@@ -534,7 +534,7 @@
     ),
     'from' => 
     array (
-      'address' => 'hello@example.com',
+      'address' => 'test@example.com',
       'name' => 'Laravel',
     ),
     'markdown' => 
