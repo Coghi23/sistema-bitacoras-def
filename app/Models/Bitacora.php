@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Bitacora extends Model
 {
+    protected $table = 'bitacora';
     
     protected $fillable = [
         'id_recinto',
@@ -33,7 +34,7 @@ class Bitacora extends Model
     public function seccion()
     {
     
-        return $this->belongsTo(Seccion::class, 'id_seccion');
+        return $this->belongsTo(Seccione::class, 'id_seccion');
     
     }
 

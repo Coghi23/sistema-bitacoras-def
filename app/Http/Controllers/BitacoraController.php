@@ -2,7 +2,14 @@
 
 namespace App\Http\Controllers;
 use App\Models\Bitacora;
+use App\Models\Recinto;
+use App\Models\Profesor;
+use App\Models\Seccione;
+use App\Models\Subarea;
+use App\Models\Horario;
+use App\Models\Evento;
 use Illuminate\Http\Request;
+
 
 class BitacoraController extends Controller
 {
@@ -14,7 +21,7 @@ class BitacoraController extends Controller
         $bitacoras = Bitacora::with('recinto','profesor','seccione','subarea','horario','evento')->get();
         $recintos = Recinto::all();
         $profesores = Profesor::all();
-        $seccione = Seccion::all();
+        $seccione = Seccione::all();
         $subareas = Subarea::all();
         $horarios = Horario::all();
         $eventos = Evento::all();

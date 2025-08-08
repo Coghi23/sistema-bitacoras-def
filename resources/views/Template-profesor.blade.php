@@ -43,10 +43,15 @@
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>
-            <a href="#" class="sidebar-item mt-auto mb-3">
-                <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
-            </a>
+            <div class="mt-auto mb-3" style="width:100%;">
+                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                    @csrf
+                    <a href="#" onclick="this.closest('form').submit();return false;" class="sidebar-item" style="width:100%;">
+                        <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
+                    </a>
+                </form>
+            </div>
         </div>
     </div>
 

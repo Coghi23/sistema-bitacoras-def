@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use App\Http\Requests\StoreInstitucionRequest;
 use App\Models\Institucione;
+use Illuminate\Http\Request;
 use Exception;
 
 class InstitucionController extends Controller
@@ -13,9 +14,17 @@ class InstitucionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $instituciones = Institucione::with('especialidad')->get();
+        $query = Institucione::with('especialidad');
+        
+        // Búsqueda por nombre
+        if ($request->filled('busquedaInstitucion')) {
+            $busqueda = $request->busquedaInstitucion;
+            $query->where('nombre', 'like', "%{$busqueda}%");
+        }
+        
+        $instituciones = $query->get();
         return view('institucion.index', compact('instituciones'));
     }
 
