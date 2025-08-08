@@ -43,6 +43,14 @@ class InstitucionController extends Controller
     {
         try{
             
+
+            // Validación adicional opcional
+            $existeInstitucion = Institucione::where('nombre', $request->nombre)->exists();
+            if ($existeInstitucion) {
+                return back()->withErrors(['nombre' => 'Ya existe una institución con este nombre.'])
+                            ->withInput();
+            }
+            
             DB::beginTransaction();
             $institucione = Institucione::create($request->validated());
 

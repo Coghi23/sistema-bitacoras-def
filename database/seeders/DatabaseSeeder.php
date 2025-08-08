@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ProfesorUserSeeder::class,
             SoporteUserSeeder::class,
             DirectorUserSeeder::class,
+            LeccioneSeeder::class, // Crear lecciones
         ]);
 
         // User::factory(10)->create();
