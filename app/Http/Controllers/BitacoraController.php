@@ -10,7 +10,6 @@ use App\Models\Horario;
 use App\Models\Evento;
 use Illuminate\Http\Request;
 
-
 class BitacoraController extends Controller
 {
     /**

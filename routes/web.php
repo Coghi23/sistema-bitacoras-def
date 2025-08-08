@@ -8,19 +8,28 @@ use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\RecintoController;
 use App\Http\Controllers\HorarioController;
 
+use App\Http\Controllers\TipoRecintoController;
+use App\Http\Controllers\EstadoRecintoController;
+use App\Http\Controllers\LlaveController;
+
+
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuarioController;
+
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
 
+    return view('Template-profesor');
+
+
     return view('welcome');
     //return view('Template-administrador');
     //return view('Template-profesor');
     //return view('Template-soporte');
-    
+
 });
 
 
@@ -51,6 +60,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::resource('recinto', RecintoController::class);
 
 Route::resource('horario', HorarioController::class);
+Route::resource('tipoRecinto', TipoRecintoController::class);
+
+Route::resource('estadoRecinto', EstadoRecintoController::class);
+
+Route::resource('llave', LlaveController::class);
 
     // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
     Route::middleware(['role:administrador|director'])->group(function () {

@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('recinto', function (Blueprint $table) {
             $table->id();
             $table->foreignId('institucion_id')->constrained('institucione');
+            $table->foreignId('llave_id')->constrained('llave');
             $table->string('nombre');
-            $table->string('tipo');
-            $table->string('estado');
+            $table->foreignId('tipoRecinto_id')->constrained('tipoRecinto');
+            $table->foreignId('estadoRecinto_id')->constrained('estadoRecinto');
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps();
         });

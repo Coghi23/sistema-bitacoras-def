@@ -12,6 +12,7 @@ class Horario extends Model
                         'tipoHorario', 
                         'horaEntrada',
                         'horaSalida',
+                        'fecha',
                         'dia',
                         'condicion'];
     

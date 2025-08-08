@@ -144,12 +144,12 @@
                             <label class="w-50 text-start">Tipo de horario:</label>
                             <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
-                                    <input class="form-check-input" type="radio" name="tipoHorario" id="fijoRadio" value="fijo" required>
+                                    <input class="form-check-input {{ request('tipoHorario') == '1' ? 'active' : '' }}" type="radio" name="tipoHorario" id="fijoRadio" value="fijo" required>
                                     <label class="form-check-label ms-2" for="fijoRadio">Fijo</label>
                                 </div>
                                 <div style="width:1px; height:24px; background-color:#0d6efd; opacity:0.7;"></div>
                                 <div class="form-check ms-3 d-flex align-items-center">
-                                    <input class="form-check-input" type="radio" name="tipoHorario" id="temporalRadio" value="temporal" required>
+                                    <input class="form-check-input {{ request('tipoHorario') == '0' ? 'active' : '' }}" type="radio" name="tipoHorario" id="temporalRadio" value="temporal" required>
                                     <label class="form-check-label ms-2" for="temporalRadio">Temporal</label>
                                 </div>
                             </div>
@@ -157,13 +157,13 @@
                         {{-- Fecha --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-50" @if(old('tipoHorario')!='temporal') disabled @endif>
+                            <input type="date" name="fecha" class="form-control rounded-4 w-50" @if(old('tipoHorario')=='1') disabled @endif>
                         </div>
                         {{-- Día --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Día:</label>
                             <div class="position-relative w-50">
-                                <select name="dia" class="form-select rounded-4 pe-5" @if(old('tipoHorario')!='fijo') disabled @endif>
+                                <select name="dia" class="form-select rounded-4 pe-5" @if(old('tipoHorario')=='0') disabled @endif>
                                     <option value="" hidden selected>Seleccione...</option>
                                     <option value="Lunes">Lunes</option>
                                     <option value="Martes">Martes</option>
@@ -379,5 +379,84 @@
 </div>
 @endsection
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Obtener elementos
+    const fijoRadio = document.getElementById('fijoRadio');
+    const temporalRadio = document.getElementById('temporalRadio');
+    const fechaInput = document.querySelector('input[name="fecha"]');
+    const diaSelect = document.querySelector('select[name="dia"]');
+
+    console.log('Elementos encontrados:', {
+        fijoRadio: fijoRadio,
+        temporalRadio: temporalRadio,
+        fechaInput: fechaInput,
+        diaSelect: diaSelect
+    });
+
+    // Función para manejar el estado de los campos
+    function toggleFields() {
+        if (fijoRadio && fijoRadio.checked) {
+            // Si se selecciona "Fijo": deshabilitar fecha, habilitar día
+            if (fechaInput) {
+                fechaInput.disabled = true;
+                fechaInput.style.backgroundColor = '#f8f9fa';
+                fechaInput.style.color = '#6c757d';
+                fechaInput.style.cursor = 'not-allowed';
+            }
+            if (diaSelect) {
+                diaSelect.disabled = false;
+                diaSelect.style.backgroundColor = '';
+                diaSelect.style.color = '';
+                diaSelect.style.cursor = '';
+            }
+            console.log('Fijo seleccionado - Fecha deshabilitada, Día habilitado');
+        } else if (temporalRadio && temporalRadio.checked) {
+            // Si se selecciona "Temporal": deshabilitar día, habilitar fecha
+            if (diaSelect) {
+                diaSelect.disabled = true;
+                diaSelect.style.backgroundColor = '#f8f9fa';
+                diaSelect.style.color = '#6c757d';
+                diaSelect.style.cursor = 'not-allowed';
+            }
+            if (fechaInput) {
+                fechaInput.disabled = false;
+                fechaInput.style.backgroundColor = '';
+                fechaInput.style.color = '';
+                fechaInput.style.cursor = '';
+            }
+            console.log('Temporal seleccionado - Día deshabilitado, Fecha habilitada');
+        }
+    }
+
+    // Verificar que los elementos existen
+    if (fijoRadio && temporalRadio && fechaInput && diaSelect) {
+        console.log('Todos los elementos existen, configurando eventos...');
+        
+        // Agregar event listeners a los radio buttons
+        fijoRadio.addEventListener('change', function() {
+            console.log('Fijo radio cambiado');
+            toggleFields();
+        });
+
+        temporalRadio.addEventListener('change', function() {
+            console.log('Temporal radio cambiado');
+            toggleFields();
+        });
+
+        // Estado inicial - por defecto deshabilitar fecha y habilitar día
+        
+
+        console.log('Estado inicial configurado - Fecha deshabilitada por defecto');
+        
+    } else {
+        console.error('Algunos elementos no se encontraron:', {
+            fijoRadio: !!fijoRadio,
+            temporalRadio: !!temporalRadio,
+            fechaInput: !!fechaInput,
+            diaSelect: !!diaSelect
+        });
+    }
+});
+</script>

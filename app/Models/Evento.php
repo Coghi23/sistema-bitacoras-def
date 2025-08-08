@@ -9,8 +9,7 @@ use Illuminate\Support\Facades\Storage;
 class Evento extends Model
 {
     use HasFactory;
-
-    protected $table = "evento";
+    protected $table = 'evento';
     protected $fillable = [
         'fecha',
         'observacion',
