@@ -14,6 +14,7 @@ class Recinto extends Model
 
     protected $fillable = [
         'institucion_id',
+        'llave_id',
         'nombre',
         'tipoRecinto_id',
         'estadoRecinto_id',
@@ -25,10 +26,10 @@ class Recinto extends Model
     {
         return $this->belongsTo(Institucione::class);
     }
-    /*public function llave()
+    public function llave()
     {
         return $this->belongsTo(Llave::class);
-    }*/
+    }
 
     public function tipoRecinto()
     {

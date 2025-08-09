@@ -124,8 +124,14 @@
 
     {{-- Modal Crear Horario --}}
     <div class="modal fade" id="modalHorario" tabindex="-1" aria-labelledby="modalHorarioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
+                <div class="modal-header modal-header-custom">
+                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <h5 class="modal-title">Crear Horario</h5>
+                    </div>
                 <form method="POST" action="{{ route('horario.store') }}">
                     @csrf
                     <div class="modal-header custom-header text-white px-4 py-3 position-relative justify-content-center">
@@ -197,7 +203,7 @@
                                                 </div>
                                             </div>
                                         {{-- Hora de ingreso --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
+                        <!--<div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Hora de ingreso:</label>
                             <div class="d-flex w-50">
                                 <input type="text" name="horaEntrada" class="form-control rounded-4 me-2 text-center" placeholder="hh:mm" style="max-width: 90px;" required />
@@ -219,7 +225,8 @@
                                     <option value="pm">PM</option>
                                 </select>
                             </div>
-                        </div>
+                        </div>-->
+                        
                             {{-- Subárea + Sección --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Subárea y sección:</label>
@@ -228,6 +235,82 @@
                                     <option value="" hidden selected>Seleccione...</option>
                                     
                                 </select>
+                            </div>
+                        </div>
+
+                        {{-- Lecciones --}}
+                        <div class="mb-3">
+                            <label class="fw-bold mb-3">Lecciones:</label>
+                            <div class="border rounded-4 p-3" style="max-height: 300px; overflow-y: auto;">
+                                {{-- Lecciones Académicas --}}
+                                <div class="mb-3">
+                                    <h6 class="text-primary mb-2">Lecciones Académicas</h6>
+                                    <div class="row">
+                                        @for($i = 1; $i <= 12; $i++)
+                                        <div class="col-12 col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                       value="{{ $i }}" id="leccion{{ $i }}">
+                                                <label class="form-check-label small" for="leccion{{ $i }}">
+                                                    Lección {{ $i }}
+                                                    @switch($i)
+                                                        @case(1) (07:00 - 07:40) @break
+                                                        @case(2) (07:40 - 08:20) @break
+                                                        @case(3) (08:20 - 09:00) @break
+                                                        @case(4) (09:20 - 10:00) @break
+                                                        @case(5) (10:00 - 10:40) @break
+                                                        @case(6) (10:40 - 11:20) @break
+                                                        @case(7) (12:05 - 12:45) @break
+                                                        @case(8) (12:45 - 01:25) @break
+                                                        @case(9) (01:25 - 02:05) @break
+                                                        @case(10) (02:20 - 03:00) @break
+                                                        @case(11) (03:00 - 03:40) @break
+                                                        @case(12) (03:40 - 04:20) @break
+                                                    @endswitch
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                {{-- Lecciones Técnicas --}}
+                                <div>
+                                    <h6 class="text-success mb-2">Lecciones Técnicas</h6>
+                                    <div class="row">
+                                        @for($i = 1; $i <= 8; $i++)
+                                        <div class="col-12 col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                       value="{{ 12 + $i }}" id="leccionTecnica{{ $i }}">
+                                                <label class="form-check-label small" for="leccionTecnica{{ $i }}">
+                                                    Lección Técnica {{ $i }}
+                                                    @switch($i)
+                                                        @case(1) (07:00 - 08:00) @break
+                                                        @case(2) (08:00 - 09:00) @break
+                                                        @case(3) (09:20 - 10:20) @break
+                                                        @case(4) (10:20 - 11:20) @break
+                                                        @case(5) (12:05 - 01:05) @break
+                                                        @case(6) (01:05 - 02:05) @break
+                                                        @case(7) (02:20 - 03:20) @break
+                                                        @case(8) (03:20 - 04:20) @break
+                                                    @endswitch
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                {{-- Botones para seleccionar/deseleccionar todos --}}
+                                <div class="mt-3 d-flex gap-2 justify-content-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLecciones()">
+                                        Seleccionar todas
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLecciones()">
+                                        Deseleccionar todas
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -241,7 +324,7 @@
 
     {{-- Modales de edición y eliminación se incluyen por cada horario en el loop de arriba --}}
     <div class="modal fade" id="modalEditarHorario" tabindex="-1" aria-labelledby="modalEditarHorarioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
                 <form method="POST" action="">
                     @csrf
@@ -345,6 +428,82 @@
                                         <option value="" hidden>Seleccione...</option>
                                         
                                     </select>
+                                </div>
+                            </div>
+
+                            {{-- Lecciones --}}
+                            <div class="mb-3">
+                                <label class="fw-bold mb-3">Lecciones:</label>
+                                <div class="border rounded-4 p-3" style="max-height: 300px; overflow-y: auto;">
+                                    {{-- Lecciones Académicas --}}
+                                    <div class="mb-3">
+                                        <h6 class="text-primary mb-2">Lecciones Académicas</h6>
+                                        <div class="row">
+                                            @for($i = 1; $i <= 12; $i++)
+                                            <div class="col-12 col-md-6 mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                           value="{{ $i }}" id="leccion{{ $i }}">
+                                                    <label class="form-check-label small" for="leccion{{ $i }}">
+                                                        Lección {{ $i }}
+                                                        @switch($i)
+                                                            @case(1) (07:00 - 07:40) @break
+                                                            @case(2) (07:40 - 08:20) @break
+                                                            @case(3) (08:20 - 09:00) @break
+                                                            @case(4) (09:20 - 10:00) @break
+                                                            @case(5) (10:00 - 10:40) @break
+                                                            @case(6) (10:40 - 11:20) @break
+                                                            @case(7) (12:05 - 12:45) @break
+                                                            @case(8) (12:45 - 01:25) @break
+                                                            @case(9) (01:25 - 02:05) @break
+                                                            @case(10) (02:20 - 03:00) @break
+                                                            @case(11) (03:00 - 03:40) @break
+                                                            @case(12) (03:40 - 04:20) @break
+                                                        @endswitch
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            @endfor
+                                        </div>
+                                    </div>
+
+                                    {{-- Lecciones Técnicas --}}
+                                    <div>
+                                        <h6 class="text-success mb-2">Lecciones Técnicas</h6>
+                                        <div class="row">
+                                            @for($i = 1; $i <= 8; $i++)
+                                            <div class="col-12 col-md-6 mb-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                           value="{{ 12 + $i }}" id="leccionTecnica{{ $i }}">
+                                                    <label class="form-check-label small" for="leccionTecnica{{ $i }}">
+                                                        Lección Técnica {{ $i }}
+                                                        @switch($i)
+                                                            @case(1) (07:00 - 08:00) @break
+                                                            @case(2) (08:00 - 09:00) @break
+                                                            @case(3) (09:20 - 10:20) @break
+                                                            @case(4) (10:20 - 11:20) @break
+                                                            @case(5) (12:05 - 01:05) @break
+                                                            @case(6) (01:05 - 02:05) @break
+                                                            @case(7) (02:20 - 03:20) @break
+                                                            @case(8) (03:20 - 04:20) @break
+                                                        @endswitch
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            @endfor
+                                        </div>
+                                    </div>
+
+                                    {{-- Botones para seleccionar/deseleccionar todos --}}
+                                    <div class="mt-3 d-flex gap-2 justify-content-center">
+                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLecciones()">
+                                            Seleccionar todas
+                                        </button>
+                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLecciones()">
+                                            Deseleccionar todas
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                     </div>
@@ -459,4 +618,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Funciones para manejar selección de lecciones
+function seleccionarTodasLecciones() {
+    const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+}
+
+function deseleccionarTodasLecciones() {
+    const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+}
 </script>

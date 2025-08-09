@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('bitacora', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_docente')->constrained('profesor');
             $table->foreignId('id_recinto')->constrained('recinto');
             $table->foreignId('id_seccion')->constrained('seccione');
             $table->foreignId('id_subarea')->constrained('subarea');

@@ -17,7 +17,7 @@
               <!-- Docente -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Docente: {{ $profesor }}" />
+                <input class="form-control ps-5" disabled value="Docente: {{ $profesores }}" />
               </div>
 
               <!-- Hora ingreso -->

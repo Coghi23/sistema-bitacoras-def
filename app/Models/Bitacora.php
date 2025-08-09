@@ -11,10 +11,10 @@ class Bitacora extends Model
     
     protected $fillable = [
         'id_recinto',
-        'id_profesor',
         'id_seccion',
         'id_subarea',
         'id_horario',
+        'id_usuario',
         'condicion',
     ];
 
@@ -22,13 +22,6 @@ class Bitacora extends Model
     {
     
         return $this->belongsTo(Recinto::class, 'id_recinto');
-    
-    }
-
-    public function profesor()
-    {
-    
-        return $this->belongsTo(Profesor::class, 'id_profesor');
     
     }
 
@@ -51,6 +44,19 @@ class Bitacora extends Model
     
         return $this->belongsTo(Horario::class, 'id_horario');
     
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
+
+    // Método para obtener solo profesores
+    public function profesor()
+    {
+        return $this->belongsTo(User::class, 'id_usuario')->whereHas('roles', function($query) {
+            $query->where('name', 'profesor');
+        });
     }
 
     public function evento(){

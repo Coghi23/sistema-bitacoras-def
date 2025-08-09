@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateRecintoRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Institucione;
 use App\Models\EstadoRecinto;
+use App\Models\Llave;
 use App\Models\TipoRecinto;
 use App\Http\Requests;
 use Exception;
@@ -25,9 +26,9 @@ class RecintoController extends Controller
         $instituciones = Institucione::all();
         $tiposRecinto = TipoRecinto::all();
         $estadosRecinto = EstadoRecinto::all();
-        
+        $llaves = Llave::all();
 
-        return view('recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto'));
+        return view('recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto', 'llaves'));
 }
 
     /**
