@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Http\Requests\UpdateLlaveRequest;
+use BaconQrCode\Encoder\QrCode;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use App\Http\Requests\StoreLlaveRequest;
@@ -90,6 +91,8 @@ class LlaveController extends Controller
         ->with('success', 'Llave actualizada correctamente.');
 
     }
+
+    
     
         
     
