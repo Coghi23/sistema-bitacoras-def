@@ -8,7 +8,7 @@ class Bitacora extends Model
 {
     protected $table = 'bitacora';
     
-    protected $table = 'bitacora';
+    
     protected $fillable = [
         'id_recinto',
         'id_profesor',

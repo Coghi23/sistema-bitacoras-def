@@ -6,6 +6,8 @@ use App\Http\Requests\StoreRecintoRequest;
 use App\Http\Requests\UpdateRecintoRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Institucione;
+use App\Models\EstadoRecinto;
+use App\Models\TipoRecinto;
 use App\Http\Requests;
 use Exception;
 
@@ -18,11 +20,14 @@ class RecintoController extends Controller
      */
     public function index()
 {
-        
-        $recintos = Recinto::with('institucion')->get();
-        $instituciones = Institucione::all();
 
-        return view('recinto.index', compact('recintos', 'instituciones'));
+        $recintos = Recinto::with('institucion', 'estadoRecinto', 'tipoRecinto')->get();
+        $instituciones = Institucione::all();
+        $tiposRecinto = TipoRecinto::all();
+        $estadosRecinto = EstadoRecinto::all();
+        
+
+        return view('recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto'));
 }
 
     /**
@@ -39,6 +44,7 @@ class RecintoController extends Controller
      */
     public function store(StoreRecintoRequest $request)
     {
+        //dd($request->validated());
         try {
             DB::beginTransaction();
             Recinto::create($request->validated());
