@@ -38,7 +38,7 @@
                                 <label for="nombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
                                 <input type="text" name="nombre" id="nombreEstadoRecinto" class="form-control" placeholder="Ingrese el nombre del Estado de Recinto" required>
                             </div>
-                            <!-- Color field removed -->
+
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
@@ -56,7 +56,7 @@
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 80%;">Nombre del Estado de Recinto</th>
-                        <!-- Color column removed -->
+
                         <th class="text-center" style="width: 10%;">Acciones</th>
                     </tr>
                 </thead>
@@ -65,9 +65,7 @@
                         <tr>
                             @if ($estadoRecinto->condicion == 1)
                                 <td class="text-center">{{ $estadoRecinto->nombre }}</td>
-                                <td class="text-center">
-                                    <!-- Color display removed -->
-                                </td>
+
                                 <td class="text-center">
                                     <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
                                         data-bs-toggle="modal"
@@ -102,9 +100,7 @@
                                                     <label for="editarNombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
                                                     <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre',$estadoRecinto->nombre)}}">
                                                 </div>
-                                                <div class="mb-3">
-                                                    <!-- Edit color field removed -->
-                                                </div>
+
                                             </div>
                                             <div class="card-footer text-center">
                                                 <button type="submit" class="btn btn-primary">Guardar Cambios</button>
