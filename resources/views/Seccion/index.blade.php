@@ -103,29 +103,33 @@
                     </div>
 
                     {{-- Modal Eliminar --}}
-                        <div class="modal fade" id="modalEliminarSeccion-{{ $seccion->id }}" tabindex="-1" aria-labelledby="modalSeccionEliminarLabel-{{ $seccion->id }}" 
-                        aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content custom-modal">
-                                    <div class="modal-body text-center">
-                                        <div class="icon-container">
-                                            <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
-                                            </div>
-                                        </div>
-                                        <p class="modal-text">¿Desea eliminar la sección?</p>
-                                        <div class="btn-group-custom">
-                                            <form action="{{ route('seccion.destroy', ['seccion' => $seccion->id]) }}" method="post">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="submit" class="btn btn-custom {{ $seccion->condicion == 1 }}">Sí</button>
-                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                                            </form>
-                                        </div>
+                    <div class="modal fade" id="modalEliminarSeccion-{{ $seccion->id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header modal-header-custom">
+                                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                        <i class="bi bi-arrow-left"></i>
+                                    </button>
+                                    <h5 class="modal-title">Confirmar eliminación</h5>
+                                </div>
+                                <div class="modal-body px-4 py-4 text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3rem;"></i>
+                                    </div>
+                                    <h6 class="mb-3">¿Está seguro que desea eliminar esta sección?</h6>
+                                    <p class="text-muted mb-4">Esta acción no se puede deshacer.</p>
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <form action="{{ route('seccion.destroy', ['seccion' => $seccion->id]) }}" method="post" class="d-inline">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger">Sí</button>
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     @endforeach
                 </tbody>
             </table>
