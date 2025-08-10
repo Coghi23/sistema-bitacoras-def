@@ -25,6 +25,9 @@ class UsuarioController extends Controller
         } else {
             $usuarios = User::with('roles')->where('condicion', true)->get();
         }
+
+        
+
         $roles = Role::all();
         return view('Usuario.index', compact('usuarios', 'roles'));
     }

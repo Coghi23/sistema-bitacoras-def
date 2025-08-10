@@ -221,7 +221,7 @@ function loadEditModal(roleId, roleName, permissions) {
 
 function setDeleteRole(roleId, roleName) {
     document.getElementById('deleteRoleName').textContent = roleName;
-    document.getElementById('deleteRoleForm').action = `/roles/${roleId}`;
+    document.getElementById('deleteRoleForm').action = `/role/${roleId}`;
 }
 </script>
 @endsection

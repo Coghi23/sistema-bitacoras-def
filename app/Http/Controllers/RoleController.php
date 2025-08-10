@@ -101,6 +101,15 @@ class RoleController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $role = Role::findOrFail($id);
+        try {
+            DB::beginTransaction();
+            $role->delete();
+            DB::commit();
+            return redirect()->route('role.index')->with('success', 'Rol eliminado correctamente');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Error al eliminar el rol.');
+        }
     }
 }
