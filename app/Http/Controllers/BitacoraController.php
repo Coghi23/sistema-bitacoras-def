@@ -29,7 +29,14 @@ class BitacoraController extends Controller
             $query->where('name', 'profesor');
         })->get();
 
-        return view('bitacora.index', compact('bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos'));
+        // Obtener la fecha del primer horario (ajusta según tu lógica)
+        $fecha = $horarios->first() ? $horarios->first()->fecha : null;
+        $seccion = $seccione->first() ? $seccione->first()->nombre : '';
+        $subarea = $subareas->first() ? $subareas->first()->nombre : '';
+
+        return view('bitacora.index', compact(
+            'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos', 'fecha', 'seccion', 'subarea'
+        ));
     }
 
     /**
@@ -45,7 +52,13 @@ class BitacoraController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $bitacora = new Bitacora();
+        // ...asigna otros campos...
+        $bitacora->hora_envio = $request->input('hora_envio');
+        $bitacora->fecha = $request->input('fecha');
+        // ...asigna otros campos...
+        $bitacora->save();
+        // ...existing code...
     }
 
     /**

@@ -27,6 +27,7 @@ class StoreBitacoraRequest extends FormRequest
             'id_subarea' => 'required|exists:subarea,id',
             'id_horario' => 'required|exists:horario,id',
             'id_usuario' => 'required|exists:users,id',
+            'hora_envio' => 'required|date_format:H:i',
         ];
     }
 

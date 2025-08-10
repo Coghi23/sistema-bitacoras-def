@@ -17,49 +17,45 @@
               <!-- Docente -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Docente: {{ $profesores }}" />
-              </div>
-
-              <!-- Hora ingreso -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-clock position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Hora ingreso: {{ $horaIngreso }}" />
+                <input class="form-control ps-5" disabled value="Docente: {{ Auth::user()->name }}" />
               </div>
 
               <!-- Recinto -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-pc-display position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Recinto: {{ $recinto }}" />
-              </div>
-
-              <!-- Hora salida -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-clock-fill position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Hora salida: {{ $horaSalida }}" />
+                <input class="form-control ps-5" disabled value="Recinto: {{ Auth::user()->recinto->nombre ?? 'Sin recinto asignado' }}" />
               </div>
 
               <!-- Fecha -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-calendar-week position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Fecha: {{ $fecha }}" />
-              </div>
-
-              <!-- Hora envío -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-send-fill position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Hora envío: {{ $horaEnvio }}" />
+                <input class="form-control ps-5" id="fechaDispositivo" readonly />
               </div>
 
               <!-- Sección -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-easel position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Sección: {{ $seccion }}" />
+                <input class="form-control ps-5" disabled value="Sección: {{ $seccion ?? '' }}" />
               </div>
 
               <!-- SubÁrea -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
                 <input class="form-control ps-5" disabled value="SubÁrea: {{ $subarea }}" />
+              </div>
+
+              <!-- Lección -->
+              <div class="col-md-6 position-relative">
+                <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                <select class="form-control ps-5" name="leccion" id="leccionSelect">
+                  <option value="">Seleccione la lección</option>
+                  @for($i = 1; $i <= 12; $i++)
+                    <option value="{{ $i }}">Lección {{ $i }}</option>
+                  @endfor
+                  @for($i = 1; $i <= 8; $i++)
+                    <option value="{{ 12 + $i }}">Lección Técnica {{ $i }}</option>
+                  @endfor
+                </select>
               </div>
 
           </div>
@@ -177,6 +173,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('JS/indexBitacoras.js') }}"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Mostrar la fecha del dispositivo en el campo correspondiente
+        var fechaInput = document.getElementById('fechaDispositivo');
+        if (fechaInput) {
+            var now = new Date();
+            var fechaLocal = now.toLocaleDateString('es-ES');
+            fechaInput.value = "Fecha: " + fechaLocal;
+        }
+
+        var form = document.getElementById('formBitacora');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                var now = new Date();
+                var hora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                var fecha = now.toISOString().slice(0, 10); // formato YYYY-MM-DD
+                document.getElementById('hora_envio').value = hora;
+                document.getElementById('fecha_envio').value = fecha;
+            });
+        }
+    });
+    </script>
 @endpush
 
 <!------------------------------------------------------------------------------------------------------------------------->
