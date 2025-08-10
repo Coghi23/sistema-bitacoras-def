@@ -187,7 +187,7 @@
                             @if(isset($llaves))
                                 @foreach ($llaves as $llave)
                                     <option value="{{$llave->id}}" 
-                                        {{ (isset($llave) && $llave->id_llave == $llave->id) || old('id_llave') == $llave->id ? 'selected' : '' }}>
+                                        {{ (isset($recinto) && $recinto->llave_id == $llave->id) || old('llave_id') == $llave->id ? 'selected' : '' }}>
                                         {{$llave->nombre}}
                                     </option>
                                 @endforeach
