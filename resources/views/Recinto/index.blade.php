@@ -200,7 +200,7 @@
                             @if(isset($instituciones))
                                 @foreach ($instituciones as $institucion)
                                     <option value="{{$institucion->id}}" 
-                                        {{ (isset($especialidad) && $especialidad->id_institucion == $institucion->id) || old('id_institucion') == $institucion->id ? 'selected' : '' }}>
+                                        {{ (isset($recinto) && $recinto->institucion_id == $institucion->id) || old('institucion_id') == $institucion->id ? 'selected' : '' }}>
                                         {{$institucion->nombre}}
                                     </option>
                                 @endforeach
