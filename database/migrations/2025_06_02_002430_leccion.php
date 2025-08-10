@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('leccion', function (Blueprint $table) {
             $table->id();
+            $table->string('tipoLeccion');
             $table->string('leccion');
             $table->string('hora_inicio');
             $table->string('hora_final');

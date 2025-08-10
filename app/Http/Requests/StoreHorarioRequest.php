@@ -22,14 +22,25 @@ class StoreHorarioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'idRecinto' => 'required|exists:recintos,id',
-            'idSubareaSeccion' => 'nullable|exists:subarea_seccions,id',
-            'idProfesor' => 'required|exists:profesors,id',
-            'tipoHorario' => 'required|string|max:50',
-            'horaEntrada' => 'required|date_format:H:i',
-            'horaSalida' => 'required|date_format:H:i|after:horaEntrada',
-            'dia' => 'required|string|max:10',
-            'condicion' => 'required|string|max:20'
+            'idRecinto' => 'required|exists:recinto,id',
+            'idSubarea' => 'required|exists:subarea,id',
+            'idSeccion' => 'required|exists:seccione,id',
+            'user_id' => 'required|exists:users,id',
+            'tipoHorario' => 'required|in:fijo,temporal',
+            'fecha' => 'nullable|date|required_if:tipoHorario,temporal',
+            'dia' => 'nullable|string|required_if:tipoHorario,fijo|in:Lunes,Martes,Miércoles,Jueves,Viernes,Sábado,Domingo',
+            'lecciones' => 'required|array|min:1',
+            'lecciones.*' => 'exists:leccion,id',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'fecha.required_if' => 'La fecha es obligatoria para horarios temporales.',
+            'dia.required_if' => 'El día es obligatorio para horarios fijos.',
+            'lecciones.required' => 'Debe seleccionar al menos una lección.',
+            'lecciones.min' => 'Debe seleccionar al menos una lección.',
         ];
     }
 }

@@ -24,7 +24,7 @@ class UpdateHorarioRequest extends FormRequest
         return [
             'idRecinto' => 'required|exists:recintos,id',
             'idSubareaSeccion' => 'nullable|exists:subarea_seccions,id',
-            'idProfesor' => 'required|exists:profesors,id',
+            'user_id' => 'required|exists:profesors,id',
             'tipoHorario' => 'required|string|max:50',
             'horaEntrada' => 'required|date_format:H:i',
             'horaSalida' => 'required|date_format:H:i|after:horaEntrada',
