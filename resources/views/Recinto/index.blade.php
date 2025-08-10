@@ -76,9 +76,10 @@
                                         <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
                                             {{ ucfirst($recinto->tipo) }}
                                         </span>
-                                            <span class="badge px-2 py-1 rounded-pill text-white" style="font-size:0.9em; background-color: #ffffffff;">
-                                                {{ $recinto->estadoRecinto->nombre ?? 'Sin estado' }}
-                                            </span>
+                                                <span class="badge px-2 py-1 rounded-pill text-dark bg-white" style="font-size:0.9em;">
+                                                    {{ $recinto->estadoRecinto->nombre }}
+                                                </span>
+                                        
                                     </div>
                                     <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">
@@ -139,8 +140,8 @@
                         <select data-size="4" title="Seleccione un tipo de recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick">
                             @if(isset($tiposRecinto))
                                 @foreach ($tiposRecinto as $tipoRecinto)
-                                    <option value="{{$tipoRecinto->id}}"
-                                        {{ (old('tipoRecinto_id', $recinto->tipoRecinto_id ?? null) == $tipoRecinto->id) ? 'selected' : '' }}>
+                                    <option value="{{$tipoRecinto->id}}" 
+                                        {{ (isset($recinto) && $recinto->tipoRecinto_id == $tipoRecinto->id) || old('tipoRecinto_id') == $tipoRecinto->id ? 'selected' : '' }}>
                                         {{$tipoRecinto->nombre}}
                                     </option>
                                 @endforeach
@@ -152,8 +153,8 @@
                         <select data-size="4" title="Seleccione un estado de recinto" data-live-search="true" name="estadoRecinto_id" id="editarEstadoRecinto" class="form-control selectpicker show-tick">
                             @if(isset($estadosRecinto))
                                 @foreach ($estadosRecinto as $estadoRecinto)
-                                    <option value="{{$estadoRecinto->id}}"
-                                        {{ (old('estadoRecinto_id', $recinto->estadoRecinto_id ?? null) == $estadoRecinto->id) ? 'selected' : '' }}>
+                                    <option value="{{$estadoRecinto->id}}" 
+                                        {{ (isset($recinto) && $recinto->estadoRecinto_id == $estadoRecinto->id) || old('estadoRecinto_id') == $estadoRecinto->id ? 'selected' : '' }}>
                                         {{$estadoRecinto->nombre}}
                                     </option>
                                 @endforeach
@@ -165,8 +166,8 @@
                         <select data-size="4" title="Seleccione una llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick">
                             @if(isset($llaves))
                                 @foreach ($llaves as $llave)
-                                    <option value="{{$llave->id}}"
-                                        {{ (old('llave_id', $recinto->llave_id ?? null) == $llave->id) ? 'selected' : '' }}>
+                                    <option value="{{$llave->id}}" 
+                                        {{ (isset($recinto) && $recinto->llave_id == $llave->id) || old('llave_id') == $llave->id ? 'selected' : '' }}>
                                         {{$llave->nombre}}
                                     </option>
                                 @endforeach
@@ -178,8 +179,8 @@
                         <select data-size="4" title="Seleccione una institución" data-live-search="true" name="institucion_id" id="editarInstitucion" class="form-control selectpicker show-tick">
                             @if(isset($instituciones))
                                 @foreach ($instituciones as $institucion)
-                                    <option value="{{$institucion->id}}"
-                                        {{ (old('institucion_id', $recinto->institucion_id ?? null) == $institucion->id) ? 'selected' : '' }}>
+                                    <option value="{{$institucion->id}}" 
+                                        {{ (isset($recinto) && $recinto->institucion_id == $institucion->id) || old('institucion_id') == $institucion->id ? 'selected' : '' }}>
                                         {{$institucion->nombre}}
                                     </option>
                                 @endforeach

@@ -20,15 +20,31 @@ class RecintoController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-        $recintos = Recinto::with('institucion', 'estadoRecinto', 'tipoRecinto', 'llave')->get();
+    {
+        $query = Recinto::with('institucion', 'estadoRecinto', 'tipoRecinto', 'llave');
+
+        // Filtro por estado
+        if (request('estado')) {
+            $query->whereHas('estadoRecinto', function($q) {
+                $q->where('nombre', request('estado'));
+            });
+        }
+
+        // Filtro por tipo
+        if (request('tipo')) {
+            $query->whereHas('tipoRecinto', function($q) {
+                $q->where('nombre', request('tipo'));
+            });
+        }
+
+        $recintos = $query->get();
         $instituciones = Institucione::all();
         $tiposRecinto = TipoRecinto::all();
         $estadosRecinto = EstadoRecinto::all();
         $llaves = Llave::all();
 
         return view('recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto', 'llaves'));
-}
+    }
 
     /**
      * Show the form for creating a new resource.
