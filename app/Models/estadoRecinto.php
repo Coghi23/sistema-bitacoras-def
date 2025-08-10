@@ -11,8 +11,7 @@ class EstadoRecinto extends Model
 
     protected $fillable = [
         'nombre',
-        'color'
-    ];
+    ]; // color removed
 
     public function recinto()
     {

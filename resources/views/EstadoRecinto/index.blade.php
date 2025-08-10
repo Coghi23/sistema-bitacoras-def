@@ -38,10 +38,7 @@
                                 <label for="nombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
                                 <input type="text" name="nombre" id="nombreEstadoRecinto" class="form-control" placeholder="Ingrese el nombre del Estado de Recinto" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="colorEstadoRecinto" class="form-label fw-bold">Código para asignar en estado recinto</label>
-                                <input type="text" name="color" id="colorEstadoRecinto" class="form-control" placeholder="Ingrese el hexadecimal del Estado de Recinto" required>
-                            </div>
+                            <!-- Color field removed -->
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
@@ -59,7 +56,7 @@
                 <thead>
                     <tr>
                         <th class="text-center" style="width: 80%;">Nombre del Estado de Recinto</th>
-                        <th class="text-center" style="width: 10%;">Color</th>
+                        <!-- Color column removed -->
                         <th class="text-center" style="width: 10%;">Acciones</th>
                     </tr>
                 </thead>
@@ -69,12 +66,7 @@
                             @if ($estadoRecinto->condicion == 1)
                                 <td class="text-center">{{ $estadoRecinto->nombre }}</td>
                                 <td class="text-center">
-                                    @if($estadoRecinto->color)
-                                        <span style="display:inline-block;width:24px;height:24px;border-radius:50%;background:{{ $estadoRecinto->color }};border:1px solid #ccc;"></span>
-                                        <span class="ms-2">{{ $estadoRecinto->color }}</span>
-                                    @else
-                                        <span class="text-muted">Sin color</span>
-                                    @endif
+                                    <!-- Color display removed -->
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
@@ -111,8 +103,7 @@
                                                     <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre',$estadoRecinto->nombre)}}">
                                                 </div>
                                                 <div class="mb-3">
-                                                    <label for="editarColorEstadoRecinto" class="form-label fw-bold">Código de color (hexadecimal)</label>
-                                                    <input type="text" name="color" id="editarColorEstadoRecinto" class="form-control" placeholder="#RRGGBB" value="{{ old('color', $estadoRecinto->color) }}">
+                                                    <!-- Edit color field removed -->
                                                 </div>
                                             </div>
                                             <div class="card-footer text-center">

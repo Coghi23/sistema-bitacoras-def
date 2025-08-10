@@ -36,7 +36,7 @@ class EstadoRecintoController extends Controller
         try{
             
             DB::beginTransaction();
-            $estadoRecinto = estadoRecinto::create($request->validated());
+            $estadoRecinto = estadoRecinto::create($request->validated()); // color removed from validated
 
             DB::commit();
 
@@ -77,7 +77,7 @@ class EstadoRecintoController extends Controller
     {
         try {
             DB::beginTransaction();
-            $estadoRecinto->update($request->validated());
+            $estadoRecinto->update($request->validated()); // color removed from validated
             DB::commit();
 
             
