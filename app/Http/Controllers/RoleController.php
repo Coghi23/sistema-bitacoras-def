@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Spatie\Permissions\Models\Role;
-use Spatie\Permissions\Models\Permission;
-use Illumintate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\DB;
 
 
 class RoleController extends Controller
@@ -15,8 +15,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::all();
-        return view('roles.index', compact('roles'));
+        $roles = Role::with('permissions')->get();
+        $permisos = Permission::all();
+        return view('roles.index', compact('roles', 'permisos'));
     }
 
     /**
@@ -40,13 +41,9 @@ class RoleController extends Controller
 
         try {
             DB::beginTransaction();
-            // crea el rol
             $role = Role::create(['name' => $request->name]);
-            //obtiene los permisospor ID
             $permissions = Permission::whereIn('id', $request->permissions)->get();
-            //sincroniza los permisos con el rol
             $role->syncPermissions($permissions);
-
             DB::commit();
             return redirect()->route('roles.index')->with('success', 'Rol creado correctamente');
         } catch (\Exception $e) {
@@ -68,6 +65,7 @@ class RoleController extends Controller
      */
     public function edit(string $id)
     {
+        $role = Role::findOrFail($id);
         $permisos = Permission::all();
         return view('roles.edit', compact('role', 'permisos'));
     }
@@ -77,6 +75,7 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $role = Role::findOrFail($id);
         $request->validate([
             'name' => 'required|unique:roles,name,' . $id,
             'permissions' => 'required|array',

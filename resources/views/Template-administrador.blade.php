@@ -62,6 +62,10 @@
                 <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
             </a>
+            <a href="{{ route('role.index') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Roles">Roles</div>
+            </a>
             <a href="{{ asset('tipoRecinto') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Tipo de Recinto">Tipo de Recinto</div>
@@ -105,6 +109,7 @@
                     </a>
                 </form>
             </div>
+            
         </div>
     </div>
 
