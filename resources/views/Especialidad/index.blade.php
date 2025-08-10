@@ -116,45 +116,39 @@
 
 
                <!-- Modal Editar Especialidad -->
-<div class="modal fade" id="modalEditarEspecialidad-{{ $especialidad->id }}" tabindex="-1" aria-labelledby="modalEditarespecialidadLabel" aria-hidden="true">
+<div class="modal fade" id="modalEditarEspecialidad-{{ $especialidad->id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header modal-header-custom">
                 <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                     <i class="bi bi-arrow-left"></i>
                 </button>
-                <h5 class="modal-title">Editar Especialidad</h5>
+                <h5 class="modal-title">Registro de especialidad</h5>
             </div>
             <div class="modal-body px-4 py-4">
-                <div class="card text-bg-light">
-                   <form action="{{ route('especialidad.update', $especialidad->id ?? 0) }}" method="post">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="id" id="editarIdespecialidad">
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="editarNombreespecialidad" class="form-label fw-bold">Nombre de la Especialidad</label>
-                                <input type="text" name="nombre" id="editarNombreespecialidad" class="form-control"
-                                    value="{{old('nombre', isset($especialidad) ? $especialidad->nombre : '')}}">
-                                
-                                <label for="editarInstitucion" class="form-label fw-bold mt-3">Institución</label>
-                                <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="editarInstitucion" class="form-control selectpicker show-tick">
-                                    @if(isset($instituciones))
-                                        @foreach ($instituciones as $institucion)
-                                            <option value="{{$institucion->id}}" 
-                                                {{ (isset($especialidad) && $especialidad->id_institucion == $institucion->id) || old('id_institucion') == $institucion->id ? 'selected' : '' }}>
-                                                {{$institucion->nombre}}
-                                            </option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                            </div>
-                        </div>
-                        <div class="card-footer text-center">
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </div>
-                    </form>
-                </div>
+                <form action="{{ route('especialidad.update', $especialidad->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Especialidad</label>
+                        <input type="text" name="nombre" class="form-control"
+                            value="{{ old('nombre', $especialidad->nombre) }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Institución</label>
+                        <select name="id_institucion" class="form-control" required>
+                            @foreach ($instituciones as $institucion)
+                                <option value="{{ $institucion->id }}" 
+                                    {{ old('id_institucion', $especialidad->id_institucion) == $institucion->id ? 'selected' : '' }}>
+                                    {{ $institucion->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Modificar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -162,29 +156,33 @@
 
 
     <!-- Modal eliminar -->
-                     <div class="modal fade" id="modalConfirmacionEliminar-{{ $especialidad->id }}" tabindex="-1" aria-labelledby="modalEspecialidadEliminarLabel-{{ $especialidad->id }}" 
-                        aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content custom-modal">
-                                    <div class="modal-body text-center">
-                                        <div class="icon-container">
-                                            <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
-                                            </div>
-                                        </div>
-                                        <p class="modal-text">¿Desea eliminar la especialidad?</p>
-                                        <div class="btn-group-custom">
-                                            <form action="{{ route('especialidad.destroy', $especialidad->id) }}" method="post">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="submit" class="btn btn-custom">Sí</button>
-                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    <div class="modal fade" id="modalConfirmacionEliminar-{{ $especialidad->id }}" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header modal-header-custom">
+                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                </div>
+                <div class="modal-body px-4 py-4 text-center">
+                    <div class="mb-3">
+                        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h6 class="mb-3">¿Está seguro que desea eliminar esta especialidad?</h6>
+                    <p class="text-muted mb-4">Esta acción no se puede deshacer.</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <form action="{{ route('especialidad.destroy', $especialidad->id) }}" method="post" class="d-inline">
+                            @method('DELETE')
+                            @csrf
+                            <button type="submit" class="btn btn-danger">Sí</button>
+                        </form>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
                         
                         
                         <!-- Modal Éxito Eliminar -->
