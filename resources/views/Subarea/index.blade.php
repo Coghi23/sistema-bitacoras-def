@@ -80,37 +80,37 @@
                     </tr>
 
                     {{-- Modal Editar SubÁrea --}}
-                    <div class="modal fade" id="modalEditarSubArea-{{ $subarea->id }}" tabindex="-1"
-                        aria-hidden="true">
+                    <div class="modal fade" id="modalEditarSubArea-{{ $subarea->id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
                                 <div class="modal-header modal-header-custom">
                                     <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                                         <i class="bi bi-arrow-left"></i>
                                     </button>
-                                    <h5 class="modal-title">Editar Sub-Área</h5>
+                                    <h5 class="modal-title">Registro de subárea</h5>
                                 </div>
                                 <div class="modal-body px-4 py-4">
                                     <form action="{{ route('subarea.update', $subarea->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold">Nombre de la Sub Área</label>
+                                            <label class="form-label fw-bold">SubÁrea</label>
                                             <input type="text" name="nombre" class="form-control"
                                                 value="{{ old('nombre', $subarea->nombre) }}" required>
-
-                                            <label class="form-label fw-bold mt-3">Especialidad</label>
-                                            <select name="id_especialidad" class="form-select" required>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Especialidad</label>
+                                            <select name="id_especialidad" class="form-control" required>
                                                 @foreach ($especialidades as $especialidad)
-                                                <option value="{{ $especialidad->id }}"
-                                                    {{ $subarea->id_especialidad == $especialidad->id ? 'selected' : '' }}>
-                                                    {{ $especialidad->nombre }}
-                                                </option>
+                                                    <option value="{{ $especialidad->id }}"
+                                                        {{ old('id_especialidad', $subarea->id_especialidad) == $especialidad->id ? 'selected' : '' }}>
+                                                        {{ $especialidad->nombre }}
+                                                    </option>
                                                 @endforeach
                                             </select>
                                         </div>
                                         <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                                            <button type="submit" class="btn btn-primary">Modificar</button>
                                         </div>
                                     </form>
                                 </div>
@@ -119,29 +119,33 @@
                     </div>
 
                     {{-- Modal Eliminar SubÁrea --}}
-                        <div class="modal fade" id="modalEliminarSubarea-{{ $subarea->id }}" tabindex="-1" aria-labelledby="modalSubareaEliminarLabel-{{ $subarea->id }}" 
-                        aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content custom-modal">
-                                    <div class="modal-body text-center">
-                                        <div class="icon-container">
-                                            <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
-                                            </div>
-                                        </div>
-                                        <p class="modal-text">¿Desea eliminar la subárea?</p>
-                                        <div class="btn-group-custom">
-                                            <form action="{{ route('subarea.destroy', ['subarea' => $subarea->id]) }}" method="post">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="submit" class="btn btn-custom {{ $subarea->condicion == 1 }}">Sí</button>
-                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                                            </form>
-                                        </div>
+                    <div class="modal fade" id="modalEliminarSubarea-{{ $subarea->id }}" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <div class="modal-header modal-header-custom">
+                                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                        <i class="bi bi-arrow-left"></i>
+                                    </button>
+                                    <h5 class="modal-title">Confirmar eliminación</h5>
+                                </div>
+                                <div class="modal-body px-4 py-4 text-center">
+                                    <div class="mb-3">
+                                        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3rem;"></i>
+                                    </div>
+                                    <h6 class="mb-3">¿Está seguro que desea eliminar esta subárea?</h6>
+                                    <p class="text-muted mb-4">Esta acción no se puede deshacer.</p>
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <form action="{{ route('subarea.destroy', ['subarea' => $subarea->id]) }}" method="post" class="d-inline">
+                                            @method('DELETE')
+                                            @csrf
+                                            <button type="submit" class="btn btn-danger">Sí</button>
+                                        </form>
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     @endforeach
                 </tbody>
             </table>
