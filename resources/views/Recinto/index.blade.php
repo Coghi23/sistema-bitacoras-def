@@ -174,7 +174,7 @@
                             @if(isset($estadosRecinto))
                                 @foreach ($estadosRecinto as $estadoRecinto)
                                     <option value="{{$estadoRecinto->id}}" 
-                                        {{ (isset($especialidad) && $especialidad->id_estado == $estadoRecinto->id) || old('id_estado') == $estadoRecinto->id ? 'selected' : '' }}>
+                                        {{ (isset($recinto) && $recinto->estadoRecinto_id == $estadoRecinto->id) || old('estadoRecinto_id') == $estadoRecinto->id ? 'selected' : '' }}>
                                         {{$estadoRecinto->nombre}}
                                     </option>
                                 @endforeach
