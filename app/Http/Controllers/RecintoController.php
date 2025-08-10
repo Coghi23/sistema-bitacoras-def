@@ -21,8 +21,7 @@ class RecintoController extends Controller
      */
     public function index()
 {
-
-        $recintos = Recinto::with('institucion', 'estadoRecinto', 'tipoRecinto')->get();
+        $recintos = Recinto::with('institucion', 'estadoRecinto', 'tipoRecinto', 'llave')->get();
         $instituciones = Institucione::all();
         $tiposRecinto = TipoRecinto::all();
         $estadosRecinto = EstadoRecinto::all();
