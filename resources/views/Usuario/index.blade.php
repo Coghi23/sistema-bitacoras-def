@@ -112,8 +112,8 @@
                         <td class="col-docente">{{ $usuario->cedula }}</td>
                         <td class="col-recinto">{{ $usuario->email }}</td>
                         <td class="col-subarea-seccion">
-                            @if(isset($usuario->roles) && $usuario->roles && $usuario->roles->isNotEmpty())
-                                {{ ucfirst($usuario->roles->first()->name) }}
+                            @if($usuario->getRoleNames()->isNotEmpty())
+                                {{ ucfirst($usuario->getRoleNames()->first()) }}
                             @else
                                 Sin rol
                             @endif
@@ -210,7 +210,7 @@
                             <i class="fas fa-user-tag text-success me-2"></i>Rol:
                         </label>
                         <div class="position-relative w-50">
-                            <select name="rol" class="form-control rounded-4" required>
+                            <select name="role" class="form-control rounded-4" required>
                                 <option value="">Seleccione un rol</option>
                                 @if(isset($roles) && $roles)
                                     @foreach ($roles as $rol)
@@ -319,20 +319,17 @@
                             <i class="fas fa-user-tag text-success me-2"></i>Rol:
                         </label>
                         <div class="position-relative w-50">
-                            <select name="rol" class="form-control rounded-4" required>
+                            <select name="role" class="form-control rounded-4" required>
                                 <option value="">Seleccione un rol</option>
                                 @if(isset($roles) && $roles)
                                     @foreach ($roles as $rol)
-                                        <option value="{{ $rol->name }}" 
-                                            {{ $usuario->roles && $usuario->roles->contains('name', $rol->name) ? 'selected' : '' }}>
-                                            {{ ucfirst($rol->name) }}
-                                        </option>
+                                        <option value="{{ $rol->name }}">{{ ucfirst($rol->name) }}</option>
                                     @endforeach
                                 @else
-                                    <option value="profesor" {{ $usuario->roles && $usuario->roles->contains('name', 'profesor') ? 'selected' : '' }}>Profesor</option>
-                                    <option value="administrador" {{ $usuario->roles && $usuario->roles->contains('name', 'administrador') ? 'selected' : '' }}>Administrador</option>
-                                    <option value="soporte" {{ $usuario->roles && $usuario->roles->contains('name', 'soporte') ? 'selected' : '' }}>Soporte</option>
-                                    <option value="director" {{ $usuario->roles && $usuario->roles->contains('name', 'director') ? 'selected' : '' }}>Director</option>
+                                    <option value="profesor">Profesor</option>
+                                    <option value="administrador">Administrador</option>
+                                    <option value="soporte">Soporte</option>
+                                    <option value="director">Director</option>
                                 @endif
                             </select>
                         </div>

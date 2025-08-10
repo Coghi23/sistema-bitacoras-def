@@ -34,6 +34,8 @@ Route::resource('bitacora', BitacoraController::class);
 // Rutas que requieren autenticación
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de recursos con protección para directores en acciones de escritura
+
+    Route::resource('role', RoleController::class);
     
     Route::resource('usuario', UsuarioController::class)->except(['store', 'update', 'destroy']);
     Route::resource('usuario', UsuarioController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
@@ -60,9 +62,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('llave', LlaveController::class);
 
-
-    Route::resource('role', RoleController::class);
-
+    // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
+    Route::middleware(['role:administrador|director'])->group(function () {
         Route::get('/template-administrador', function () {
             return view('template-administrador');
         })->name('template.administrador');

@@ -17,7 +17,7 @@ class RoleController extends Controller
     {
         $roles = Role::with('permissions')->get();
         $permisos = Permission::all();
-        return view('roles.index', compact('roles', 'permisos'));
+        return view('role.index', compact('roles', 'permisos'));
     }
 
     /**
@@ -26,7 +26,7 @@ class RoleController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('roles.create', compact('roles'));
+        return view('role.create', compact('roles'));
     }
 
     /**
@@ -45,7 +45,7 @@ class RoleController extends Controller
             $permissions = Permission::whereIn('id', $request->permissions)->get();
             $role->syncPermissions($permissions);
             DB::commit();
-            return redirect()->route('roles.index')->with('success', 'Rol creado correctamente');
+            return redirect()->route('role.index')->with('success', 'Rol creado correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Error al crear el rol.');
@@ -67,7 +67,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
         $permisos = Permission::all();
-        return view('roles.edit', compact('role', 'permisos'));
+        return view('role.edit', compact('role', 'permisos'));
     }
 
     /**
@@ -89,7 +89,7 @@ class RoleController extends Controller
             //actualizar permisos
             $role->syncPermissions($permissions);
             DB::commit();
-            return redirect()->route('roles.index')->with('success', 'Rol actualizado correctamente');
+            return redirect()->route('role.index')->with('success', 'Rol actualizado correctamente');
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Error al actualizar el rol.');

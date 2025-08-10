@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\User;
 use App\Models\Institucione;
 use App\Models\Especialidade;
@@ -18,8 +19,9 @@ class UsuarioController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::all();
-        return view('Usuario.index', compact('users'));
+        $usuarios = User::with('roles')->get();
+        $roles = Role::all();
+        return view('Usuario.index', compact('usuarios', 'roles'));
     }
 
     public function create()
@@ -36,28 +38,31 @@ class UsuarioController extends Controller
         try {
             DB::beginTransaction();
 
-        //password hash
-        $fieldHash = Hash::make($request->password);
-        //Modify the password value in request
-        $request->merge(['password' => $fieldHash]);
+            // Hashea la contraseña
+            $fieldHash = Hash::make($request->password);
 
-        //create user
-        $user = User::create($request->all());
+            // Crea el usuario solo con los campos válidos
+            $usuario = User::create([
+                'name' => $request->name,
+                'cedula' => $request->cedula,
+                'email' => $request->email,
+                'password' => $fieldHash,
+                // agrega aquí otros campos reales de tu tabla users si los tienes
+            ]);
 
-        //Asign rol
-        $user->assignRole($request->role);
+            // Asigna el rol
+            $usuario->assignRole($request->role);
 
-        DB::commit();
-    } 
-    catch (Exception $e) {
-        DB::rollBack();
-        return redirect()->route('usuario.index')
-            ->with('error', 'Error al crear el usuario: ' . $e->getMessage());
+            DB::commit();
+        } 
+        catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('usuario.index')
+                ->with('error', 'Error al crear el usuario: ' . $e->getMessage());
         }
             
-    return redirect()->route('usuario.index')->with('success', 'Usuario creado exitosamente.');
+        return redirect()->route('usuario.index')->with('success', 'Usuario creado exitosamente.');
     }
-
     /**
      * Update the specified resource in storage.
      */
@@ -67,16 +72,16 @@ class UsuarioController extends Controller
             DB::beginTransaction();
             //Comprueba la contraseña y aplica el hash
             if (empty($request->password)) {
-                $requrestData = $request->except('password');
+                $requestData = $request->except('password');
             }
             else{
                 $fieldHash = Hash::make($request->password);
                 $request->merge(['password' => $fieldHash]);
                 $requestData = $request->all();
             }
-            $user->update($requestData);
+            $usuario->update($requestData);
             //actualiza el rol
-            $user->syncRoles($request->role);
+            $usuario->syncRoles($request->role);
             DB::commit();
         }
         catch (Exception $e) {

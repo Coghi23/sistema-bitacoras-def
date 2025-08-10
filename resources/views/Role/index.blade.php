@@ -1,4 +1,3 @@
-<?php
 @extends('Template-administrador')
 
 @section('content')
@@ -90,7 +89,7 @@
                 <h5 class="modal-title">Crear Nuevo Rol</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
-            <form action="{{ route('roles.store') }}" method="POST">
+            <form action="{{ route('role.store') }}" method="POST">
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
@@ -203,7 +202,7 @@
 <script>
 function loadEditModal(roleId, roleName, permissions) {
     document.getElementById('edit_name').value = roleName;
-    document.getElementById('editRoleForm').action = `/roles/${roleId}`;
+    document.getElementById('editRoleForm').action = `/role/${roleId}`;
     
     // Limpiar todos los checkboxes
     const checkboxes = document.querySelectorAll('#edit_permissions input[type="checkbox"]');
