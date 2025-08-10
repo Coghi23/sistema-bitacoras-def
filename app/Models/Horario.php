@@ -8,7 +8,7 @@ class Horario extends Model
 {
     protected $fillable = ['idRecinto', 
                         'idSubareaSeccion', 
-                        'idProfesor', 
+                        'user_id', // Cambiado de idProfesor a user_id
                         'tipoHorario', 
                         'horaEntrada',
                         'horaSalida',
@@ -29,7 +29,14 @@ class Horario extends Model
 
     public function profesor()
     {
-        return $this->belongsTo(Profesor::class, 'idProfesor');
+        // Relación con User, solo para usuarios con rol 'profesor'
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    // Opcional: scope para obtener solo usuarios con rol profesor
+    public function profesorUsuario()
+    {
+         return $this->belongsTo(User::class, 'user_id')->where('rol', 'profesor');
     }
 }
 
