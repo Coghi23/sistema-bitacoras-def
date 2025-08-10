@@ -19,7 +19,12 @@ class UsuarioController extends Controller
      */
     public function index(Request $request)
     {
-        $usuarios = User::with('roles')->get();
+        $inactivos = $request->query('inactivos');
+        if ($inactivos) {
+            $usuarios = User::with('roles')->where('condicion', false)->get();
+        } else {
+            $usuarios = User::with('roles')->where('condicion', true)->get();
+        }
         $roles = Role::all();
         return view('Usuario.index', compact('usuarios', 'roles'));
     }
@@ -35,6 +40,13 @@ class UsuarioController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => 'required',
+            'cedula' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required',
+            'role' => 'required|exists:roles,name',
+        ]);
         try {
             DB::beginTransaction();
 
@@ -98,10 +110,14 @@ class UsuarioController extends Controller
      */
     public function destroy(User $usuario)
     {
-        $user = User::find($id);
-        $rolUser = $user->getRoleNames()->first();
-        $user->delete();
+        // Cambia el estado de condicion (activo/inactivo)
+        $usuario->condicion = !$usuario->condicion;
+        $usuario->save();
 
-        return redirect()->route('usuario.index')->with('success', 'Usuario eliminado exitosamente.');
+        $mensaje = $usuario->condicion
+            ? 'Usuario activado exitosamente.'
+            : 'Usuario inactivado exitosamente.';
+
+        return redirect()->route('usuario.index')->with('success', $mensaje);
     }
 }
