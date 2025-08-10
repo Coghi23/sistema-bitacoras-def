@@ -41,7 +41,7 @@ class RoleController extends Controller
 
         try {
             DB::beginTransaction();
-            $role = Role::create(['name' => $request->name]);
+            $role = Role::create(['name' => strtolower($request->name)]);
             $permissions = Permission::whereIn('id', $request->permissions)->get();
             $role->syncPermissions($permissions);
             DB::commit();
@@ -82,8 +82,8 @@ class RoleController extends Controller
         ]);
         try {
             DB::beginTransaction();
-            
-            $role->update(['name' => $request->name]);
+
+            $role->update(['name' => strtolower($request->name)]);
             //obtener los permisos por ID
             $permissions = Permission::whereIn('id', $request->permissions)->get();
             //actualizar permisos
