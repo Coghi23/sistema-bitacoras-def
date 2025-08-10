@@ -24,17 +24,13 @@
                                 Todos
                             </a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => 'disponible'])) }}">
-                                Disponible
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => 'mantenimiento'])) }}">
-                                En mantenimiento
-                            </a>
-                        </li>
-                        
+                        @foreach($estadosRecinto as $estadoRecinto)
+                            <li>
+                                <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => $estadoRecinto->nombre])) }}">
+                                    {{ $estadoRecinto->nombre }}
+                                </a>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>
@@ -55,33 +51,18 @@
                 <div class="tab-indicator"></div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
                     <a href="{{ route('recinto.index') }}">
-                         <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
+                        <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
                     </a>
                 </div>
-                <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index', ['tipo' => 'laboratorio']) }}">
-                        <button class="btn tab-btn {{ request('tipo') == 'laboratorio' ? 'active' : '' }}" type="button" style="width: 100%;">
-                            <i class="fas fa-desktop"></i>
-                            Laboratorios
-                        </button>
-                    </a>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index', ['tipo' => 'taller']) }}">
-                        <button class="btn tab-btn {{ request('tipo') == 'taller' ? 'active' : '' }}" type="button" style="width: 100%;">
-                            <i class="fas fa-wrench"></i>
-                            Talleres
-                        </button>
-                    </a>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index', ['tipo' => 'movil']) }}">
-                        <button class="btn tab-btn {{ request('tipo') == 'movil' ? 'active' : '' }}" type="button" style="width: 100%;">
-                            <i class="fas fa-laptop"></i>
-                            Laboratorios móviles
-                        </button>
-                    </a>
-                </div>
+                @foreach($tiposRecinto as $tipoRecinto)
+                    <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
+                        <a href="{{ route('recinto.index', ['tipo' => $tipoRecinto->nombre]) }}">
+                            <button class="btn tab-btn {{ request('tipo') == $tipoRecinto->nombre ? 'active' : '' }}" type="button" style="width: 100%;">
+                                {{ $tipoRecinto->nombre }}
+                            </button>
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
@@ -95,11 +76,9 @@
                                         <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
                                             {{ ucfirst($recinto->tipo) }}
                                         </span>
-                                        @if($recinto->estado == 'disponible')
-                                            <span class="badge bg-success text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Disponible</span>
-                                        @else
-                                            <span class="badge bg-danger text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Mantenimiento</span>
-                                        @endif
+                                        <span class="badge px-2 py-1 rounded-pill text-white" style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto->color ?? '#6c757d' }};">
+                                            {{ $recinto->estadoRecinto->nombre }}
+                                        </span>
                                     </div>
                                     <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">
@@ -161,7 +140,7 @@
                             @if(isset($tiposRecinto))
                                 @foreach ($tiposRecinto as $tipoRecinto)
                                     <option value="{{$tipoRecinto->id}}" 
-                                        {{ (isset($tipoRecinto) && $tipoRecinto->id == $tipoRecinto->id) || old('tipoRecinto_id') == $tipoRecinto->id ? 'selected' : '' }}>
+                                        {{ (isset($recinto) && $recinto->tipoRecinto_id == $tipoRecinto->id) || old('tipoRecinto_id') == $tipoRecinto->id ? 'selected' : '' }}>
                                         {{$tipoRecinto->nombre}}
                                     </option>
                                 @endforeach

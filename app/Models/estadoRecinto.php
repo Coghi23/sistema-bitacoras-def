@@ -10,7 +10,8 @@ class EstadoRecinto extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre' 
+        'nombre',
+        'color'
     ];
 
     public function recinto()
