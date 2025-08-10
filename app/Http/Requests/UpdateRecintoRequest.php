@@ -29,6 +29,7 @@ class UpdateRecintoRequest extends FormRequest
             'institucion_id' => 'required|exists:institucione,id',
             'estadoRecinto_id' => 'required|exists:estadoRecinto,id',
             'tipoRecinto_id' => 'required|exists:tipoRecinto,id',
+            'llave_id' => 'required|exists:llave,id',
             
         ];
     }
