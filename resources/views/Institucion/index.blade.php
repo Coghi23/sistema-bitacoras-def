@@ -103,57 +103,56 @@
                             
                         </tr>
 
-                        <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-labelledby="modalEditarInstitucionLabel-{{ $institucion->id }}" aria-hidden="true">
+                        <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header modal-header-custom">
                                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                                             <i class="bi bi-arrow-left"></i>
                                         </button>
-                                        <h5 class="modal-title">Editar Institución</h5>
+                                        <h5 class="modal-title">Registro de institución</h5>
                                     </div>
                                     <div class="modal-body px-4 py-4">
-                                        <div class="card text-bg-light">
-                                        <form action="{{ route('institucion.update',['institucion'=>$institucion]) }}" method="post">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="id" id="editarIdInstitucion">
-                                                <div class="card-body">
-                                                    <div class="mb-3">
-                                                        <label for="editarNombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
-                                                        <input type="text" name="nombre" id="nombre" class="form-control"
-                                                value="{{old('nombre',$institucion->nombre)}}">
-                                                    </div>
-                                                </div>
-                                                <div class="card-footer text-center">
-                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                </div>
-                                            </form>
-                                        </div>
+                                        <form action="{{ route('institucion.update', $institucion->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Institución</label>
+                                                <input type="text" name="nombre" class="form-control"
+                                                    value="{{ old('nombre', $institucion->nombre) }}" required>
+                                            </div>
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-primary">Modificar</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                             <!-- Modal eliminar -->
-                        <div class="modal fade" id="modalConfirmacionEliminar-{{ $institucion->id }}" tabindex="-1" aria-labelledby="modalInstitucionEliminarLabel-{{ $institucion->id }}" 
-                        aria-hidden="true">
+                        <div class="modal fade" id="modalConfirmacionEliminar-{{ $institucion->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content custom-modal">
-                                    <div class="modal-body text-center">
-                                        <div class="icon-container">
-                                            <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
-                                            </div>
+                                <div class="modal-content">
+                                    <div class="modal-header modal-header-custom">
+                                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <h5 class="modal-title">Confirmar eliminación</h5>
+                                    </div>
+                                    <div class="modal-body px-4 py-4 text-center">
+                                        <div class="mb-3">
+                                            <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 3rem;"></i>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar el usuario?</p>
-                                        <div class="btn-group-custom">
-                                            <form action="{{ route('institucion.destroy', ['institucion' => $institucion->id]) }}" method="post">
+                                        <h6 class="mb-3">¿Está seguro que desea eliminar esta institución?</h6>
+                                        <p class="text-muted mb-4">Esta acción no se puede deshacer.</p>
+                                        <div class="d-flex gap-2 justify-content-center">
+                                            <form action="{{ route('institucion.destroy', ['institucion' => $institucion->id]) }}" method="post" class="d-inline">
                                                 @method('DELETE')
                                                 @csrf
-                                                <button type="submit" class="btn btn-custom {{ $institucion->condicion == 1 }}">Sí</button>
-                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                                <button type="submit" class="btn btn-danger">Sí</button>
                                             </form>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                         </div>
                                     </div>
                                 </div>
