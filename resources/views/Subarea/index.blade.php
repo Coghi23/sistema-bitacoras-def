@@ -9,42 +9,18 @@
         {{-- Encabezado de búsqueda y botón Agregar --}}
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="input-group w-50">
-                <form id="busquedaForm" method="GET" action="{{ route('subarea.index') }}" class="d-flex w-100">
-                    <span class="input-group-text bg-white border-white">
-                        <i class="bi bi-search text-secondary"></i>
-                    </span>
-                    <input type="text" class="form-control border-start-0 shadow-sm"
-                        placeholder="Buscar por subarea o especialidad..." name="busquedaSubarea" 
-                        value="{{ request('busquedaSubarea') }}" id="inputBusqueda" autocomplete="off" 
-                        style="border-radius: 20px;">
-                    @if(request('busquedaSubarea'))
-                    <button type="button" class="btn btn-outline-secondary border-0" id="limpiarBusqueda" title="Limpiar búsqueda">
-                        <i class="bi bi-x-circle"></i>
-                    </button>
-                    @endif
-                </form>
+                <span class="input-group-text bg-white border-white">
+                    <i class="bi bi-search text-secondary"></i>
+                </span>
+                <input type="text" class="form-control border-start-0 shadow-sm"
+                    placeholder="Buscar por especialidad..." style="border-radius: 20px;">
             </div>
-            
-            @if(Auth::user() && !Auth::user()->hasRole('director'))
             <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center"
                 data-bs-toggle="modal" data-bs-target="#modalAgregarSubArea"
                 title="Agregar SubÁrea" style="background-color: #134496; font-size: 1.2rem;">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
-            @endif
-
         </div>
-
-        {{-- Indicador de resultados de búsqueda --}}
-        @if(request('busquedaSubarea'))
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                <span>
-                    Mostrando {{ $subareas->count() }} resultado(s) para "<strong>{{ request('busquedaSubarea') }}</strong>"
-                    <a href="{{ route('subarea.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
-                </span>
-            </div>
-        @endif
 
         {{-- Tabla de Sub-Áreas --}}
         <div class="table-responsive">
@@ -63,7 +39,6 @@
                             <td class="text-center">{{ $subarea->nombre }}</td>
                             <td class="text-center">{{ $subarea->especialidad ? $subarea->especialidad->nombre : 'Sin especialidad' }}</td>
                             <td class="text-center">
-                                @if(Auth::user() && !Auth::user()->hasRole('director'))
                                 <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal"
                                     data-bs-target="#modalEditarSubArea-{{ $subarea->id }}">
                                     <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
@@ -72,9 +47,6 @@
                                     data-bs-target="#modalEliminarSubarea-{{ $subarea->id }}">
                                     <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
                                 </button>
-                                @else
-                                <span class="text-muted">Solo vista</span>
-                                @endif
                             </td>
                         @endif
                     </tr>
@@ -91,9 +63,19 @@
                                     <h5 class="modal-title">Editar Sub-Área</h5>
                                 </div>
                                 <div class="modal-body px-4 py-4">
+                                                    {{-- Mostrar errores de validación --}}
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            @foreach ($errors->all() as $error)
+                                                <div>{{ $error }}</div>
+                                            @endforeach
+                                        </div>
+                                    @endif
                                     <form action="{{ route('subarea.update', $subarea->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
+                                        <input type="hidden" name="form_type" value="edit">
+                                        <input type="hidden" name="subarea_id" value="{{ $subarea->id }}">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Nombre de la Sub Área</label>
                                             <input type="text" name="nombre" class="form-control"
@@ -160,8 +142,17 @@
                 <h5 class="modal-title">Registro de Sub-Área</h5>
             </div>
             <div class="modal-body px-4 py-4">
+                {{-- Mostrar errores de validación --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        @foreach ($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                @endif
                 <form action="{{ route('subarea.store') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="form_type" value="create">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Nombre de la Sub Área</label>
                         <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>
@@ -182,37 +173,22 @@
         </div>
     </div>
 </div>
-
 <script>
-    // Funcionalidad de búsqueda en tiempo real
-    let timeoutId;
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const formBusqueda = document.getElementById('busquedaForm');
-    const btnLimpiar = document.getElementById('limpiarBusqueda');
-    
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function() {
-                formBusqueda.submit();
-            }, 500); // Espera 500ms después de que el usuario deje de escribir
-        });
-        
-        // También permitir búsqueda al presionar Enter
-        inputBusqueda.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                formBusqueda.submit();
+        // Mantener modal abierto si hay errores
+    @if ($errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar qué tipo de formulario fue enviado para abrir el modal correcto
+            const formType = '{{ old("form_type") }}';
+            const subareaId = '{{ old("subarea_id") }}';
+
+            if (formType === 'create') {
+                var modal = new bootstrap.Modal(document.getElementById('modalAgregarSubArea'));
+                modal.show();
+            } else if (formType === 'edit' && subareaId) {
+                var modal = new bootstrap.Modal(document.getElementById('modalEditarSubArea-' + subareaId));
+                modal.show();
             }
         });
-    }
-    
-    // Funcionalidad del botón limpiar
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
-            window.location.href = '{{ route("subarea.index") }}';
-        });
-    }
+    @endif
 </script>
 @endsection

@@ -24,7 +24,17 @@ class UpdateSeccionRequest extends FormRequest
         $seccion = $this->route('seccion');
         $seccionId = $seccion->id;
         return [
-            'nombre' => 'required|string|max:55'
+            'nombre' => 'required|string|max:55|unique:seccione,nombre,' . $seccionId
         ];  
+    }
+    
+    public function messages(): array
+    {
+        return [
+            'nombre.required' => 'El campo nombre es obligatorio.',
+            'nombre.string' => 'El campo nombre debe ser una cadena de texto.',
+            'nombre.max' => 'El campo nombre no puede exceder los 55 caracteres.',
+            'nombre.unique' => 'Ya existe una sección con este nombre.',
+        ];
     }
 }
