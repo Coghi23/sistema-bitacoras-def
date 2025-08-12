@@ -76,11 +76,7 @@
                                         <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
                                             {{ ucfirst($recinto->tipo) }}
                                         </span>
-                                            <!-- 
-                                                <span class="badge px-2 py-1 rounded-pill text-dark bg-white" style="font-size:0.9em;">
-                                                    {{ $recinto->estadoRecinto->nombre }}
-                                                </span>
-                                        Estado del recinto -->
+                                            
                                     </div>
                                     <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">

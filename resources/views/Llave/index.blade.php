@@ -53,8 +53,9 @@
             <table class="table align-middle table-hover">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 90%;">Nombre de la llave</th>
-                        <th class="text-center" style="width: 10%;">Acciones</th>
+                        <th class="text-center" style="width: 60%;">Nombre de la llave</th>
+                        <th class="text-center" style="width: 25%;">Estado</th>
+                        <th class="text-center" style="width: 15%;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,11 +64,17 @@
                             @if ($llave->condicion == 1)
                                 <td class="text-center">{{ $llave->nombre }}</td>
                                 <td class="text-center">
+                                    <span class="badge {{ $llave->estadoBadgeClass }}">
+                                        {{ $llave->estadoEntregaText }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
                                     <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalEditarLlave-{{ $llave->id }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
+                                    
                                     <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $llave->id }}" aria-label="Eliminar Llave">
                                             <i class="bi bi-trash"></i>
                                     </button>
