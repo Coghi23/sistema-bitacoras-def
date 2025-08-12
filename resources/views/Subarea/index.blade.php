@@ -7,15 +7,35 @@
     <div class="main-content">
 
         {{-- Encabezado de búsqueda y botón Agregar --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="input-group w-50">
-                <span class="input-group-text bg-white border-white">
-                    <i class="bi bi-search text-secondary"></i>
-                </span>
-                <input type="text" class="form-control border-start-0 shadow-sm"
-                    placeholder="Buscar por especialidad..." style="border-radius: 20px;">
+        <div class="search-bar-wrapper mb-4">
+            <div class="search-bar">
+                <form id="busquedaForm" method="GET" action="{{ route('subarea.index') }}" class="w-100 position-relative">
+                    <span class="search-icon">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Buscar subárea..."
+                        name="busquedaSubarea"
+                        value="{{ request('busquedaSubarea') }}"
+                        id="inputBusqueda"
+                        autocomplete="off"
+                    >
+                    @if(request('busquedaSubarea'))
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                        id="limpiarBusqueda"
+                        title="Limpiar búsqueda"
+                        style="background: transparent;"
+                    >
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    @endif
+                </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center"
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                 data-bs-toggle="modal" data-bs-target="#modalAgregarSubArea"
                 title="Agregar SubÁrea" style="background-color: #134496; font-size: 1.2rem;">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
@@ -174,21 +194,48 @@
     </div>
 </div>
 <script>
-        // Mantener modal abierto si hay errores
-    @if ($errors->any())
-        document.addEventListener('DOMContentLoaded', function() {
-            // Detectar qué tipo de formulario fue enviado para abrir el modal correcto
-            const formType = '{{ old("form_type") }}';
-            const subareaId = '{{ old("subarea_id") }}';
+// Búsqueda en tiempo real + limpiar
+let timeoutId;
+const inputBusqueda = document.getElementById('inputBusqueda');
+const formBusqueda = document.getElementById('busquedaForm');
+const btnLimpiar = document.getElementById('limpiarBusqueda');
 
-            if (formType === 'create') {
-                var modal = new bootstrap.Modal(document.getElementById('modalAgregarSubArea'));
-                modal.show();
-            } else if (formType === 'edit' && subareaId) {
-                var modal = new bootstrap.Modal(document.getElementById('modalEditarSubArea-' + subareaId));
-                modal.show();
-            }
-        });
-    @endif
+if (inputBusqueda) {
+    inputBusqueda.addEventListener('input', function() {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(function() {
+            formBusqueda.submit();
+        }, 500);
+    });
+    inputBusqueda.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            formBusqueda.submit();
+        }
+    });
+}
+
+if (btnLimpiar) {
+    btnLimpiar.addEventListener('click', function() {
+        inputBusqueda.value = '';
+        window.location.href = '{{ route("subarea.index") }}';
+    });
+}
+
+// Mantener modal abierto si hay errores
+@if ($errors->any())
+document.addEventListener('DOMContentLoaded', function() {
+    const formType = '{{ old("form_type") }}';
+    const subareaId = '{{ old("subarea_id") }}';
+
+    if (formType === 'create') {
+        var modal = new bootstrap.Modal(document.getElementById('modalAgregarSubArea'));
+        modal.show();
+    } else if (formType === 'edit' && subareaId) {
+        var modal = new bootstrap.Modal(document.getElementById('modalEditarSubArea-' + subareaId));
+        modal.show();
+    }
+});
+@endif
 </script>
 @endsection
