@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('llave', function (Blueprint $table) {
-            $table->tinyInteger('estado')->default(0)->after('nombre'); // 0: No entregada, 1: Entregada
+            if (!Schema::hasColumn('llave', 'estado')) {
+                $table->tinyInteger('estado')->default(0)->after('nombre'); // 0: No entregada, 1: Entregada
+            }
         });
     }
 
@@ -22,7 +24,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('llave', function (Blueprint $table) {
-            $table->dropColumn(['estado']);
+            if (Schema::hasColumn('llave', 'estado')) {
+                $table->dropColumn(['estado']);
+            }
         });
     }
 };
