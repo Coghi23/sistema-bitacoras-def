@@ -8,11 +8,9 @@
             <div class="col-auto flex-grow-1" style="min-width: 0;">
                 <form id="busquedaForm" method="GET" action="{{ route('usuario.index') }}">
                     <div class="position-relative" style="max-width: 700px; width: 100%;">
-                        <div class="input-group search-box shadow-sm">
-                            <span class="input-group-text bg-white border-0">
-                                <i class="bi bi-search"></i>
-                            </span>
-                            <input type="text" class="form-control border-0" placeholder="Buscar usuario" name="busquedaUsuario" value="{{ request('busquedaUsuario') }}" autocomplete="off" id="inputBusqueda" />
+                        <div class="input-group search-box">
+                            <input type="text" class="form-control border-0" placeholder="Buscar usuario" name="busquedaUsuario" value="{{ request('busquedaUsuario') }}" autocomplete="off" id="inputBusqueda" class="bi bi-search" />
+
                             @if(request('busquedaUsuario'))
                             <button type="button" class="btn btn-outline-secondary border-0" id="limpiarBusqueda" title="Limpiar búsqueda">
                                 <i class="bi bi-x-circle"></i>
@@ -46,7 +44,6 @@
                 --}}
             </div>
         </div>
-            
         {{-- Mensajes de éxito/error --}}
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -100,6 +97,7 @@
         </a>
 
         <div id="tabla-usuarios">
+
             <table class="table table-striped">
                 <thead>
                     <tr class="header-row">
@@ -482,6 +480,7 @@
         });
         @endif
     </script>
+
 </div>
 @endsection
 

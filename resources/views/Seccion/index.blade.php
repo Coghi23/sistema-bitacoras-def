@@ -84,9 +84,20 @@
                                     <h5 class="modal-title">Registro de sección</h5>
                                 </div>
                                 <div class="modal-body px-4 py-4">
+                                    {{-- Mostrar errores de validación --}}
+                                    @if ($errors->any())
+                                        <div class="alert alert-danger">
+                                            @foreach ($errors->all() as $error)
+                                                <div>{{ $error }}</div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                    
                                     <form action="{{ route('seccion.update', $seccion->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
+                                        <input type="hidden" name="form_type" value="edit">
+                                        <input type="hidden" name="seccion_id" value="{{ $seccion->id }}">
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Sección</label>
                                             <input type="text" name="nombre" class="form-control"
@@ -145,8 +156,18 @@
                 <h5 class="modal-title">Registro de sección</h5>
             </div>
             <div class="modal-body px-4 py-4">
+                {{-- Mostrar errores de validación --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        @foreach ($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                @endif
+                
                 <form action="{{ route('seccion.store') }}" method="POST">
                     @csrf
+                    <input type="hidden" name="form_type" value="create">
                     <div class="mb-3">
                         <label class="form-label fw-bold">Sección</label>
                         <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>
@@ -191,6 +212,23 @@
             window.location.href = '{{ route("seccion.index") }}';
         });
     }
+    
+    // Mantener modal abierto si hay errores
+    @if ($errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar qué tipo de formulario fue enviado para abrir el modal correcto
+            const formType = '{{ old("form_type") }}';
+            const seccionId = '{{ old("seccion_id") }}';
+            
+            if (formType === 'create') {
+                var modal = new bootstrap.Modal(document.getElementById('modalAgregarSeccion'));
+                modal.show();
+            } else if (formType === 'edit' && seccionId) {
+                var modal = new bootstrap.Modal(document.getElementById('modalEditarSeccion-' + seccionId));
+                modal.show();
+            }
+        });
+    @endif
 </script>
 @endsection
 

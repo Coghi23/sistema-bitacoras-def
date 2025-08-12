@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 use App\Models\Bitacora;
 use App\Models\Recinto;
-use App\Models\Profesor;
 use App\Models\Seccione;
 use App\Models\Subarea;
 use App\Models\Horario;
 use App\Models\Evento;
+use App\Models\User;
 use Illuminate\Http\Request;
 
 class BitacoraController extends Controller
@@ -17,15 +17,26 @@ class BitacoraController extends Controller
      */
     public function index()
     {
-        $bitacoras = Bitacora::with('recinto','profesor','seccione','subarea','horario','evento')->get();
+        $bitacoras = Bitacora::with('recinto','usuario','seccione','subarea','horario','evento')->get();
         $recintos = Recinto::all();
-        $profesores = Profesor::all();
         $seccione = Seccione::all();
         $subareas = Subarea::all();
         $horarios = Horario::all();
         $eventos = Evento::all();
+        
+        // Obtener todos los usuarios con rol profesor
+        $profesores = User::whereHas('roles', function($query) {
+            $query->where('name', 'profesor');
+        })->get();
 
-        return view('bitacora.index', compact('bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos'));
+        // Obtener la fecha del primer horario (ajusta según tu lógica)
+        $fecha = $horarios->first() ? $horarios->first()->fecha : null;
+        $seccion = $seccione->first() ? $seccione->first()->nombre : '';
+        $subarea = $subareas->first() ? $subareas->first()->nombre : '';
+
+        return view('bitacora.index', compact(
+            'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos', 'fecha', 'seccion', 'subarea'
+        ));
     }
 
     /**
@@ -41,7 +52,13 @@ class BitacoraController extends Controller
      */
     public function store(Request $request)
     {
-        
+        $bitacora = new Bitacora();
+        // ...asigna otros campos...
+        $bitacora->hora_envio = $request->input('hora_envio');
+        $bitacora->fecha = $request->input('fecha');
+        // ...asigna otros campos...
+        $bitacora->save();
+        // ...existing code...
     }
 
     /**

@@ -55,8 +55,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('recinto', RecintoController::class);
 
+
     Route::resource('horario', HorarioController::class);
     Route::resource('tipoRecinto', TipoRecintoController::class);
+
 
     Route::resource('estadoRecinto', EstadoRecintoController::class);
 

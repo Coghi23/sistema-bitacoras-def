@@ -14,14 +14,14 @@ return new class extends Migration
         Schema::create('horarios', function (Blueprint $table) {
            $table->id();
            $table->boolean('tipoHorario')->default(true);
-           $table->time('horaEntrada');
-           $table->time('horaSalida');
            $table->date('fecha')->nullable();
            $table->string('dia')->nullable();
-           $table->foreignId('id_recinto')->constrained('recinto')->onDelete('cascade');
-           $table->foreignId('id_subareaseccion')->constrained('subareaseccion')->onDelete('cascade');
-           $table->foreignId('id_profesor')->constrained('profesor')->onDelete('cascade');
-          $table->tinyInteger('condicion')->default(1);
+           $table->foreignId('idRecinto')->constrained('recinto')->onDelete('cascade');
+           $table->foreignId('idSubarea')->constrained('subarea')->onDelete('cascade');
+           $table->foreignId('idLeccion')->nullable()->constrained('leccion')->onDelete('cascade');
+           $table->foreignId('idSeccion')->constrained('seccione')->onDelete('cascade');
+           $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+           $table->tinyInteger('condicion')->default(1);
            $table->timestamps();
            
         });
@@ -32,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('horario');   
+        Schema::dropIfExists('horarios');   
     }
 };

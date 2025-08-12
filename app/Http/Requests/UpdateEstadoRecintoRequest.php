@@ -24,7 +24,7 @@ class UpdateEstadoRecintoRequest extends FormRequest
         $estadoRecinto = $this->route('estadoRecinto');
         $estadoRecintoId = $estadoRecinto->id;
         return [
-            'nombre' => 'required|string|max:255'
-        ];
+            'nombre' => 'required|string|max:255',
+        ]; // color validation removed
     }
 }

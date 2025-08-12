@@ -10,7 +10,7 @@ class Recinto extends Model
     use HasFactory;
 
     protected $table = 'recinto';   
-    public $timestamps = false;     
+    //public $timestamps = false;     
 
     protected $fillable = [
         'institucion_id',
@@ -40,9 +40,6 @@ class Recinto extends Model
     {
         return $this->belongsTo(EstadoRecinto::class);
     }
-    // Un recinto *puede tener* múltiples horarios
-    /*public function horarios()
-    {
-        return $this->hasMany(Horario::class);
-    }*/
+
+    
 }

@@ -24,17 +24,13 @@
                                 Todos
                             </a>
                         </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => 'disponible'])) }}">
-                                Disponible
-                            </a>
-                        </li>
-                        <li>
-                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => 'mantenimiento'])) }}">
-                                En mantenimiento
-                            </a>
-                        </li>
-                        
+                        @foreach($estadosRecinto as $estadoRecinto)
+                            <li>
+                                <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => $estadoRecinto->nombre])) }}">
+                                    {{ $estadoRecinto->nombre }}
+                                </a>
+                            </li>
+                        @endforeach
                     </ul>
                 </div>
             </div>
@@ -55,33 +51,18 @@
                 <div class="tab-indicator"></div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
                     <a href="{{ route('recinto.index') }}">
-                         <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
+                        <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
                     </a>
                 </div>
-                <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index', ['tipo' => 'laboratorio']) }}">
-                        <button class="btn tab-btn {{ request('tipo') == 'laboratorio' ? 'active' : '' }}" type="button" style="width: 100%;">
-                            <i class="fas fa-desktop"></i>
-                            Laboratorios
-                        </button>
-                    </a>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index', ['tipo' => 'taller']) }}">
-                        <button class="btn tab-btn {{ request('tipo') == 'taller' ? 'active' : '' }}" type="button" style="width: 100%;">
-                            <i class="fas fa-wrench"></i>
-                            Talleres
-                        </button>
-                    </a>
-                </div>
-                <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index', ['tipo' => 'movil']) }}">
-                        <button class="btn tab-btn {{ request('tipo') == 'movil' ? 'active' : '' }}" type="button" style="width: 100%;">
-                            <i class="fas fa-laptop"></i>
-                            Laboratorios móviles
-                        </button>
-                    </a>
-                </div>
+                @foreach($tiposRecinto as $tipoRecinto)
+                    <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
+                        <a href="{{ route('recinto.index', ['tipo' => $tipoRecinto->nombre]) }}">
+                            <button class="btn tab-btn {{ request('tipo') == $tipoRecinto->nombre ? 'active' : '' }}" type="button" style="width: 100%;">
+                                {{ $tipoRecinto->nombre }}
+                            </button>
+                        </a>
+                    </div>
+                @endforeach
             </div>
         </div>
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
@@ -95,18 +76,26 @@
                                         <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
                                             {{ ucfirst($recinto->tipo) }}
                                         </span>
-                                        @if($recinto->estado == 'disponible')
-                                            <span class="badge bg-success text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Disponible</span>
-                                        @else
-                                            <span class="badge bg-danger text-white px-2 py-1 rounded-pill" style="font-size:0.9em;">Mantenimiento</span>
-                                        @endif
+                                            <!-- 
+                                                <span class="badge px-2 py-1 rounded-pill text-dark bg-white" style="font-size:0.9em;">
+                                                    {{ $recinto->estadoRecinto->nombre }}
+                                                </span>
+                                        Estado del recinto -->
                                     </div>
                                     <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                        <i class="fas fa-key me-1"></i>Número de llave: {{ $recinto->llave->nombre}}
+                                    </div>
+                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
                                         <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
                                     </div>
+                                    
                                 </div>
                                 <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
+                                    <!--<button class="btn btn-outline-info btn-sm rounded-5 d-flex align-items-center justify-content-center"
+                                            data-bs-toggle="modal" data-bs-target="#modalDevolucionLlave-{{ $recinto->id }}">
+                                        <i class="bi bi-key"></i>
+                                    </button>-->
                                     <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"
                                             data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
                                         <i class="bi bi-pencil"></i>
@@ -142,25 +131,48 @@
                     <form id="formEditarRecinto-{{ $recinto->id }}" action="{{ route('recinto.update', $recinto->id) }}" method="POST">
                     @csrf
                     @method('PATCH')
-                    <div class="mb-3">
-                        <label for="tipoRecinto-{{ $recinto->id }}" class="form-label mb-1">Tipo</label>
-                        <select class="form-select" id="tipoRecinto-{{ $recinto->id }}" name="tipo" required>
-                        <option value="">Seleccione un tipo</option>
-                        <option value="laboratorio" {{ $recinto->tipo == 'laboratorio' ? 'selected' : '' }}>Laboratorio</option>
-                        <option value="taller" {{ $recinto->tipo == 'taller' ? 'selected' : '' }}>Taller</option>
-                        <option value="movil" {{ $recinto->tipo == 'movil' ? 'selected' : '' }}>Laboratorio móvil</option>
-                        </select>
-                    </div>
+                    
                     <div class="mb-3">
                         <label for="nombreRecinto-{{ $recinto->id }}" class="form-label mb-1">Nombre</label>
                         <input type="text" class="form-control" id="nombreRecinto-{{ $recinto->id }}" name="nombre" value="{{ $recinto->nombre }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="estadoRecinto-{{ $recinto->id }}" class="form-label mb-1">Estado</label>
-                        <select class="form-select" id="estadoRecinto-{{ $recinto->id }}" name="estado" required>
-                        <option value="">Seleccione un estado</option>
-                        <option value="disponible" {{ $recinto->estado == 'disponible' ? 'selected' : '' }}>Disponible</option>
-                        <option value="mantenimiento" {{ $recinto->estado == 'mantenimiento' ? 'selected' : '' }}>En mantenimiento</option>
+                        <label for="tipoRecinto-{{ $recinto->id }}" class="form-label mb-1">Tipo Recinto</label>
+                        <select data-size="4" title="Seleccione un tipo de recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick">
+                            @if(isset($tiposRecinto))
+                                @foreach ($tiposRecinto as $tipoRecinto)
+                                    <option value="{{$tipoRecinto->id}}" 
+                                        {{ (isset($recinto) && $recinto->tipoRecinto_id == $tipoRecinto->id) || old('tipoRecinto_id') == $tipoRecinto->id ? 'selected' : '' }}>
+                                        {{$tipoRecinto->nombre}}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="estadoRecinto-{{ $recinto->id }}" class="form-label mb-1">Estado Recinto</label>
+                        <select data-size="4" title="Seleccione un estado de recinto" data-live-search="true" name="estadoRecinto_id" id="editarEstadoRecinto" class="form-control selectpicker show-tick">
+                            @if(isset($estadosRecinto))
+                                @foreach ($estadosRecinto as $estadoRecinto)
+                                    <option value="{{$estadoRecinto->id}}" 
+                                        {{ (isset($recinto) && $recinto->estadoRecinto_id == $estadoRecinto->id) || old('estadoRecinto_id') == $estadoRecinto->id ? 'selected' : '' }}>
+                                        {{$estadoRecinto->nombre}}
+                                    </option>
+                                @endforeach
+                            @endif
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="llaveRecinto-{{ $recinto->id }}" class="form-label mb-1">Numero de llave</label>
+                        <select data-size="4" title="Seleccione una llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick">
+                            @if(isset($llaves))
+                                @foreach ($llaves as $llave)
+                                    <option value="{{$llave->id}}" 
+                                        {{ (isset($recinto) && $recinto->llave_id == $llave->id) || old('llave_id') == $llave->id ? 'selected' : '' }}>
+                                        {{$llave->nombre}}
+                                    </option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
                     <div class="mb-3">
@@ -169,7 +181,7 @@
                             @if(isset($instituciones))
                                 @foreach ($instituciones as $institucion)
                                     <option value="{{$institucion->id}}" 
-                                        {{ (isset($especialidad) && $especialidad->id_institucion == $institucion->id) || old('id_institucion') == $institucion->id ? 'selected' : '' }}>
+                                        {{ (isset($recinto) && $recinto->institucion_id == $institucion->id) || old('institucion_id') == $institucion->id ? 'selected' : '' }}>
                                         {{$institucion->nombre}}
                                     </option>
                                 @endforeach
@@ -207,25 +219,35 @@
                             <input type="text" class="form-control" id="nombreRecinto" name="nombre" placeholder="Nombre del recinto" required>
                         </div>
                         <div class="mb-3">
-                            <label for="tipoRecinto" class="form-label mb-1">Tipo</label>
-                            <select class="form-select" id="tipoRecinto" name="tipo" required>
-                            <option value="">Seleccione un tipo</option>
-                            <option value="laboratorio">Laboratorio</option>
-                            <option value="taller">Taller</option>
-                            <option value="movil">Laboratorio móvil</option>
+                            <label for="tipoRecinto" class="form-label mb-1">Tipo recinto</label>
+
+                            <select data-size="4" title="Seleccione un tipo de recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione un tipo de recinto</option>
+                                @foreach ($tiposRecinto as $tipoRecinto)
+                                    <option value="{{$tipoRecinto->id}}" {{ old('tipoRecinto_id') == $tipoRecinto->id ? 'selected' : '' }}>{{$tipoRecinto->nombre}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="estadoRecinto" class="form-label mb-1">Estado recinto</label>
+
+                            <select data-size="4" title="Seleccione un estado de recinto" data-live-search="true" name="estadoRecinto_id" id="estadoRecinto_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione un estado de recinto</option>
+                                @foreach ($estadosRecinto as $estadoRecinto)
+                                    <option value="{{$estadoRecinto->id}}" {{ old('estadoRecinto_id') == $estadoRecinto->id ? 'selected' : '' }}>{{$estadoRecinto->nombre}}</option>
+                                @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="estadoRecinto" class="form-label mb-1">Estado</label>
-                            <select class="form-select" id="estadoRecinto" name="estado" required>
-                            <option value="">Seleccione un estado</option>
-                            <option value="disponible">Activo</option>
-                            <option value="mantenimiento">En mantenimiento</option>
+                            <label for="llaveRecinto" class="form-label mb-1">Numero de llave</label>
+                            
+                            <select data-size="4" title="Seleccione una llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione una llave</option>
+                                @foreach ($llaves as $llave)
+                                    <option value="{{$llave->id}}" {{ old('llave_id') == $llave->id ? 'selected' : '' }}>{{$llave->nombre}}</option>
+                                @endforeach
                             </select>
-                        </div>
-                        <div class="mb-3" id="profesorField" style="display:none;">
-                            <label for="profesorRecinto" class="form-label mb-1">Profesor</label>
-                            <input type="text" class="form-control" id="profesorRecinto" name="profesor" placeholder="Nombre del profesor">
                         </div>
                         <div class="mb-3">
                             <label for="institucionRecinto" class="form-label mb-1">Institución</label>
@@ -250,5 +272,79 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Devolución de Llave -->
+@foreach($recintos as $recinto)
+<div class="modal fade" id="modalDevolucionLlave-{{ $recinto->id }}" tabindex="-1" aria-labelledby="modalDevolucionLlaveLabel-{{ $recinto->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-0">
+            <div class="modal-header rounded-0 custom-header">
+                <button type="button" class="btn p-0 me-3" data-bs-dismiss="modal" aria-label="Volver" style="color: #FFD600; font-size: 1.5rem; background: none; border: none;">
+                    <span class="icono-atras">
+                        <i><img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="external-ui-basic-ui-solid-adri-ansyah-26"/></i>
+                    </span>
+                </button>
+                <h3 class="flex-grow-1">Devolución de Llave</h3>
+            </div>
+            <div class="modal-body pb-0 text-center" style="border-bottom: 8px solid #003366;">
+                <div class="mb-4">
+                    <h5>{{ $recinto->nombre }}</h5>
+                    <p class="text-secondary">Número de llave: <strong>{{ $recinto->llave->nombre }}</strong></p>
+                </div>
+                
+                <div id="qrCode-{{ $recinto->id }}" class="mb-4" style="display: none;">
+                    <div class="d-flex justify-content-center">
+                        <div id="qrCodeContainer-{{ $recinto->id }}"></div>
+                    </div>
+                    <p class="mt-2 text-success">¡Código QR generado exitosamente!</p>
+                </div>
+
+                <div class="d-flex justify-content-center gap-2 mt-4 mb-2">
+                    <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success rounded-pill px-4" onclick="generarQRDevolucion({{ $recinto->id }}, '{{ $recinto->llave->nombre }}', '{{ $recinto->nombre }}')">
+                        Realizar Devolución
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endforeach
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script>
+function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
+    const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
+    const qrDiv = document.getElementById(`qrCode-${recintoId}`);
+    
+    // Limpiar contenedor previo
+    qrContainer.innerHTML = '';
+    
+    // Datos para el QR
+    const datosDevolucion = {
+        tipo: 'devolucion_llave',
+        recinto: nombreRecinto,
+        llave: numeroLlave,
+        fecha: new Date().toISOString(),
+        id: recintoId
+    };
+    
+    // Generar QR
+    QRCode.toCanvas(datosDevolucion.JSON.stringify(datosDevolucion), {
+        width: 200,
+        height: 200,
+        margin: 2,
+    }, function (error, canvas) {
+        if (error) {
+            console.error(error);
+            alert('Error al generar el código QR');
+            return;
+        }
+        
+        qrContainer.appendChild(canvas);
+        qrDiv.style.display = 'block';
+    });
+}
+</script>
 @endsection
 

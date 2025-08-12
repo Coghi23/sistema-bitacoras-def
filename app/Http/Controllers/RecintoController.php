@@ -6,6 +6,9 @@ use App\Http\Requests\StoreRecintoRequest;
 use App\Http\Requests\UpdateRecintoRequest;
 use Illuminate\Support\Facades\DB;
 use App\Models\Institucione;
+use App\Models\EstadoRecinto;
+use App\Models\Llave;
+use App\Models\TipoRecinto;
 use App\Http\Requests;
 use Exception;
 
@@ -17,13 +20,31 @@ class RecintoController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-{
-        
-        $recintos = Recinto::with('institucion')->get();
-        $instituciones = Institucione::all();
+    {
+        $query = Recinto::with('institucion', 'estadoRecinto', 'tipoRecinto', 'llave');
 
-        return view('recinto.index', compact('recintos', 'instituciones'));
-}
+        // Filtro por estado
+        if (request('estado')) {
+            $query->whereHas('estadoRecinto', function($q) {
+                $q->where('nombre', request('estado'));
+            });
+        }
+
+        // Filtro por tipo
+        if (request('tipo')) {
+            $query->whereHas('tipoRecinto', function($q) {
+                $q->where('nombre', request('tipo'));
+            });
+        }
+
+        $recintos = $query->get();
+        $instituciones = Institucione::all();
+        $tiposRecinto = TipoRecinto::all();
+        $estadosRecinto = EstadoRecinto::all();
+        $llaves = Llave::all();
+
+        return view('recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto', 'llaves'));
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -39,6 +60,7 @@ class RecintoController extends Controller
      */
     public function store(StoreRecintoRequest $request)
     {
+        //dd($request->validated());
         try {
             DB::beginTransaction();
             Recinto::create($request->validated());

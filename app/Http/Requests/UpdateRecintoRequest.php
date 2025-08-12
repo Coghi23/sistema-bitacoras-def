@@ -26,9 +26,11 @@ class UpdateRecintoRequest extends FormRequest
         $recintoId = $recinto->id;
         return [
             'nombre' => 'required|string|max:55',
-            'estado' => 'required|string|max:55',
-            'tipo' => 'required|string|max:55',
-            'institucion_id' => 'required|exists:institucione,id'
-        ]; 
+            'institucion_id' => 'required|exists:institucione,id',
+            'estadoRecinto_id' => 'required|exists:estadoRecinto,id',
+            'tipoRecinto_id' => 'required|exists:tipoRecinto,id',
+            'llave_id' => 'required|exists:llave,id',
+            
+        ];
     }
 }
