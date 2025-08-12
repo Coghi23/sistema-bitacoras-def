@@ -10,94 +10,73 @@
     <link rel="stylesheet" href="{{ asset('Css/Login.css') }}">
 </head>
 <body>
-    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center p-3"> 
-        <div class="login-card">
-            <div class="row g-0 h-100">
-                <div class="col-12 d-flex flex-column align-items-center justify-content-center px-4 py-3">
-                    <!-- Logos -->
-                    <div class="logo-container mb-3 d-flex align-items-center flex-wrap justify-content-center">
-                        <img src="{{ asset('Logos_Login/logo1.png') }}" alt="Logo 1" class="logo">
-                        <div class="divider d-none d-sm-block"></div>
-                        <img src="{{ asset('Logos_Login/logo2.png') }}" alt="Logo 2" class="logo">
-                        <div class="divider d-none d-sm-block"></div>
-                        <img src="{{ asset('Logos_Login/logo3.png') }}" alt="Logo 3" class="logo">
-                    </div>
+<div class="login-wrapper">
+    <div class="login-card row">
+        <div class="col-md-6 d-flex flex-column align-items-center justify-content-center px-4 py-2">
+            <div class="logo-container mb-4">
+                <img src="{{ asset('img/logo1.png') }}" alt="Logo 1" class="logo">
+                <div class="divider"></div>
+                <img src="{{ asset('img/logo2.png') }}" alt="Logo 2" class="logo">
+                <div class="divider"></div>
+                <img src="{{ asset('img/logo3.png') }}" alt="Logo 3" class="logo">
+            </div>
+            <h5 class="inicio2">
+                <i class="bi bi-arrow-left-circle-fill" style="cursor: pointer;" onclick="location.href='{{ route('login') }}'"> | </i>
+                Cambio de contraseña
+            </h5>
+            <div class="underline2"></div>
+        </div>
 
-                    <!-- Mensaje de estado de sesión -->
-                    @if (session('status'))
-                        <div class="alert alert-success mb-3 w-100" style="max-width: 400px;">
-                            {{ session('status') }}
-                        </div>
-                    @endif
+        <form id="login-form" novalidate>
+            <div class="mb-3 position-relative">
+                <label><i class="bi bi-person-fill"></i> | Correo Electrónico</label>
+                <div id="errorCorreo" class="mensaje-error5 d-none" style="margin-bottom: 5px;">
+                    <div class="icono">!</div>
+                    <span id="textoErrorCorreo"></span>
+                </div>
+                <input type="email" id="correoInput" class="form-control input-limitado" placeholder="ejemplo@gmail.com" required />
+            </div>
 
-                    <!-- Título con botón de regreso -->
-                    <div class="d-flex align-items-center justify-content-center mb-2">
-                        <a href="{{ route('login') }}" class="btn btn-link p-0 me-3" style="color: #EFC737; font-size: 1.5rem;">
-                            <i class="bi bi-arrow-left-circle-fill"></i>
-                        </a>
-                        <h4 class="inicio text-center mb-0">Restablecer Contraseña</h4>
-                    </div>
-                    <div class="underline mx-auto"></div>
-                    
-                    <!-- Mensaje explicativo -->
-                    <p class="text-center mt-3 mb-4" style="color: #134496; max-width: 400px;">
-                        Ingresa tu nueva contraseña para completar el restablecimiento.
-                    </p>
+            <div class="mb-3 position-relative">
+                <label class="label-amarillo">
+                    <img src="{{ asset('img/candado.png') }}" width="20" /> | Nueva Contraseña
+                </label>
+                <div id="errorNuevaPass" class="mensaje-error5 d-none" style="margin-bottom: 5px;">
+                    <div class="icono">!</div>
+                    <span id="textoErrorNuevaPass"></span>
+                </div>
+                <input type="password" id="nuevaPassInput" class="form-control input-limitado" placeholder="Contraseña" required />
+            </div>
 
-                    <!-- Formulario -->
-                    <form id="reset-form" method="POST" action="{{ route('password.store') }}" class="w-100" style="max-width: 400px;">
-                        @csrf
+            <div class="mb-3 position-relative">
+                <label class="label-amarillo">
+                    <img src="{{ asset('img/candado2.png') }}" width="20" /> | Confirmar Contraseña
+                </label>
+                <div id="errorConfirmPass" class="mensaje-error5 d-none" style="margin-bottom: 5px;">
+                    <div class="icono">!</div>
+                    <span id="textoErrorConfirmPass"></span>
+                </div>
+                <input type="password" id="confirmPassInput" class="form-control input-limitado" placeholder="Contraseña" required />
+            </div>
 
-                        <!-- Password Reset Token -->
-                        <input type="hidden" name="token" value="{{ $request->route('token') }}">
+            <div id="mensajeGeneral" class="mensaje-error4 d-none mb-3 d-flex align-items-center justify-content-center">
+                <div class="icono">!</div>
+                <span id="textoMensajeGeneral"></span>
+            </div>
 
-                        <!-- Email Address (readonly) -->
-                        <div class="mb-3">
-                            <label class="form-label"><i class="bi bi-envelope-fill icon"> |</i> Correo Electrónico</label>
-                            <input type="email" name="email" class="form-control @error('email') is-invalid @enderror" 
-                                   value="{{ old('email', $request->email) }}" required readonly style="background-color: #f8f9fa;">
-                            @error('email')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label class="form-label"><i class="bi bi-lock-fill icon"> |</i> Nueva Contraseña</label>
-                            <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" 
-                                   placeholder="Nueva contraseña" required autocomplete="new-password">
-                            @error('password')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="mb-3">
-                            <label class="form-label"><i class="bi bi-lock-fill icon"> |</i> Confirmar Contraseña</label>
-                            <input type="password" name="password_confirmation" class="form-control @error('password_confirmation') is-invalid @enderror" 
-                                   placeholder="Confirmar nueva contraseña" required autocomplete="new-password">
-                            @error('password_confirmation')
-                                <div class="invalid-feedback d-block">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
-                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mb-2">
-                            <button type="submit" class="btn-custom">Restablecer Contraseña</button>
-                            <a href="{{ route('login') }}" class="olvidé-contraseña text-center">Volver al login</a>
-                        </div>
-                    </form>
+            <div class="col-md-6 d-flex flex-column align-items-center justify-content-center px-5 py-2">
+                <div class="d-flex justify-content-center mb-2">
+                    <button type="button" class="btn-custom3" id="BtnAfirmacion" onclick="confirmarEnvioCambioContraseña()">
+                        Cambiar Contraseña
+                    </button>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
-    
+</div>
+
     <script src="{{ asset('js/script.js') }}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js" integrity="sha384-ndDqU0Gzau9qJ1lfW4pNLlhNTkCfHzAVBReH9diLvGRem5+R9g2FzA8ZGN954O5Q" crossorigin="anonymous"></script>
 </body>
 </html>
