@@ -18,12 +18,8 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/', function () {
 
     
-
-
     return view('welcome');
-    //return view('Template-administrador');
-    //return view('Template-profesor');
-    //return view('Template-soporte');
+
 
 });
 
@@ -82,8 +78,7 @@ Route::get('/dashboard', function () {
     } elseif ($user->hasRole('soporte')) {
         return redirect('/template-soporte');
     }
-    
-    return view('template-soporte');
+
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
