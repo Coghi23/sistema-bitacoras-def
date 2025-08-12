@@ -8,12 +8,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
+
     @stack('styles')
 </head>
 
 <body>
     <div id="sidebar-navbar">
-        <div class="topbar">
+        <div class="topbar mt-0">
             <button class="hamburger d-md-none" onclick="toggleSidebar()">
                 <i class="bi bi-list"></i>
             </button>
@@ -25,6 +26,7 @@
             <div class="title">Bitácoras HHC</div>
             <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
         </div>
+
         <div class="yellow-line"></div>
         <div class="sidebar-separator d-none d-md-block"></div>
         <div class="sidebar" id="sidebar">

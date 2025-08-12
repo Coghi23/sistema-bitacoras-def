@@ -1,0 +1,270 @@
+  #cuadInfo{
+    border: 1px solid #00A0E6; 
+  }
+
+  #elementos{
+    border: 1px solid #DFDFDF;
+    border-radius: 8px; 
+  }
+  
+  
+  .card input {
+    font-style: italic;
+    background-color: #f9f9f9;
+  }
+  
+  input.form-control:disabled {
+    background-color: #fff !important;
+  }
+  
+  #iconoInformacion{
+    color: #000 !important;
+  }
+
+
+  /**********************************************************Estado del Recinto***************************************************************/
+  #estadoRec {
+    background-color: #e7e3e3;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+  }
+  
+  .button-box {
+    position: relative;
+    background: #e7e3e3;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    width: 100%;
+    height: auto;
+    max-width: auto;
+  }
+  
+  .toggle-btn {
+    width: 50%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    z-index: 2;
+    position: relative;
+    cursor: pointer;
+  }
+  
+  #btn {
+    position: absolute;
+    top: 2;
+    left: 2;
+    width: 50%;
+    height: 100%;
+    background: #fff;
+    display: flex;
+    border-radius: 10px;
+    transition: left 0.3s ease;
+    z-index: 1;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  #btn-orden
+  {
+    margin-top: 10px;
+    max-width: auto;
+  }
+  #btn-problema{
+    margin-top: 10px;
+    max-width: auto;
+  }
+
+  .content-slide {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.4s ease;
+  }
+  
+  .content-slide.active {
+    max-height: 500px;
+    opacity: 1;
+    margin-top: 10px;
+  }
+  
+  .icono-estado {
+    font-size: 27px;
+    margin-right: 8px;
+    vertical-align: middle;
+    margin-top: 10px;
+  }
+
+  /*****************************************PRIORIDAD Y OBSERVACIONES*****************************************************************/
+  #prioridad{
+    border: 1px solid #00A0E6 ;
+    margin: 10px;
+    border-radius: 12px;
+    padding: 30px;
+    font-size: 20px;
+  }
+
+  #observaciones{
+    margin: 10px;
+    border-radius: 12px;
+    border: 1px solid #00A0E6 ;
+    padding: 15px;
+  }
+
+  #prioridad .form-check {
+    border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 4px;
+  }
+  
+  #prioridad .form-check:last-child {
+    border-bottom: none; /* quita ultima linea */
+  }
+
+  #prioridad .form-check:last-child {
+    border-bottom: none;
+  }
+  
+  #prioridad > .col:first-child {
+    border-right: 1px solid #ccc; /*Agrega linea vertical*/
+  }
+  
+.form-check-input[type="radio"] {
+    border: 2px solid #003287; /*Color de borde radio button*/
+  }
+  
+ 
+  .form-check-input[type="radio"]:checked {
+    background-color: #003287;
+    border-color: #003287;     /*color del centro*/
+  }
+
+  #btnCancelar{
+    background-color: #003287;
+    color: #fff;
+    padding: 10px;
+    font-size: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 12px;
+  }
+
+  #btnEnviar{
+    background-color: #003287;
+    color: #fff;
+    padding: 10px;
+    font-size: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 12px;
+  }
+  
+  #btnEnviarOrden{
+    background-color: #003287;
+    color: #fff;
+    padding: 10px;
+    font-size: 25px;
+    padding-left: 100px;
+    padding-right: 100px;
+    justify-content: center;
+    margin: 40px;
+    border-radius: 12px;
+  }
+  
+  @media (max-width: 768px) {
+    #main-content {
+      margin-left: 0 !important;
+    }
+
+  }
+
+  /*/////////////////////////////////////MODALS///////////////////////////////////////////////////////////////////////////////////////////*/
+  #modalmodalOrden, #modalProblema{
+    font-family: 'Segoe UI', sans-serif;
+    margin: 30px;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .modal-text{
+    color: #003287;
+  }
+
+  #iconomodal{
+    color: #EFC737;
+    font-size: 30px;
+ 
+  }
+
+  #BtnAfirmacion, #BtnNegacion{
+    background-color: #003287;
+    color: #fff;
+    padding-left: 40px;
+    padding-right: 40px;
+    border-radius: 30px;
+    font-size: 15px;
+    margin-bottom: 10px;
+  }
+
+  /*/////////////////////////////////////////////MENSAJE DE CONFIRMACIÓN////////////////////////////////////////////////////////////////////////*/
+  /* ==== ICONO DE ÉXITO ==== */
+.swal2-icon.swal2-success {
+  border: none !important;
+  width: 48px !important;
+  height: 50px !important;
+  font-size: 0.6rem !important;
+  border-radius: 100% !important;
+  margin: 1rem auto 0.5rem auto !important;
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #EFC737 !important; /* amarillo */
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #EFC737 !important; /* amarillo */
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: #EFC737!important;
+}
+
+.swal2-confirm {
+  background-color: #1C4482 !important;
+  color: white !important;
+  border: 1px solid #1C4482 !important;
+}
+
+.swal2-title {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+  color: #134496;
+  margin-top: 10px;
+  padding: 5x;
+  margin: auto;
+}
+
+.swal2-html-container {
+  font-size: 1.2rem !important;
+  color: #004AAD !important;
+}
+
+/*////////////////////////////////////////MENSAJE FALTAN DATOS//////////////////////////////////////////////////*/
+
+#mensajeError {
+  background-color: #FFA1A1;
+  color: #000;
+  margin: 0px;
+  padding: 5px;
+  border-radius: 20px;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(255, 0, 0, 0.05);
+  max-width: 350px;
+  text-align: right;
+}
+
+#mensajeError .bi{
+  margin: 5px;
+}

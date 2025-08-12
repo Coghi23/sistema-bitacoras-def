@@ -4,126 +4,136 @@
 
 @section('content')
 
+<head> 
+      <link rel="stylesheet" href="{{ asset('Css/Bitacoras.css') }}">
+</head>
+
 <!------------------------------------------------------------------------------------------------------------------------->
-<div class="container my-4">
-    <div class="row">
-      <div class="col-14">
+<div class="wrapper">
+    <div class="main-content">
+      <div class="container my-4">
+          <div class="row">
+            <div class="col-14">
 
-        <h5><strong>Información</strong></h5>
-                <!-- Tarjeta Información -->
-        <div class="card p-3 mb-3" id="cuadInfo">
-          <div class="row g-3">
+              <h5><strong>Información</strong></h5>
+                      <!-- Tarjeta Información -->
+              <div class="card p-3 mb-3" id="cuadInfo">
+                <div class="row g-3">
 
-              <!-- Docente -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Docente: {{ Auth::user()->name }}" />
-              </div>
-
-              <!-- Recinto -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-pc-display position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Recinto: {{ Auth::user()->recinto->nombre ?? 'Sin recinto asignado' }}" />
-              </div>
-
-              <!-- Fecha -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-calendar-week position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" id="fechaDispositivo" readonly />
-              </div>
-
-              <!-- Sección -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-easel position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Sección: {{ $seccion ?? '' }}" />
-              </div>
-
-              <!-- SubÁrea -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="SubÁrea: {{ $subarea }}" />
-              </div>
-
-              <!-- Lección -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <select class="form-control ps-5" name="leccion" id="leccionSelect">
-                  <option value="">Seleccione la lección</option>
-                  @for($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}">Lección {{ $i }}</option>
-                  @endfor
-                  @for($i = 1; $i <= 8; $i++)
-                    <option value="{{ 12 + $i }}">Lección Técnica {{ $i }}</option>
-                  @endfor
-                </select>
-              </div>
-
-          </div>
-        </div>
-
-
-    <div class="container-fluid d-flex justify-content-center mb-3">
-        <div class="container-fluid" id="estadoRec">
-          <div class="container-fluid button-box">
-            <div class="container-fluid" id="btn"></div>
-            <button type="button" class="toggle-btn" id="btn-orden" onclick="leftClick()">
-                <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en orden</h5>
-              </button>
-              
-              <button type="button" class="toggle-btn" id="btn-problema" onclick="rightClick()">
-                <h5><i class="bi bi-exclamation-circle icono-estado"></i>Reportar Problema</h5>
-              </button>
-              
-          </div>
-        </div>
-      </div>
-
-      <div class="container-fluid justify-content-center d-flex" >
-        <button class="btn" id="btnEnviarOrden" data-bs-toggle="modal"
-        data-bs-target="#modalOrden">Enviar Bitácora</button>
-      </div>
-
-     
-    
-      <!-- Contenido que se muestra/oculta -->
-      <div id="contenido-problema" class="content-slide">
-        <div class="row position-relative">
-            <div class="col-md-6" >
-                <h5>Prioridad</h5>
-                <div class="row d-flex" id="prioridad">
-                    <div class="col">
-                        <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Alta</div>
-                        <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Media</div>
+                    <!-- Docente -->
+                    <div class="col-md-6 position-relative">
+                      <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                      <input class="form-control ps-5" disabled value="Docente: {{ Auth::user()->name }}" />
                     </div>
-                    <div class="col">
-                        <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Regular</div>
-                        <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Baja</div>
+
+                    <!-- Recinto -->
+                    <div class="col-md-6 position-relative">
+                      <i class="bi bi-pc-display position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                      <input class="form-control ps-5" disabled value="Recinto: {{ Auth::user()->recinto->nombre ?? 'Sin recinto asignado' }}" />
                     </div>
+
+                    <!-- Fecha -->
+                    <div class="col-md-6 position-relative">
+                      <i class="bi bi-calendar-week position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                      <input class="form-control ps-5" id="fechaDispositivo" readonly />
+                    </div>
+
+                    <!-- Sección -->
+                    <div class="col-md-6 position-relative">
+                      <i class="bi bi-easel position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                      <input class="form-control ps-5" disabled value="Sección: {{ $seccion ?? '' }}" />
+                    </div>
+
+                    <!-- SubÁrea -->
+                    <div class="col-md-6 position-relative">
+                      <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                      <input class="form-control ps-5" disabled value="SubÁrea: {{ $subarea }}" />
+                    </div>
+
+                    <!-- Lección -->
+                    <div class="col-md-6 position-relative">
+                      <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                      <select class="form-control ps-5" name="leccion" id="leccionSelect">
+                        <option value="">Seleccione la lección</option>
+                        @for($i = 1; $i <= 12; $i++)
+                          <option value="{{ $i }}">Lección {{ $i }}</option>
+                        @endfor
+                        @for($i = 1; $i <= 8; $i++)
+                          <option value="{{ 12 + $i }}">Lección Técnica {{ $i }}</option>
+                        @endfor
+                      </select>
+                    </div>
+
                 </div>
-            </div>
-            <div class="col-md-6">
-                <h5>Observaciones</h5>
-                <div class="row"  id="observaciones">
-                    <textarea class="form-control" rows="4"></textarea>
+              </div>
+
+
+          <div class="container-fluid d-flex justify-content-center mb-3">
+              <div class="container-fluid" id="estadoRec">
+                <div class="container-fluid button-box">
+                  <div class="container-fluid" id="btn"></div>
+                  <button type="button" class="toggle-btn" id="btn-orden" onclick="leftClick()">
+                      <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en orden</h5>
+                    </button>
+                    
+                    <button type="button" class="toggle-btn" id="btn-problema" onclick="rightClick()">
+                      <h5><i class="bi bi-exclamation-circle icono-estado"></i>Reportar Problema</h5>
+                    </button>
+                    
                 </div>
+              </div>
             </div>
 
-           <div class="d-flex flex-column align-items-end">
-              <!-- Mensaje de error -->
-              <div id="mensajeError" class="alert alert-danger d-none" role="alert">
-                <i class="bi bi-exclamation-circle-fill"></i>Por favor ingrese todos los datos.
+            <div class="container-fluid justify-content-center d-flex" >
+              <button class="btn" id="btnEnviarOrden" data-bs-toggle="modal"
+              data-bs-target="#modalOrden">Enviar Bitácora</button>
+            </div>
+
+          
+          
+            <!-- Contenido que se muestra/oculta -->
+            <div id="contenido-problema" class="content-slide">
+              <div class="row position-relative">
+                  <div class="col-md-6" >
+                      <h5>Prioridad</h5>
+                      <div class="row d-flex" id="prioridad">
+                          <div class="col">
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Alta</div>
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Media</div>
+                          </div>
+                          <div class="col">
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Regular</div>
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Baja</div>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="col-md-6">
+                      <h5>Observaciones</h5>
+                      <div class="row"  id="observaciones">
+                          <textarea class="form-control" rows="4"></textarea>
+                      </div>
+                  </div>
+
+                <div class="d-flex flex-column align-items-end">
+                    <!-- Mensaje de error -->
+                    <div id="mensajeError" class="alert alert-danger d-none" role="alert">
+                      <i class="bi bi-exclamation-circle-fill"></i>Por favor ingrese todos los datos.
+                    </div>
+                </div>
+
+                  <!-- Botones -->
+              <div class="d-flex justify-content-end gap-2 mt-3">
+                  <button class="btn" id="btnCancelar" onclick="limpiarFormularioProblema()">Cancelar</button>
+                  <button class="btn" id="btnEnviar" onclick="validarDatos()">Enviar Bitácora</button>
               </div>
           </div>
 
-            <!-- Botones -->
-        <div class="d-flex justify-content-end gap-2 mt-3">
-            <button class="btn" id="btnCancelar" onclick="limpiarFormularioProblema()">Cancelar</button>
-            <button class="btn" id="btnEnviar" onclick="validarDatos()">Enviar Bitácora</button>
-        </div>
-    </div>
 
+          </div>
+          </div>
+      </div>
 
-    </div>
+  
 </div>
 </div>
 
