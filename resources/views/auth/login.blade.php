@@ -4,69 +4,88 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Inicio de Sesión</title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('Css/Login.css') }}">
 </head>
 <body>
-     <div class="container d-flex align-items-center justify-content-center h-100"> 
+    <div class="container d-flex align-items-center justify-content-center h-100"> 
         <div class="login-card row">
             <div class="col-md-6 d-flex flex-column align-items-center justify-content-center px-4 py-2">
-                <div class="logo-container mb-4">
-                    <img src="{{ asset('img/logo1.png') }}" alt="Logo 1" class="logo">
-                    <div class="divider"></div>
-                    <img src="{{ asset('img/logo2.png') }}" alt="Logo 2" class="logo">
-                    <div class="divider"></div>
-                    <img src="{{ asset('img/logo3.png') }}" alt="Logo 3" class="logo">
+                
+                <!-- Logos -->
+                <div class="logo-container mb-3 d-flex align-items-center flex-wrap justify-content-center">
+                    <img src="{{ asset('Logos_Login/logo1.png') }}" alt="Logo 1" class="logo">
+                    <div class="divider d-none d-sm-block"></div>
+                    <img src="{{ asset('Logos_Login/logo2.png') }}" alt="Logo 2" class="logo">
+                    <div class="divider d-none d-sm-block"></div>
+                    <img src="{{ asset('Logos_Login/logo3.png') }}" alt="Logo 3" class="logo">
                 </div>
 
-                <h4 class="inicio">Inicio de Sesión</h4>
-                <div class="underline"></div>
+                <!-- Mensaje de estado -->
+                @if (session('status'))
+                    <div class="alert alert-success mb-3 w-100" style="max-width: 400px;">
+                        {{ session('status') }}
+                    </div>
+                @endif
+
+                <!-- Título -->
+                <h4 class="inicio text-center">Inicio de Sesión</h4>
+                <div class="underline mx-auto"></div>
                 <br>
 
-                <form id="login-form">
+                <!-- Formulario -->
+                <form id="login-form" method="POST" action="{{ route('login') }}" class="w-100" style="max-width: 400px;">
+                    @csrf
+
+                    <!-- Correo -->
                     <div class="mb-3 position-relative">
-                        <label><i class="bi bi-person-fill icon"> |</i> Correo Electrónico</label>
+                        <label class="form-label"><i class="bi bi-person-fill icon"> |</i> Correo Electrónico</label>
 
-                        <div id="errorCorreo" class="mensaje-error3 d-none">
-                            <div class="icono">!</div>
-                            <span id="textoErrorCorreo">Error</span>
-                        </div>
+                        @error('email')
+                            <div class="mensaje-error3">
+                                <div class="icono">!</div>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
 
-                        <input type="email" id="correoLogin" class="form-control" placeholder="ejemplo@gmail.com">
+                        <input type="email" name="email" id="correoLogin" class="form-control @error('email') is-invalid @enderror" placeholder="ejemplo@gmail.com" value="{{ old('email') }}" required autofocus autocomplete="username">
                     </div>
 
+                    <!-- Contraseña -->
                     <div class="mb-3 position-relative">
-                        <label><i class="bi bi-lock"> |</i> Contraseña</label>
+                        <label class="form-label"><i class="bi bi-lock"> |</i> Contraseña</label>
 
-                        <div id="errorPassword" class="mensaje-error3 d-none">
-                            <div class="icono">!</div>
-                            <span id="textoErrorPassword">Error</span>
-                        </div>
+                        @error('password')
+                            <div class="mensaje-error3">
+                                <div class="icono">!</div>
+                                <span>{{ $message }}</span>
+                            </div>
+                        @enderror
 
-                        <input type="password" id="passwordLogin" class="form-control" placeholder="Contraseña">
+                        <input type="password" name="password" id="passwordLogin" class="form-control @error('password') is-invalid @enderror" placeholder="Contraseña" required autocomplete="current-password">
                     </div>
 
+                    <!-- Recuérdame -->
                     <div class="form-check mb-3">
-                        <input type="checkbox" class="form-check-input" id="recordar">
+                        <input type="checkbox" name="remember" class="form-check-input" id="recordar" {{ old('remember') ? 'checked' : '' }}>
                         <label class="form-check-label" for="recordar">Recuérdame</label>
                     </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-2 position-relative">
-                        <div id="errorGeneral" class="mensaje-error d-none">
-                            <div class="icono">!</div>
-                            <span id="textoErrorGeneral">Por favor ingrese todos los datos</span>
-                        </div>
-
-                        <button type="button" class="btn-custom" onclick="validarLogin()">Inicio de sesión</button>
-                        <a href="{{ route('password.request') }}" id="forgot-link" class="olvidé-contraseña">¿Olvidaste la contraseña?</a>
+                    <!-- Botón + Olvidé contraseña -->
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <button type="submit" class="btn-custom">Inicio de sesión</button>
+                        <a href="{{ route('password.request') }}" id="forgot-link" class="olvidé-contraseña ms-auto">¿Olvidaste la contraseña?</a>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    <script src="{{ asset('js/login.js') }}"></script>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/script.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
