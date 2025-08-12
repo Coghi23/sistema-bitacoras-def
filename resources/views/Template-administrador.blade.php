@@ -62,6 +62,11 @@
                 <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
             </a>
+            
+            <a href="{{ route('admin.qr.index') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-qr-code-scan"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="QR Temporales">QR Temporales</div>
+            </a>
             <a href="{{ asset('tipoRecinto') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Tipo de Recinto">Tipo de Recinto</div>
@@ -117,7 +122,11 @@
     <script src="{{ asset('JS/Sidebar.js') }}"></script>
     <script src="{{ asset('JS/modals-create-especialidad.js') }}"></script>
     <script src="{{ asset('JS/modals-edit-especialidad.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    
+    <!-- Scripts específicos de páginas -->
+    @stack('scripts')
 </body>
 
 </html>

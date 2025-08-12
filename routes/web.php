@@ -11,6 +11,7 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\TipoRecintoController;
 use App\Http\Controllers\EstadoRecintoController;
 use App\Http\Controllers\LlaveController;
+use App\Http\Controllers\QrController;
 
 
 use App\Http\Controllers\ProfileController;
@@ -66,6 +67,33 @@ Route::resource('tipoRecinto', TipoRecintoController::class);
 Route::resource('estadoRecinto', EstadoRecintoController::class);
 
 Route::resource('llave', LlaveController::class);
+
+// Rutas para gestión de QR temporales
+Route::middleware(['auth'])->group(function () {
+    // Para profesores
+    Route::middleware('role:profesor')->group(function () {
+        Route::get('/profesor/llaves', [QrController::class, 'indexProfesor'])->name('profesor.llaves.index');
+        Route::post('/qr/generar', [QrController::class, 'generarQr'])->name('qr.generar');
+    });
+    
+    // Ruta temporal para debug (sin middleware de rol)
+    Route::get('/test-profesor-llaves', [QrController::class, 'indexProfesor'])->name('test.profesor.llaves');
+    
+    // NUEVAS RUTAS PARA PROFESOR-LLAVE (estructura separada)
+    Route::middleware('role:profesor')->group(function () {
+        Route::get('/profesor-llave', [App\Http\Controllers\ProfesorLlaveController::class, 'index'])->name('profesor-llave.index');
+        Route::post('/profesor-llave/generar-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'generarQr'])->name('profesor-llave.generar-qr');
+        Route::post('/profesor-llave/escanear-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'escanearQr'])->name('profesor-llave.escanear-qr');
+    });
+    
+    // Para administradores
+    Route::middleware('role:administrador|director')->group(function () {
+        Route::get('/admin/qr', [QrController::class, 'indexAdmin'])->name('admin.qr.index');
+    });
+    
+    // Ruta para escanear QR (disponible para ambos roles)
+    Route::post('/qr/escanear', [QrController::class, 'escanearQr'])->name('qr.escanear');
+});
 
     // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
     Route::middleware(['role:administrador|director'])->group(function () {

@@ -1,0 +1,16 @@
+<?php
+
+// Simular una respuesta del servidor para debug
+echo "Route Debug Test:\n";
+echo "Current URL: http://sistema-bitacoras-def.test/profesor/llaves\n";
+echo "Route Name: profesor.llaves.index\n";
+echo "Controller: QrController@indexProfesor\n";
+echo "Middleware: auth, role:profesor\n";
+echo "\nTo test:\n";
+echo "1. Login as: profesor@test.com / password123\n";
+echo "2. Check if user has 'profesor' role\n";
+echo "3. Navigate to Llaves in sidebar\n";
+echo "\nIf still not working, check:\n";
+echo "- User role assignment\n";
+echo "- Middleware configuration\n";
+echo "- Browser cache\n";
