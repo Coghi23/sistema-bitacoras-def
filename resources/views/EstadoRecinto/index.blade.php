@@ -61,6 +61,10 @@
                                 <label for="nombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
                                 <input type="text" name="nombre" id="nombreEstadoRecinto" class="form-control" placeholder="Ingrese el nombre del Estado de Recinto" required>
                             </div>
+                            <div class="mb-3">
+                                <label for="colorEstadoRecinto" class="form-label fw-bold">Color a asignar al estado de recinto</label>
+                                <input type="color"value="#ffffff" name="color" id="colorEstadoRecinto" class="form-control"  required>
+                            </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
                             </div>
@@ -76,7 +80,8 @@
             <table class="table align-middle table-hover">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 90%;">Nombre del Estado de Recinto</th>
+                        <th class="text-center" style="width: 60%;">Nombre del Estado de Recinto</th>
+                        <th class="text-center" style="width: 30%;">Color</th>
                         <th class="text-center" style="width: 10%;">Acciones</th>
                     </tr>
                 </thead>
@@ -85,6 +90,10 @@
                         <tr>
                             @if ($estadoRecinto->condicion == 1)
                                 <td class="text-center">{{ $estadoRecinto->nombre }}</td>
+                                <td class="text-center">
+                                    <span class="badge" style="background-color: {{ $estadoRecinto->color }};">
+                                        {{ $estadoRecinto->color }}
+                                    </span>
                                 <td class="text-center">
                                     @if(Auth::user() && !Auth::user()->hasRole('director'))
                                     <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
@@ -123,6 +132,10 @@
                                                         <label for="editarNombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
                                                         <input type="text" name="nombre" id="nombre" class="form-control"
                                                 value="{{old('nombre',$estadoRecinto->nombre)}}">
+                                                    </div>
+                                                    <div class="mb-3">
+                                                 <label for="colorEstadoRecinto" class="form-label fw-bold">Color a asignar al estado de recinto</label>
+                                                    <input type="color"value="{{old('nombre',$estadoRecinto->color)}}" name="color" id="colorEstadoRecinto" class="form-control"  required>
                                                     </div>
                                                 </div>
                                                 <div class="card-footer text-center">
@@ -224,4 +237,9 @@
         });
     }
 </script>
+<script>
+       $(document).ready(function() {
+         $('#colorSelector').colorpicker();
+       });
+       </script>
 @endpush

@@ -23,6 +23,7 @@ class StoreEstadoRecintoRequest extends FormRequest
     {
        return [
             'nombre' => 'required|string|max:255',
-        ]; // color validation removed
+            'color' => ['required', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
+        ];
     }
 }

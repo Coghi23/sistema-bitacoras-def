@@ -25,6 +25,7 @@ class UpdateEstadoRecintoRequest extends FormRequest
         $estadoRecintoId = $estadoRecinto->id;
         return [
             'nombre' => 'required|string|max:255',
+            'color' => ['required', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
         ]; // color validation removed
     }
 }
