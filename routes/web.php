@@ -12,6 +12,7 @@ use App\Http\Controllers\EstadoRecintoController;
 use App\Http\Controllers\LlaveController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\EventoController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -60,9 +61,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('llave', LlaveController::class);
 
+    Route::view('evento', EventoController::class);
+
     Route::view('/template-administrador', 'template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'template-profesor')->name('template-profesor');
     Route::view('/template-soporte', 'template-soporte')->name('template-soporte');
+
+    
 
 });
 

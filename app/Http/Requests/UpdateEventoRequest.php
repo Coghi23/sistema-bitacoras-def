@@ -25,8 +25,11 @@ class UpdateEventoRequest extends FormRequest
             'idBitacora' => 'required|exists:bitacora,id',
             'user_id' => 'required|exists:users,id',
             'fecha' => 'required|date',
-            'hora' => 'required|date_format:H:i',
+            'observacion' => 'required|string|max:255',
+            'prioridad' => 'required|integer',
+            'confirmacion' => 'required|boolean',
             'descripcion' => 'required|string|max:255',
+            'condicion' => 'required|boolean',
         ];
     }
 }

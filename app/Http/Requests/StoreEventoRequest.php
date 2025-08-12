@@ -11,7 +11,7 @@ class StoreEventoRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,14 @@ class StoreEventoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'idBitacora' => 'required|exists:bitacora,id',
+            'user_id' => 'required|exists:users,id',
+            'fecha' => 'required|date',
+            'observacion' => 'required|string|max:255',
+            'prioridad' => 'required|integer',
+            'confirmacion' => 'required|boolean',
+            'descripcion' => 'required|string|max:255',
+            'condicion' => 'required|boolean'
         ];
     }
 }

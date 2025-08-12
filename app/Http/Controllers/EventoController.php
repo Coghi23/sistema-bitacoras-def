@@ -19,19 +19,23 @@ class EventoController extends Controller
     public function index()
     {
 
-        $eventos = Evento::with('bitacora','profesor')->get();
+        $eventos = Evento::with('bitacora', 'profesor')->get();
         $bitacoras = Bitacora::all();
-        $profesores = User::whereHas('roles', function($query) {
+        $profesores = User::whereHas('roles', function ($query) {
             $query->where('name', 'profesor');
         })->get();
 
-        return view('evento.index', compact('bitacoras','profesores'));
+        return view('evento.index', compact('eventos', 'bitacoras', 'profesores'));
     }
 
     //funcion de crear
     public function create()
     {
-        return view('evento.create');
+        $bitacoras = Bitacora::all();
+        $profesores = User::whereHas('roles', function ($query) {
+            $query->where('name', 'profesor');
+        })->get();
+        return view('evento.create', compact('bitacoras', 'profesores'));
     }
 
     public function store(StoreEventoRequest $request)
@@ -39,12 +43,21 @@ class EventoController extends Controller
         try {
 
             DB::beginTransaction();
-            $evento = Evento::create($request->validated());
-            DB::commit();
 
+            Evento::create([
+                'idBitacora' => $request->input('idBitacora'),
+                'user_id' => $request->input('user_id'),
+                'fecha' => $request->input('fecha'),
+                'observacion' => $request->input('observacion'),
+                'prioridad' => $request->input('prioridad'),
+                'confirmacion' => $request->input('confirmacion'),
+                'condicion' => $request->input('condicion')
+            ]);
+
+            DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Hubo un problema al guardar el evento.']);
+            return back()->withErrors(['error' => 'Hubo un problema al guardar el evento. ' . $e->getMessage()]);
         }
 
         return redirect()->route('evento.index')
@@ -55,9 +68,10 @@ class EventoController extends Controller
     public function edit(Evento $evento)
     {
         $bitacoras = Bitacora::all();
-        $profesores = User::whereHas('roles', function($query) {
+        $profesores = User::whereHas('roles', function ($query) {
             $query->where('name', 'profesor');
         })->get();
+
         $evento->load('bitacora', 'profesor');
 
         return view('evento.edit', compact('evento', 'bitacoras', 'profesores'));
@@ -82,6 +96,9 @@ class EventoController extends Controller
     {
         $message = "";
         $evento = Evento::find($id);
+        if (!$evento) {
+            return redirect()->route('evento.index')->withErrors(['error' => 'Evento no encontrado.']);
+        }
         if ($evento->condicion == 1) {
             Evento::where('id', $evento->id)
                 ->update(['condicion' => 0]);

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create(('evento'), function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_bitacora')->constrained('bitacora')->onDelete('cascade');
-            $table->foreignId('id_profesor')->constrained('profesor')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->timestamp('fecha');
             $table->string('observacion',255);
             $table->string('prioridad',255);
