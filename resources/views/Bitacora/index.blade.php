@@ -41,14 +41,14 @@
               <!-- SubÁrea -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="SubÁrea: {{ $subarea }}" />
+                <input class="form-control ps-5" disabled value="Subárea: {{ $subarea }}" />
               </div>
 
               <!-- Lección -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
                 <select class="form-control ps-5" name="leccion" id="leccionSelect">
-                  <option value="">Seleccione la lección</option>
+                  <option value="">Seleccione la Lección</option>
                   @for($i = 1; $i <= 12; $i++)
                     <option value="{{ $i }}">Lección {{ $i }}</option>
                   @endfor
@@ -67,7 +67,7 @@
           <div class="container-fluid button-box">
             <div class="container-fluid" id="btn"></div>
             <button type="button" class="toggle-btn" id="btn-orden" onclick="leftClick()">
-                <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en orden</h5>
+                <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en Orden</h5>
               </button>
               
               <button type="button" class="toggle-btn" id="btn-problema" onclick="rightClick()">
@@ -111,7 +111,7 @@
            <div class="d-flex flex-column align-items-end">
               <!-- Mensaje de error -->
               <div id="mensajeError" class="alert alert-danger d-none" role="alert">
-                <i class="bi bi-exclamation-circle-fill"></i>Por favor ingrese todos los datos.
+                <i class="bi bi-exclamation-circle-fill"></i>Por favor, ingrese todos los datos.
               </div>
           </div>
 
@@ -137,7 +137,7 @@
           <i class="bi bi-question-circle-fill" id="iconomodal"></i>
         </div>
         <p class="modal-text text-center">
-          ¿Está usted seguro de que todo<br>se encuentra en orden dentro del recinto?
+          ¿Está Seguro de que Todo<br>se Encuentra en Orden Dentro del Recinto?
         </p>
         <div class="d-flex justify-content-center gap-3">
           <button type="button" class="btn" data-bs-dismiss="modal" id="BtnAfirmacion" onclick="confirmarEnvioComentario()">Sí</button>
@@ -157,7 +157,7 @@
           <i class="bi bi-question-circle-fill" id="iconomodal"></i>
         </div>
         <p class="modal-text text-center">
-          ¿Está usted seguro de reportar<br>un problema dentro del recinto?
+          ¿Está Seguro de Reportar<br>un Problema Dentro del Recinto?
         </p>
         <div class="d-flex justify-content-center gap-3">
           <button type="button" class="btn" data-bs-dismiss="modal" id="BtnAfirmacion" onclick="confirmarEnvioComentario()">Sí</button>

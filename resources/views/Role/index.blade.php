@@ -8,7 +8,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title mb-0">Gestión de Roles</h3>
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal">
-                        <i class="bi bi-plus-circle"></i> Crear Rol
+                        <i class="bi bi-plus-circle"></i> Crear Nuevo Rol
                     </button>
                 </div>
                 <div class="card-body">
@@ -46,7 +46,7 @@
                                             @if($role->permissions->count() > 0)
                                                 <span class="badge bg-info">{{ $role->permissions->count() }} permisos</span>
                                             @else
-                                                <span class="badge bg-secondary">Sin permisos</span>
+                                                <span class="badge bg-secondary">Sin Permisos</span>
                                             @endif
                                         </td>
                                         <td>{{ $role->created_at->format('d/m/Y') }}</td>
@@ -69,7 +69,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">No hay roles registrados</td>
+                                        <td colspan="5" class="text-center">No Hay Roles Registrados</td>
                                     </tr>
                                 @endforelse
                             </tbody>
@@ -184,7 +184,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p>¿Estás seguro de que deseas eliminar el rol <strong id="deleteRoleName"></strong>?</p>
+                <p>¿Está seguro de que desea eliminar el rol <strong id="deleteRoleName"></strong>?</p>
                 <p class="text-danger">Esta acción no se puede deshacer.</p>
             </div>
             <div class="modal-footer">

@@ -52,14 +52,14 @@
                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <h5 class="modal-title">Crear Institución</h5>
+                        <h5 class="modal-title">Crear Nueva Institución</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
                         <form action="{{ route('institucion.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="nombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
-                                <input type="text" name="nombre" id="nombreInstitucion" class="form-control" placeholder="Ingrese el nombre de la Institución" required>
+                                <input type="text" name="nombre" id="nombreInstitucion" class="form-control" placeholder="Ingrese el Nombre de la Institución" required>
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
@@ -96,14 +96,14 @@
                                             <i class="bi bi-trash"></i>
                                     </button>
                                     @else
-                                    <span class="text-muted">Solo vista</span>
+                                    <span class="text-muted">Solo Vista</span>
                                     @endif
                                 </td>
                             @endif
                             
                         </tr>
 
-                        <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-labelledby="modalEditarInstitucionLabel-{{ $institucion->id }}" aria-hidden="true">
+                        <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
                                     <div class="modal-header modal-header-custom">
@@ -113,23 +113,29 @@
                                         <h5 class="modal-title">Editar Institución</h5>
                                     </div>
                                     <div class="modal-body px-4 py-4">
-                                        <div class="card text-bg-light">
-                                        <form action="{{ route('institucion.update',['institucion'=>$institucion]) }}" method="post">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="id" id="editarIdInstitucion">
-                                                <div class="card-body">
-                                                    <div class="mb-3">
-                                                        <label for="editarNombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
-                                                        <input type="text" name="nombre" id="nombre" class="form-control"
-                                                value="{{old('nombre',$institucion->nombre)}}">
-                                                    </div>
-                                                </div>
-                                                <div class="card-footer text-center">
-                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                </div>
-                                            </form>
-                                        </div>
+                                        {{-- Mostrar errores de validación --}}
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                @foreach ($errors->all() as $error)
+                                                    <div>{{ $error }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
+                                        
+                                        <form action="{{ route('institucion.update', $institucion->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="form_type" value="edit">
+                                            <input type="hidden" name="institucion_id" value="{{ $institucion->id }}">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Nombre de la Institución</label>
+                                                <input type="text" name="nombre" class="form-control"
+                                                    value="{{ old('nombre', $institucion->nombre) }}" required>
+                                            </div>
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-primary">Modificar</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -146,7 +152,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar el usuario?</p>
+                                        <p class="modal-text">¿Desea Eliminar la Institución?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('institucion.destroy', ['institucion' => $institucion->id]) }}" method="post">
                                                 @method('DELETE')
@@ -223,5 +229,22 @@
             window.location.href = '{{ route("institucion.index") }}';
         });
     }
+
+    // Mantener modal abierto si hay errores
+    @if ($errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar qué tipo de formulario fue enviado para abrir el modal correcto
+            const formType = '{{ old("form_type") }}';
+            const institucionId = '{{ old("institucion_id") }}';
+            
+            if (formType === 'create') {
+                var modal = new bootstrap.Modal(document.getElementById('modalAgregarInstitucion'));
+                modal.show();
+            } else if (formType === 'edit' && institucionId) {
+                var modal = new bootstrap.Modal(document.getElementById('modalEditarInstitucion-' + institucionId));
+                modal.show();
+            }
+        });
+    @endif
 </script>
 @endpush

@@ -81,7 +81,7 @@
                                     <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                                         <i class="bi bi-arrow-left"></i>
                                     </button>
-                                    <h5 class="modal-title">Registro de sección</h5>
+                                    <h5 class="modal-title">Edición de Sección</h5>
                                 </div>
                                 <div class="modal-body px-4 py-4">
                                     {{-- Mostrar errores de validación --}}
@@ -99,7 +99,7 @@
                                         <input type="hidden" name="form_type" value="edit">
                                         <input type="hidden" name="seccion_id" value="{{ $seccion->id }}">
                                         <div class="mb-3">
-                                            <label class="form-label fw-bold">Sección</label>
+                                            <label class="form-label fw-bold">Nombre de la Sección</label>
                                             <input type="text" name="nombre" class="form-control"
                                                 value="{{ old('nombre', $seccion->nombre) }}" required>
 
@@ -124,7 +124,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar la sección?</p>
+                                        <p class="modal-text">¿Desea Eliminar la Sección?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('seccion.destroy', ['seccion' => $seccion->id]) }}" method="post">
                                                 @method('DELETE')
@@ -153,7 +153,7 @@
                 <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                     <i class="bi bi-arrow-left"></i>
                 </button>
-                <h5 class="modal-title">Registro de sección</h5>
+                <h5 class="modal-title">Crear Nueva Sección</h5>
             </div>
             <div class="modal-body px-4 py-4">
                 {{-- Mostrar errores de validación --}}
@@ -169,7 +169,7 @@
                     @csrf
                     <input type="hidden" name="form_type" value="create">
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Sección</label>
+                        <label class="form-label fw-bold">Nombre de la Sección</label>
                         <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>
                     </div>
                     <div class="text-center mt-4">

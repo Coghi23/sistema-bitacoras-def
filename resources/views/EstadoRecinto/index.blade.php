@@ -52,14 +52,14 @@
                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <h5 class="modal-title">Crear Estado de Recinto</h5>
+                        <h5 class="modal-title">Crear Nuevo Estado de Recinto</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
                         <form action="{{ route('estadoRecinto.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="nombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
-                                <input type="text" name="nombre" id="nombreEstadoRecinto" class="form-control" placeholder="Ingrese el nombre del Estado de Recinto" required>
+                                <input type="text" name="nombre" id="nombreEstadoRecinto" class="form-control" placeholder="Ingrese el Nombre del Estado de Recinto" required>
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
@@ -71,7 +71,7 @@
         </div>
 
        
-        <!-- Modal Editar estado recinto-->
+        <!-- Modal Editar Estado de Recinto-->
         <div class="table-responsive">
             <table class="table align-middle table-hover">
                 <thead>
@@ -96,7 +96,7 @@
                                             <i class="bi bi-trash"></i>
                                     </button>
                                     @else
-                                    <span class="text-muted">Solo vista</span>
+                                    <span class="text-muted">Solo Vista</span>
                                     @endif
                                 </td>
                             @endif
@@ -146,7 +146,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar el estado de recinto?</p>
+                                        <p class="modal-text">¿Desea Eliminar el Estado de Recinto?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('estadoRecinto.destroy', ['estadoRecinto' => $estadoRecinto->id]) }}" method="post">
                                                 @method('DELETE')
