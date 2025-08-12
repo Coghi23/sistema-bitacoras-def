@@ -470,7 +470,7 @@
   ),
   'mail' => 
   array (
-    'default' => 'log',
+    'default' => 'smtp',
     'mailers' => 
     array (
       'smtp' => 
@@ -480,8 +480,8 @@
         'url' => NULL,
         'host' => 'sandbox.smtp.mailtrap.io',
         'port' => '2525',
-        'username' => '98356b0ce9b8f2',
-        'password' => '648f63a10aa8e2',
+        'username' => '3f9312d2661c06',
+        'password' => '67ff95ffeae831',
         'timeout' => NULL,
         'local_domain' => 'sistema-bitacoras-def.test',
       ),
@@ -534,8 +534,8 @@
     ),
     'from' => 
     array (
-      'address' => 'test@example.com',
-      'name' => 'Laravel',
+      'address' => 'hello@example.com',
+      'name' => 'Example',
     ),
     'markdown' => 
     array (
