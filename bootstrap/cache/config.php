@@ -158,9 +158,9 @@
       'file' => 
       array (
         'driver' => 'file',
-
         'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
         'lock_path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
+
 
       ),
       'memcached' => 
@@ -334,8 +334,7 @@
       'local' => 
       array (
         'driver' => 'local',
-
-        'root' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/private',
+        'root' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/private',
 
         'serve' => true,
         'throw' => false,
@@ -345,7 +344,7 @@
       array (
         'driver' => 'local',
 
-        'root' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+        'root' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
 
         'url' => 'http://sistema-bitacoras-def.test/storage',
         'visibility' => 'public',
@@ -369,7 +368,7 @@
     'links' => 
     array (
 
-      'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\public\\storage' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+      'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\public\\storage' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
 
     ),
   ),
@@ -396,7 +395,7 @@
       array (
         'driver' => 'single',
 
-        'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
 
         'level' => 'debug',
         'replace_placeholders' => true,
@@ -405,7 +404,7 @@
       array (
         'driver' => 'daily',
 
-        'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
 
         'level' => 'debug',
         'days' => 14,
@@ -472,7 +471,7 @@
       'emergency' => 
       array (
 
-        'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+        'path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
 
       ),
       'deprecations' => 
@@ -557,7 +556,7 @@
       'paths' => 
       array (
 
-        0 => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views/vendor/mail',
+        0 => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views/vendor/mail',
 
       ),
     ),
@@ -696,7 +695,7 @@
     'expire_on_close' => false,
     'encrypt' => false,
 
-    'files' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/sessions',
+    'files' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/sessions',
 
     'connection' => NULL,
     'table' => 'sessions',
@@ -825,9 +824,9 @@
     'paths' => 
     array (
 
-      0 => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views',
+      0 => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views',
     ),
-    'compiled' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework\\views',
+    'compiled' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework\\views',
 
   ),
   'tinker' => 
