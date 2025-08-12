@@ -10,7 +10,13 @@
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
-    
+    <link rel="stylesheet" href="{{ asset('Css/Mensaje.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/Mensajeconf.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/mensajeeliminar.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/usuarios.css') }}">
+    <!-- Font Awesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
 </head>
 
@@ -123,6 +129,8 @@
     <script src="{{ asset('JS/modals-create-especialidad.js') }}"></script>
     <script src="{{ asset('JS/modals-edit-especialidad.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

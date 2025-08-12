@@ -15,12 +15,13 @@ class DatabaseSeeder extends Seeder
     {
         // Ejecutar seeders en orden específico
         $this->call([
-            RolesSeeder::class,          // Primero crear roles y permisos
+                      // Primero crear roles y permisos
             AdminUserSeeder::class,
             ProfesorUserSeeder::class,
             SoporteUserSeeder::class,
             DirectorUserSeeder::class,
             LeccioneSeeder::class, // Crear lecciones
+            RolesSeeder::class,
         ]);
 
         // User::factory(10)->create();

@@ -20,8 +20,8 @@ Route::get('/', function () {
     
 
 
-    return view('welcome');
-    //return view('Template-administrador');
+    //return view('welcome');
+    return view('Template-administrador');
     //return view('Template-profesor');
     //return view('Template-soporte');
 
