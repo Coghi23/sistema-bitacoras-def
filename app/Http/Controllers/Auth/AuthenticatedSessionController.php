@@ -31,15 +31,17 @@ class AuthenticatedSessionController extends Controller
         $user = Auth::user();
         
         // Redireccionar según el rol del usuario
-        if ($user->hasRole('administrador')) {
-            return redirect()->intended('/template-administrador');
-        } elseif ($user->hasRole('director')) {
-            return redirect()->intended('/template-administrador');
-        } elseif ($user->hasRole('profesor')) {
-            return redirect()->intended('/template-profesor');
-        } elseif ($user->hasRole('soporte')) {
-            return redirect()->intended('/template-soporte');
-        }
+            if ($user->hasRole('administrador')) {
+                return redirect()->route('Template-administrador');
+            } elseif ($user->hasRole('profesor')) {
+                return redirect()->route('Template-profesor');
+            } elseif ($user->hasRole('soporte')) {
+                return redirect()->route('Template-soporte');
+            } elseif ($user->hasRole('director')) {
+                return redirect()->route('Template-administrador');
+            }
+    // ...otros roles
+    return redirect('/'); // ruta por defecto
         
         // Redirección por defecto
         return redirect()->intended(route('dashboard', absolute: false));

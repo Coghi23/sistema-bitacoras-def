@@ -3,20 +3,15 @@ use App\Http\Controllers\InstitucionController;
 use App\Http\Controllers\SubareaController;
 use App\Http\Controllers\SeccionController;
 use App\Http\Controllers\EspecialidadController;
-
+use App\Http\Controllers\RoleController;
 use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\RecintoController;
 use App\Http\Controllers\HorarioController;
-
 use App\Http\Controllers\TipoRecintoController;
 use App\Http\Controllers\EstadoRecintoController;
 use App\Http\Controllers\LlaveController;
-
-
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuarioController;
-
-
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,11 +33,12 @@ Route::resource('bitacora', BitacoraController::class);
 
 // Rutas que requieren autenticación
 Route::middleware(['auth', 'verified'])->group(function () {
-    
     // Rutas de recursos con protección para directores en acciones de escritura
+
+    Route::resource('role', RoleController::class);
+    
     Route::resource('usuario', UsuarioController::class)->except(['store', 'update', 'destroy']);
     Route::resource('usuario', UsuarioController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
-
 
     Route::resource('institucion', InstitucionController::class)->except(['store', 'update', 'destroy']);
     Route::resource('institucion', InstitucionController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
@@ -57,36 +53,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('especialidad', EspecialidadController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
 
 
-Route::resource('recinto', RecintoController::class);
+    Route::resource('recinto', RecintoController::class);
 
-Route::resource('horario', HorarioController::class);
 
-Route::resource('tipoRecinto', TipoRecintoController::class);
+    Route::resource('horario', HorarioController::class);
+    Route::resource('tipoRecinto', TipoRecintoController::class);
 
-Route::resource('estadoRecinto', EstadoRecintoController::class);
 
-Route::resource('llave', LlaveController::class);
+    Route::resource('estadoRecinto', EstadoRecintoController::class);
 
-    // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
-    Route::middleware(['role:administrador|director'])->group(function () {
-        Route::get('/template-administrador', function () {
-            return view('template-administrador');
-        })->name('template.administrador');
-    });
-    
-    // Rutas para profesor
-    Route::middleware('role:profesor')->group(function () {
-        Route::get('/template-profesor', function () {
-            return view('template-profesor');
-        })->name('template.profesor');
-    });
-    
-    // Rutas para soporte
-    Route::middleware('role:soporte')->group(function () {
-        Route::get('/template-soporte', function () {
-            return view('template-soporte');
-        })->name('template.soporte');
-    });
+    Route::resource('llave', LlaveController::class);
+
+    Route::view('/template-administrador', 'template-administrador')->name('template-administrador');
+    Route::view('/template-profesor', 'template-profesor')->name('template-profesor');
+    Route::view('/template-soporte', 'template-soporte')->name('template-soporte');
+
 });
 
 Route::get('/dashboard', function () {

@@ -158,8 +158,10 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
-        'lock_path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
+
+        'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
+        'lock_path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
+
       ),
       'memcached' => 
       array (
@@ -332,7 +334,9 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/private',
+
+        'root' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/private',
+
         'serve' => true,
         'throw' => false,
         'report' => false,
@@ -340,7 +344,9 @@
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+
+        'root' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+
         'url' => 'http://sistema-bitacoras-def.test/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -362,7 +368,9 @@
     ),
     'links' => 
     array (
-      'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\public\\storage' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+
+      'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\public\\storage' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+
     ),
   ),
   'logging' => 
@@ -387,14 +395,18 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
+        'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
         'level' => 'debug',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
+        'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
         'level' => 'debug',
         'days' => 14,
         'replace_placeholders' => true,
@@ -459,7 +471,9 @@
       ),
       'emergency' => 
       array (
-        'path' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
+        'path' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
       ),
       'deprecations' => 
       array (
@@ -542,7 +556,9 @@
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views/vendor/mail',
+
+        0 => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views/vendor/mail',
+
       ),
     ),
   ),
@@ -679,7 +695,9 @@
     'lifetime' => 120,
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/sessions',
+
+    'files' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework/sessions',
+
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -806,9 +824,11 @@
   array (
     'paths' => 
     array (
-      0 => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views',
+
+      0 => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\resources\\views',
     ),
-    'compiled' => 'C:\\Users\\Estudiante-17\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework\\views',
+    'compiled' => 'C:\\Users\\Estudiante-13\\Documents\\GitHub\\sistema-bitacoras-def\\storage\\framework\\views',
+
   ),
   'tinker' => 
   array (
