@@ -64,9 +64,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('llave', LlaveController::class);
 
-    Route::view('/template-administrador', 'template-administrador')->name('Template-administrador');
-    Route::view('/template-profesor', 'template-profesor')->name('Template-profesor');
-    Route::view('/template-soporte', 'template-soporte')->name('Template-soporte');
+    Route::view('/template-administrador', 'template-administrador')->name('template-administrador');
+    Route::view('/template-profesor', 'template-profesor')->name('template-profesor');
+    Route::view('/template-soporte', 'template-soporte')->name('template-soporte');
 
 });
 
