@@ -32,13 +32,13 @@ class AuthenticatedSessionController extends Controller
         
         // Redireccionar según el rol del usuario
             if ($user->hasRole('administrador')) {
-                return redirect()->route('Template-administrador');
+                return redirect()->route('template-administrador');
             } elseif ($user->hasRole('profesor')) {
-                return redirect()->route('Template-profesor');
+                return redirect()->route('template-profesor');
             } elseif ($user->hasRole('soporte')) {
-                return redirect()->route('Template-soporte');
+                return redirect()->route('template-soporte');
             } elseif ($user->hasRole('director')) {
-                return redirect()->route('Template-administrador');
+                return redirect()->route('template-administrador');
             }
     // ...otros roles
     return redirect('/'); // ruta por defecto
