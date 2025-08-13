@@ -76,7 +76,10 @@
                                         <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
                                             {{ ucfirst($recinto->tipo) }}
                                         </span>
-                                            
+                                           <span class="badge px-2 py-1 rounded-pill text-dark"
+                                              style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto->color }};">
+                                            {{ $recinto->estadoRecinto->nombre }}
+                                          </span>
                                     </div>
                                     <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">
@@ -85,6 +88,7 @@
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">
                                         <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
                                     </div>
+                                    
                                     
                                 </div>
                                 <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">

@@ -11,11 +11,12 @@ class EstadoRecinto extends Model
 
     protected $fillable = [
         'nombre',
-    ]; // color removed
+        'color',
+    ]; 
 
     public function recinto()
     {
-        return $this->hasMany(Recinto::class, 'estadoRecinto_id');
+        return $this->hasOne(Recinto::class, 'estadoRecinto_id');
     }
 
     protected $table = 'estadoRecinto';
