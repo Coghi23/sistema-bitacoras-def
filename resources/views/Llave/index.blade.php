@@ -58,7 +58,12 @@
                             @csrf
                             <div class="mb-3">
                                 <label for="nombreLlave" class="form-label fw-bold">Nombre de la Llave</label>
-                                <input type="text" name="nombre" id="nombreLlave" class="form-control" placeholder="Ingrese el Nombre de la Llave" required>
+                                <input type="text" name="nombre" id="nombreLlave" class="form-control @error('nombre') is-invalid @enderror" placeholder="Ingrese el Nombre de la Llave" value="{{ old('nombre') }}" required>
+                                @error('nombre')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>

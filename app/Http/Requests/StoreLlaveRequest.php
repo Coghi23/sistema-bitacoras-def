@@ -22,7 +22,17 @@ class StoreLlaveRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:255',
+            'nombre' => 'required|string|max:255|unique:llave,nombre',
+        ];
+    }
+    /**
+     * Mensajes personalizados de validación
+     */
+    public function messages()
+    {
+        return [
+            'nombre.unique' => 'Ya existe una llave con ese nombre.',
+            'nombre.required' => 'El nombre de la llave es obligatorio.',
         ];
     }
 }
