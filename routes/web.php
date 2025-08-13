@@ -13,6 +13,7 @@ use App\Http\Controllers\LlaveController;
 use App\Http\Controllers\QrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\EventoController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -61,10 +62,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('llave', LlaveController::class);
 
+    Route::view('evento', EventoController::class);
+
     Route::view('/template-administrador', 'template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'template-profesor')->name('template-profesor');
     Route::view('/template-soporte', 'template-soporte')->name('template-soporte');
+    
 
+});
 
     // Rutas para gestión de QR temporales
     Route::middleware(['auth'])->group(function () {
@@ -117,7 +122,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
                 return view('template-soporte');
             })->name('template-soporte');
         });
-    });
+    
 
 Route::get('/dashboard', function () {
     $user = Auth::user();

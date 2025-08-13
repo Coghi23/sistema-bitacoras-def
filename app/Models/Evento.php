@@ -11,10 +11,13 @@ class Evento extends Model
     use HasFactory;
     protected $table = 'evento';
     protected $fillable = [
+        'idBitacora',
+        'user_id',
         'fecha',
         'observacion',
         'prioridad',
-        'confirmacion'
+        'confirmacion',
+        'condicion'
     ];
 
     public function bitacora()
