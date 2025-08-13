@@ -4,45 +4,29 @@
 <div class="wrapper">
     <div class="main-content p-4" style="margin-left: 90px;">
         <div class="row align-items-end mb-4">
-            {{-- Barra de búsqueda --}}
-            <div class="col-auto flex-grow-1" style="min-width: 0;">
-                <form id="busquedaForm" method="GET" action="{{ route('usuario.index') }}">
-                    <div class="position-relative" style="max-width: 700px; width: 100%;">
-                        <div class="input-group search-box">
-                            <input type="text" class="form-control border-0" placeholder="Buscar usuario" name="busquedaUsuario" value="{{ request('busquedaUsuario') }}" autocomplete="off" id="inputBusqueda" class="bi bi-search" />
-
-                            @if(request('busquedaUsuario'))
-                            <button type="button" class="btn btn-outline-secondary border-0" id="limpiarBusqueda" title="Limpiar búsqueda">
-                                <i class="bi bi-x-circle"></i>
-                            </button>
-                            @endif
-                        </div>
-                    </div>
+            {{-- Búsqueda + botón agregar --}}
+        <div class="search-bar-wrapper mb-4">
+            <div class="search-bar">
+                <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="w-100 position-relative">
+                    <span class="search-icon">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control"
+                        placeholder="Buscar usuario..." name="busquedaUsuario" 
+                        value="{{ request('busquedaUsuario') }}" id="inputBusqueda" autocomplete="off">
+                    @if(request('busquedaUsuario'))
+                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    @endif
                 </form>
             </div>
-            {{-- Botones --}}
-            <div class="col-auto d-flex gap-2 align-items-end">
-                @if(Auth::user() && !Auth::user()->hasRole('director'))
-                <button class="btn btn-agregar d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalUsuario">
-                    Agregar
-                    <span class="icon-circle">
-                        <i class="fas fa-plus fa-sm text-primary"></i>
-                    </span>
-                </button>
-                @endif
-                {{-- Filtros temporalmente desactivados
-                <div class="filtros-wrapper position-relative">
-                    <button class="btn btn-filtros d-flex align-items-center gap-2" type="submit" form="filtrosForm">
-                        <i class="fas fa-filter"></i>
-                        Filtros
-                    </button>
-                    <form id="filtrosForm" method="GET" action="{{ route('usuario.index') }}">
-                        <div class="dropdown-panel shadow-sm">
-                        </div>
-                    </form>
-                </div>
-                --}}
-            </div>
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                data-bs-toggle="modal" data-bs-target="#modalUsuario"
+                title="Agregar Usuario" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                Agregar <i class="bi bi-plus-circle ms-2"></i>
+            </button>
+        </div>
         </div>
         {{-- Mensajes de éxito/error --}}
         @if(session('success'))

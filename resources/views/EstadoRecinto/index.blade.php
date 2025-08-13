@@ -7,31 +7,30 @@
 
 <div class="wrapper">
     <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="input-group w-50">
-                <form id="busquedaForm" method="GET" action="{{ route('estadoRecinto.index') }}" class="d-flex w-100">
-                    <span class="input-group-text bg-white border-white">
-                        <i class="bi bi-search text-secondary"></i>
+        {{-- Búsqueda + botón agregar --}}
+        <div class="search-bar-wrapper mb-4">
+            <div class="search-bar">
+                <form id="busquedaForm" method="GET" action="{{ route('estadoRecinto.index') }}" class="w-100 position-relative">
+                    <span class="search-icon">
+                        <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0 shadow-sm" style="border-radius: 20px;" 
-                  placeholder="Buscar estado recinto..." name="busquedaEstadoRecinto" 
-                  value="{{ request('busquedaEstadoRecinto') }}" id="inputBusqueda" autocomplete="off" />
-              @if(request('busquedaEstadoRecinto'))
-                    <button type="button" class="btn btn-outline-secondary border-0" id="limpiarBusqueda" title="Limpiar búsqueda">
+                    <input type="text" class="form-control"
+                        placeholder="Buscar estado recinto..." name="busquedaEstadoRecinto" 
+                        value="{{ request('busquedaEstadoRecinto') }}" id="inputBusqueda" autocomplete="off">
+                    @if(request('busquedaEstadoRecinto'))
+                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
                         <i class="bi bi-x-circle"></i>
                     </button>
                     @endif
                 </form>
             </div>
-            
-            @if(Auth::user() && !Auth::user()->hasRole('director'))
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center" 
-                data-bs-toggle="modal" data-bs-target="#modalAgregarEstadoRecinto" 
-                title="Agregar Estado Recinto" style="background-color: #134496; font-size: 1.2rem;">
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                data-bs-toggle="modal" data-bs-target="#modalAgregarEstadoRecinto"
+                title="Agregar Estado de Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
-            @endif
         </div>
+
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaEstadoRecinto'))

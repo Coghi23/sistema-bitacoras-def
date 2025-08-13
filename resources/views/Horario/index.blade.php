@@ -6,35 +6,28 @@
 
 <div class="wrapper">
     <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="input-group w-50">
-                <span class="input-group-text bg-white border-white">
-                    <i class="bi bi-search text-secondary"></i>
-                </span>
-                <form method="GET" action="{{ route('horario.index') }}" class="d-flex w-100">
-                    <input type="text" class="form-control border-start-0 shadow-sm" style="border-radius: 20px;" placeholder="Buscar docente..." name="busquedaDocente" value="{{ request('busquedaDocente') }}" autocomplete="off" />
+        {{-- Búsqueda + botón agregar --}}
+        <div class="search-bar-wrapper mb-4">
+            <div class="search-bar">
+                <form id="busquedaForm" method="GET" action="{{ route('horario.index') }}" class="w-100 position-relative">
+                    <span class="search-icon">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control"
+                        placeholder="Buscar Horario..." name="busquedaHorario" 
+                        value="{{ request('busquedaHorario') }}" id="inputBusqueda" autocomplete="off">
+                    @if(request('busquedaHorario'))
+                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                    @endif
                 </form>
             </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center" 
-                    data-bs-toggle="modal" data-bs-target="#modalHorario" 
-                    title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem;">
-                    Agregar <i class="bi bi-plus-circle ms-2"></i>
-                </button>
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary rounded-pill px-4 d-flex align-items-center dropdown-toggle" 
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                        style="font-size: 1.2rem;">
-                        <i class="bi bi-funnel me-2"></i>
-                        Filtros
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('horario.index') }}">Todos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'fijo']) }}">Horarios Fijos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'temporal']) }}">Horarios Temporales</a></li>
-                    </ul>
-                </div>
-            </div>
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                data-bs-toggle="modal" data-bs-target="#modalHorario"
+                title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                Agregar <i class="bi bi-plus-circle ms-2"></i>
+            </button>
         </div>
 
         {{-- Tabla Horarios Fijos --}}
