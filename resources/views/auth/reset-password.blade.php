@@ -32,7 +32,9 @@
 
                     <!-- Título con botón de regreso -->
                     <h5 class="inicio2">
-                        <i class="biO bi-arrow-left-circle-fill " style="cursor: pointer;" "> | </i>
+                        <a href="{{ route('login') }}" style="color: inherit; text-decoration: none;">
+                            <i class="bi bi-arrow-left-circle-fill" style="cursor: pointer;"></i>
+                        </a> | 
                         Cambio de contraseña
                     </h5>
                     <div class="underline2"></div>
@@ -81,8 +83,12 @@
                             @enderror
                         </div>
 
-                        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mb-2">
-                            <button type="submit" class="btn-custom">Restablecer Contraseña</button>
+                        <div class="col-md-12 d-flex flex-column align-items-center justify-content-center px-5 py-2">
+                            <div class="d-flex justify-content-center mb-2">
+                                <button type="submit" class="btn-custom3">
+                                    Cambiar Contraseña
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

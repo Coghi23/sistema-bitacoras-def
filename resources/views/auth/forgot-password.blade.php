@@ -32,11 +32,11 @@
 
                     <!-- Título con botón de regreso -->
                     <div class="d-flex align-items-center justify-content-center mb-2">
-                        <a href="{{ route('login') }}" class="btn btn-link p-0 me-3" style="color: #EFC737; font-size: 1.5rem;">
-                        </a>
                         <h5 class="inicio2">
-                                <i class="biO bi-arrow-left-circle-fill" style="cursor: pointer;" onclick="location.href='index.html'"></i> | Olvidaste la contraseña
-                        </h5>                    
+                            <a href="{{ route('login') }}" style="color: inherit; text-decoration: none;">
+                                <i class="bi bi-arrow-left-circle-fill" style="cursor: pointer;"></i>
+                            </a> | Olvidaste la contraseña
+                        </h5>
                     </div>
 
                     <div class="underline2"></div>
