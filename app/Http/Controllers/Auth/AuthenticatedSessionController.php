@@ -39,7 +39,7 @@ class AuthenticatedSessionController extends Controller
                 return redirect()->route('template-soporte');
             } elseif ($user->hasRole('director')) {
                 return redirect()->route('template-administrador');
-            }
+            } 
     // ...otros roles
     return redirect('/'); // ruta por defecto
         

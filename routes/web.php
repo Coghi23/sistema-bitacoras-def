@@ -97,21 +97,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::middleware(['role:administrador|director'])->group(function () {
             Route::get('/template-administrador', function () {
                 return view('template-administrador');
-            })->name('template.administrador');
+            })->name('template-administrador');
         });
         
         // Rutas para profesor
         Route::middleware('role:profesor')->group(function () {
             Route::get('/template-profesor', function () {
                 return view('template-profesor');
-            })->name('template.profesor');
+            })->name('template-profesor');
         });
         
         // Rutas para soporte
         Route::middleware('role:soporte')->group(function () {
             Route::get('/template-soporte', function () {
                 return view('template-soporte');
-            })->name('template.soporte');
+            })->name('template-soporte');
         });
     });
 
