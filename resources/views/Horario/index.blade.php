@@ -16,11 +16,13 @@
                 </form>
             </div>
             <div class="d-flex gap-2">
+                @if(Auth::user() && !Auth::user()->hasRole('director'))
                 <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center" 
                     data-bs-toggle="modal" data-bs-target="#modalHorario" 
                     title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem;">
                     Agregar <i class="bi bi-plus-circle ms-2"></i>
                 </button>
+                @endif
                 <div class="dropdown">
                     <button class="btn btn-outline-primary rounded-pill px-4 d-flex align-items-center dropdown-toggle" 
                         type="button" data-bs-toggle="dropdown" aria-expanded="false"
@@ -63,12 +65,16 @@
                         <td class="col-salida">{{ $horario->leccion->hora_final ?? '' }}</td>
                         <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
                         <td class="col-acciones">
+                            @if(Auth::user() && !Auth::user()->hasRole('director'))
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
                                 <i class="bi bi-pencil icon-editar"></i>
                             </button>
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
                                 <i class="bi bi-trash icon-eliminar"></i>
                             </button>
+                            @else
+                            <span class="text-muted">Solo vista</span>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -104,12 +110,16 @@
                         <td class="col-entrada"></td>
                         <td class="col-salida"></td>
                         <td class="col-acciones">
+                            @if(Auth::user() && !Auth::user()->hasRole('director'))
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
                                 <i class="bi bi-pencil icon-editar"></i>
                             </button>
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
                                 <i class="bi bi-trash icon-eliminar"></i>
                             </button>
+                            @else
+                            <span class="text-muted">Solo vista</span>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -120,9 +130,8 @@
                 </tbody>
             </table>
         </div>
-    
 
-
+    @if(Auth::user() && !Auth::user()->hasRole('director'))
     {{-- Modal Crear Horario --}}
     <div class="modal fade" id="modalHorario" tabindex="-1" aria-labelledby="modalHorarioLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -489,6 +498,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Modal Éxito Eliminar --}}
     @if(session('eliminado'))

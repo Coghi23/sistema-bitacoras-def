@@ -35,12 +35,25 @@
                     @endif
                 </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalAgregarSubArea"
-                title="Agregar Subárea" style="background-color: #134496; font-size: 1.2rem;">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
+            @if(Auth::user() && !Auth::user()->hasRole('director'))
+                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                    data-bs-toggle="modal" data-bs-target="#modalAgregarSubArea"
+                    title="Agregar Subárea" style="background-color: #134496; font-size: 1.2rem;">
+                    Agregar <i class="bi bi-plus-circle ms-2"></i>
+                </button>
+            @endif
         </div>
+
+        {{-- Indicador de resultados de búsqueda --}}
+        @if(request('busquedaSubarea'))
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <span>
+                    Mostrando {{ $subareas->count() }} resultado(s) para "<strong>{{ request('busquedaSubarea') }}</strong>"
+                    <a href="{{ route('subarea.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
+                </span>
+            </div>
+        @endif
 
         {{-- Tabla de Subáreas --}}
         <div class="table-responsive">
@@ -54,11 +67,12 @@
                 </thead>
                 <tbody>
                     @foreach ($subareas as $subarea)
-                    <tr>
                         @if ($subarea->condicion == 1)
+                        <tr>
                             <td class="text-center">{{ $subarea->nombre }}</td>
                             <td class="text-center">{{ $subarea->especialidad ? $subarea->especialidad->nombre : 'Sin especialidad' }}</td>
                             <td class="text-center">
+                                @if(Auth::user() && !Auth::user()->hasRole('director'))
                                 <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal"
                                     data-bs-target="#modalEditarSubArea-{{ $subarea->id }}">
                                     <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
@@ -67,60 +81,64 @@
                                     data-bs-target="#modalEliminarSubarea-{{ $subarea->id }}">
                                     <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
                                 </button>
+                                @else
+                                <span class="text-muted">Solo vista</span>
+                                @endif
                             </td>
+                        </tr>
                         @endif
-                    </tr>
 
-                    {{-- Modal Editar Subárea --}}
-                    <div class="modal fade" id="modalEditarSubArea-{{ $subarea->id }}" tabindex="-1"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header modal-header-custom">
-                                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                                        <i class="bi bi-arrow-left"></i>
-                                    </button>
-                                    <h5 class="modal-title">Editar Subárea</h5>
-                                </div>
-                                <div class="modal-body px-4 py-4">
-                                    {{-- Mostrar errores de validación --}}
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger">
-                                            @foreach ($errors->all() as $error)
-                                                <div>{{ $error }}</div>
-                                            @endforeach
-                                        </div>
-                                    @endif
-                                    <form action="{{ route('subarea.update', $subarea->id) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="form_type" value="edit">
-                                        <input type="hidden" name="subarea_id" value="{{ $subarea->id }}">
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">Nombre de la Subárea</label>
-                                            <input type="text" name="nombre" class="form-control"
-                                                value="{{ old('nombre', $subarea->nombre) }}" required>
-
-                                            <label class="form-label fw-bold mt-3">Especialidad</label>
-                                            <select name="id_especialidad" class="form-select" required>
-                                                @foreach ($especialidades as $especialidad)
-                                                <option value="{{ $especialidad->id }}"
-                                                    {{ $subarea->id_especialidad == $especialidad->id ? 'selected' : '' }}>
-                                                    {{ $especialidad->nombre }}
-                                                </option>
+                        {{-- Modal Editar Subárea --}}
+                        @if(Auth::user() && !Auth::user()->hasRole('director'))
+                        <div class="modal fade" id="modalEditarSubArea-{{ $subarea->id }}" tabindex="-1"
+                            aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header modal-header-custom">
+                                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <h5 class="modal-title">Editar Subárea</h5>
+                                    </div>
+                                    <div class="modal-body px-4 py-4">
+                                        {{-- Mostrar errores de validación --}}
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                @foreach ($errors->all() as $error)
+                                                    <div>{{ $error }}</div>
                                                 @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                        </div>
-                                    </form>
+                                            </div>
+                                        @endif
+                                        <form action="{{ route('subarea.update', $subarea->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="form_type" value="edit">
+                                            <input type="hidden" name="subarea_id" value="{{ $subarea->id }}">
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Nombre de la Subárea</label>
+                                                <input type="text" name="nombre" class="form-control"
+                                                    value="{{ old('nombre', $subarea->nombre) }}" required>
+
+                                                <label class="form-label fw-bold mt-3">Especialidad</label>
+                                                <select name="id_especialidad" class="form-select" required>
+                                                    @foreach ($especialidades as $especialidad)
+                                                    <option value="{{ $especialidad->id }}"
+                                                        {{ $subarea->id_especialidad == $especialidad->id ? 'selected' : '' }}>
+                                                        {{ $especialidad->nombre }}
+                                                    </option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
 
-                    {{-- Modal Eliminar Subárea --}}
+                        {{-- Modal Eliminar Subárea --}}
                         <div class="modal fade" id="modalEliminarSubarea-{{ $subarea->id }}" tabindex="-1" aria-labelledby="modalSubareaEliminarLabel-{{ $subarea->id }}" 
                         aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -144,6 +162,7 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     @endforeach
                 </tbody>
             </table>

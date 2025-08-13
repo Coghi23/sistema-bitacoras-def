@@ -4,7 +4,6 @@
 
 @section('content')
 
-
 <div class="wrapper">
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -14,13 +13,16 @@
                 </span>
                 <input type="text" class="form-control border-start-0 shadow-sm" style="border-radius: 20px;" placeholder="Buscar llave..." />
             </div>
+            @if(Auth::user() && !Auth::user()->hasRole('director'))
             <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center" 
                 data-bs-toggle="modal" data-bs-target="#modalAgregarLlave" 
                 title="Agregar Llave" style="background-color: #134496; font-size: 1.2rem;">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
+            @endif
         </div>
 
+        @if(Auth::user() && !Auth::user()->hasRole('director'))
         <!-- Modal Crear Llave -->
         <div class="modal fade" id="modalAgregarLlave" tabindex="-1" aria-labelledby="modalAgregarLlaveLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -46,21 +48,17 @@
                 </div>
             </div>
         </div>
+        @endif
 
-       
-        <!-- Modal Editar Llave -->
+        <!-- Tabla -->
         <div class="table-responsive">
             <table class="table align-middle table-hover">
                 <thead>
                     <tr>
-
                         <th class="text-center" style="width: 50%;">Nombre de la llave</th>
                         <th class="text-center" style="width: 25%;">Estado</th>
                         <th class="text-center" style="width: 10%;">Última actualización</th>
                         <th class="text-center" style="width: 15%;">Acciones</th>
-
-                        
-
                     </tr>
                 </thead>
                 <tbody id="llaves-table-body">
@@ -79,6 +77,7 @@
                                     </small>
                                 </td>
                                 <td class="text-center">
+                                    @if(Auth::user() && !Auth::user()->hasRole('director'))
                                     <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalEditarLlave-{{ $llave->id }}">
@@ -86,13 +85,17 @@
                                     </button>
                                     
                                     <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $llave->id }}" aria-label="Eliminar Llave">
-                                            <i class="bi bi-trash"></i>
+                                        <i class="bi bi-trash"></i>
                                     </button>
+                                    @else
+                                    <span class="text-muted">Solo vista</span>
+                                    @endif
                                 </td>
                             @endif
-                            
                         </tr>
 
+                        @if(Auth::user() && !Auth::user()->hasRole('director'))
+                        <!-- Modal Editar Llave -->
                         <div class="modal fade" id="modalEditarLlave-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalEditarLlaveLabel-{{ $llave->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
@@ -104,7 +107,7 @@
                                     </div>
                                     <div class="modal-body px-4 py-4">
                                         <div class="card text-bg-light">
-                                        <form action="{{ route('llave.update',['llave'=>$llave]) }}" method="post">
+                                            <form action="{{ route('llave.update',['llave'=>$llave]) }}" method="post">
                                                 @csrf
                                                 @method('PATCH')
                                                 <input type="hidden" name="id" id="editarIdLlave">
@@ -112,7 +115,7 @@
                                                     <div class="mb-3">
                                                         <label for="editarNombreLlave" class="form-label fw-bold">Nombre de la Llave</label>
                                                         <input type="text" name="nombre" id="nombre" class="form-control"
-                                                value="{{old('nombre',$llave->nombre)}}">
+                                                        value="{{old('nombre',$llave->nombre)}}">
                                                     </div>
                                                 </div>
                                                 <div class="card-footer text-center">
@@ -125,7 +128,7 @@
                             </div>
                         </div>
 
-                            <!-- Modal eliminar -->
+                        <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalLlaveEliminarLabel-{{ $llave->id }}" 
                         aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -150,7 +153,6 @@
                             </div>
                         </div>
                         
-                        
                         <!-- Modal Éxito Eliminar -->
                         <div class="modal fade" id="modalExitoEliminar" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -168,16 +170,13 @@
                                 </div>
                             </div>
                         </div>
+                        @endif
                     @endforeach
                 </tbody>
             </table>
         </div> 
     </div>
 </div>
-
-
-
-
 
 @endsection
 

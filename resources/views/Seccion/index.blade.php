@@ -23,12 +23,14 @@
                     @endif
                 </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalAgregarSeccion"
-                title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
-        </div>
+                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                        data-bs-toggle="modal" data-bs-target="#modalAgregarSeccion"
+                        title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem;">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
+                    </button>
+                @endif
+            </div>
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaSeccion'))
