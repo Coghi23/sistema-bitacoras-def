@@ -235,6 +235,91 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Funciones para manejar los botones de estado del recinto
+    window.leftClick = function() {
+        // Mover el fondo al botón izquierdo (Todo en orden)
+        var btn = document.getElementById('btn');
+        if (btn) {
+            btn.style.left = '2px';
+        }
+        // Ocultar el contenido de reportar problema
+        var contenidoProblema = document.getElementById('contenido-problema');
+        if (contenidoProblema) {
+            contenidoProblema.classList.remove('active');
+        }
+    };
+
+    window.rightClick = function() {
+        // Mover el fondo al botón derecho (Reportar problema)
+        var btn = document.getElementById('btn');
+        if (btn) {
+            btn.style.left = 'calc(50% - 2px)';
+        }
+        // Mostrar el contenido de reportar problema
+        var contenidoProblema = document.getElementById('contenido-problema');
+        if (contenidoProblema) {
+            contenidoProblema.classList.add('active');
+        }
+    };
+
+    window.limpiarFormularioProblema = function() {
+        // Limpiar los radio buttons de prioridad
+        var radiosPrioridad = document.querySelectorAll('input[name="prioridad"]');
+        radiosPrioridad.forEach(function(radio) {
+            radio.checked = false;
+        });
+        
+        // Limpiar el textarea de observaciones
+        var textarea = document.querySelector('#observaciones textarea');
+        if (textarea) {
+            textarea.value = '';
+        }
+        
+        // Ocultar mensaje de error
+        var mensajeError = document.getElementById('mensajeError');
+        if (mensajeError) {
+            mensajeError.classList.add('d-none');
+        }
+        
+        // Cambiar a "Todo en orden"
+        leftClick();
+    };
+
+    window.validarDatos = function() {
+        var prioridadSeleccionada = document.querySelector('input[name="prioridad"]:checked');
+        var observaciones = document.querySelector('#observaciones textarea').value.trim();
+        var mensajeError = document.getElementById('mensajeError');
+        
+        if (!prioridadSeleccionada || !observaciones) {
+            // Mostrar mensaje de error
+            mensajeError.classList.remove('d-none');
+            return false;
+        } else {
+            // Ocultar mensaje de error y proceder
+            mensajeError.classList.add('d-none');
+            // Aquí puedes abrir el modal de confirmación o procesar el formulario
+            var modalProblema = new bootstrap.Modal(document.getElementById('modalProblema'));
+            modalProblema.show();
+            return true;
+        }
+    };
+
+    window.confirmarEnvioComentario = function() {
+        // Aquí puedes procesar el envío del formulario
+        // Por ejemplo, enviar los datos via AJAX o submit del formulario
+        console.log('Enviando bitácora...');
+        // Mostrar mensaje de éxito con SweetAlert
+        Swal.fire({
+            title: '¡Éxito!',
+            text: 'Bitácora enviada correctamente',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    };
+});
+</script>
 @endpush
 
 <!------------------------------------------------------------------------------------------------------------------------->

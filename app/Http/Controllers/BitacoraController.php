@@ -21,8 +21,12 @@ class BitacoraController extends Controller
         $recintos = Recinto::all();
         $seccione = Seccione::all();
         $subareas = Subarea::all();
-        // Cargar las relaciones necesarias para que funcione el JavaScript
-        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'leccion', 'profesor')->get();
+        
+        // Filtrar solo los horarios del profesor logueado
+        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'leccion', 'profesor')
+                           ->where('user_id', auth()->id())
+                           ->get();
+        
         $eventos = Evento::all();
         
         // Obtener todos los usuarios con rol profesor
