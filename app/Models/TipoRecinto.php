@@ -13,9 +13,9 @@ class TipoRecinto extends Model
         'nombre' 
     ];
 
-    public function recinto()
+    public function recintos()
     {
-        return $this->hasMany(Recinto::class, 'tipoRecinto_id');
+        return $this->hasMany(Recinto::class);
     }
 
     protected $table = 'tipoRecinto';

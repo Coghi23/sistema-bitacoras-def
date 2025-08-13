@@ -32,17 +32,13 @@
             <div class="row align-items-center filter-tabs rounded-3 mb-4 altura-lg altura-md altura-sm" id="filterTabs">
                 <div class="tab-indicator"></div>
                 <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                    <a href="{{ route('recinto.index') }}">
-                        <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
-                    </a>
+                    <button class="btn btn-lightrounded tab-btn active" type="button" style="width: 100%;" data-tipo="todos">Todos</button>
                 </div>
                 @foreach($tiposRecinto as $tipoRecinto)
                     <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                        <a href="{{ route('recinto.index', ['tipo' => $tipoRecinto->nombre]) }}">
-                            <button class="btn tab-btn {{ request('tipo') == $tipoRecinto->nombre ? 'active' : '' }}" type="button" style="width: 100%;">
-                                {{ $tipoRecinto->nombre }}
-                            </button>
-                        </a>
+                        <button class="btn tab-btn" type="button" style="width: 100%;" data-tipo="{{ strtolower($tipoRecinto->nombre) }}">
+                            {{ $tipoRecinto->nombre }}
+                        </button>
                     </div>
                 @endforeach
             </div>
@@ -70,6 +66,9 @@
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">
                                         <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
                                     </div>
+                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                        <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto->nombre }}
+                                    </div>
                                     
                                     
                                 </div>
@@ -95,6 +94,54 @@
                     @endif
                 @endif
           
+                <div id="recintos-list">
+                @foreach($recintos as $recinto)
+                    @if ($recinto->condicion == 1)
+                        <div class="col d-flex recinto-item" data-nombre="{{ strtolower($recinto->nombre) }}" data-tipo="{{ strtolower($recinto->tipoRecinto ? $recinto->tipoRecinto->nombre : '') }}">
+                            <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
+                                <div class="card-body pb-2 p-2">
+                                    <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
+                                    <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
+                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                    </div>
+                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
+                                    <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"></button>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                @endforeach
+<script>
+// Filtrado por tipo de laboratorio (JS puro, sin recarga)
+document.addEventListener('DOMContentLoaded', function() {
+    const filterTabs = document.getElementById('filterTabs');
+    const recintosList = document.getElementById('recintos-list');
+    let tipoActivo = 'todos';
+    if (filterTabs && recintosList) {
+        filterTabs.querySelectorAll('.tab-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                // Quitar clase active de todos los tabs y ponerla en el seleccionado
+                filterTabs.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                tipoActivo = btn.getAttribute('data-tipo');
+                // Filtrar recintos
+                recintosList.querySelectorAll('.recinto-item').forEach(function(item) {
+                    const tipo = item.getAttribute('data-tipo');
+                    if (tipoActivo === 'todos' || tipo === tipoActivo) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
+});
+</script>
+                </div>
 
             <!-- Modal Editar Recinto -->
             
@@ -231,6 +278,8 @@
                                 @endforeach
                             </select>
                         </div>
+
+  
                         <div class="mb-3">
                             <label for="institucionRecinto" class="form-label mb-1">Institución</label>
                             
@@ -296,36 +345,36 @@
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
 
-// Funcionalidad de búsqueda en tiempo real
-    let timeoutId;
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const formBusqueda = document.getElementById('busquedaForm');
-    const btnLimpiar = document.getElementById('limpiarBusqueda');
-    
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function() {
-                formBusqueda.submit();
-            }, 500); // Espera 500ms después de que el usuario deje de escribir
-        });
-        
-        // También permitir búsqueda al presionar Enter
-        inputBusqueda.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                formBusqueda.submit();
+
+
+const inputBusqueda = document.getElementById('inputBusqueda');
+const recintosList = document.getElementById('recintos-list');
+const btnLimpiar = document.getElementById('limpiarBusqueda');
+
+if (inputBusqueda && recintosList) {
+    inputBusqueda.addEventListener('input', function() {
+        const valor = inputBusqueda.value.trim().toLowerCase();
+        const items = recintosList.querySelectorAll('.recinto-item');
+        items.forEach(function(item) {
+            const nombre = item.getAttribute('data-nombre');
+            if (!valor || nombre.includes(valor)) {
+                item.style.display = '';
+            } else {
+                item.style.display = 'none';
             }
         });
-    }
-    
-    // Funcionalidad del botón limpiar
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
-            window.location.href = '{{ route("recinto.index") }}';
+    });
+}
+
+if (btnLimpiar && inputBusqueda && recintosList) {
+    btnLimpiar.addEventListener('click', function() {
+        inputBusqueda.value = '';
+        const items = recintosList.querySelectorAll('.recinto-item');
+        items.forEach(function(item) {
+            item.style.display = '';
         });
-    }
+    });
+}
 
 function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
     const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
@@ -360,5 +409,30 @@ function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
     });
 }
 </script>
+  <script>
+    // Recopilar llaves ya asignadas a recintos activos
+    const llavesOcupadas = [
+        @foreach($recintos as $recinto)
+            @if($recinto->condicion == 1 && $recinto->llave_id)
+                {{ $recinto->llave_id }},
+            @endif
+        @endforeach
+    ];
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const formAgregar = document.querySelector('#modalAgregarRecinto form');
+        if (formAgregar) {
+            formAgregar.addEventListener('submit', function(e) {
+                const selectLlave = document.getElementById('llave_id');
+                const llaveSeleccionada = selectLlave ? selectLlave.value : '';
+                if (llaveSeleccionada && llavesOcupadas.includes(parseInt(llaveSeleccionada))) {
+                    e.preventDefault();
+                    alert('La llave seleccionada ya está asignada a otro recinto. Por favor, elija otra.');
+                    selectLlave.focus();
+                }
+            });
+        }
+    });
+    </script>
 @endsection
 
