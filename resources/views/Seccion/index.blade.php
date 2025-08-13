@@ -114,10 +114,9 @@
                                     <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                                         <i class="bi bi-arrow-left"></i>
                                     </button>
-                                    <h5 class="modal-title">Edición de Sección</h5>
+                                    <h5 class="modal-title">Registro de sección</h5>
                                 </div>
                                 <div class="modal-body px-4 py-4">
-
                                     {{-- Mostrar errores de validación para editar --}}
                                     @if (session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->any())
                                         <div class="alert alert-danger">
@@ -126,20 +125,15 @@
                                                     <li>{{ $error }}</li>
                                                 @endforeach
                                             </ul>
-
                                         </div>
                                     @endif
                                     
                                     <form action="{{ route('seccion.update', $seccion->id) }}" method="POST">
                                         @csrf
                                         @method('PATCH')
-                                        <input type="hidden" name="form_type" value="edit">
-                                        <input type="hidden" name="seccion_id" value="{{ $seccion->id }}">
                                         <div class="mb-3">
-
                                             <label class="form-label fw-bold">Sección</label>
                                             <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror"
-
                                                 value="{{ old('nombre', $seccion->nombre) }}" required>
                                             @error('nombre')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -194,7 +188,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea Eliminar la Sección?</p>
+                                        <p class="modal-text">¿Desea eliminar la sección?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('seccion.destroy', ['seccion' => $seccion->id]) }}" method="post">
                                                 @method('DELETE')
@@ -223,10 +217,9 @@
                 <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                     <i class="bi bi-arrow-left"></i>
                 </button>
-                <h5 class="modal-title">Crear Nueva Sección</h5>
+                <h5 class="modal-title">Registro de sección</h5>
             </div>
             <div class="modal-body px-4 py-4">
-
                 {{-- Mostrar errores de validación para crear --}}
                 @if (session('modal_crear') && $errors->any())
                     <div class="alert alert-danger">
@@ -239,11 +232,8 @@
                 @endif
                 
                 <form id="formCrearSeccion" action="{{ route('seccion.store') }}" method="POST">
-
                     @csrf
-                    <input type="hidden" name="form_type" value="create">
                     <div class="mb-3">
-
                         <label class="form-label fw-bold">Sección</label>
                         <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror" 
                                value="{{ old('nombre') }}">
@@ -265,16 +255,13 @@
                                         <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
                                     @endforeach
                                 </select>
-                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidad()" style="min-width: 38px; padding: 0;">
-                                    <i class="bi bi-plus"></i>
+                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidad()" style="height: 9%; min-width: 38px; padding: 0;">
+                                    <i class="bi bi-plus" style="height: 49px;"></i>
                                 </button>
                             </div>
                             <!-- Contenedor para especialidades seleccionadas -->
-                            <div id="especialidadesSeleccionadas" class="mt-2">
-                                <div class="row g-2" id="especialidadesGrid"></div>
-                            </div>
+                            <div id="especialidadesSeleccionadas" class="mt-2"></div>
                         </div>
-
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-primary">Crear</button>
@@ -312,31 +299,28 @@
         // Agregar al array de control
         especialidadesAgregadas.push(id);
         
-        // Crear elemento visual en grid
-        const grid = document.getElementById('especialidadesGrid');
-        const especialidadCol = document.createElement('div');
-        especialidadCol.className = 'col-12 col-sm-6 col-md-4';
-        especialidadCol.setAttribute('data-id', id);
-        especialidadCol.innerHTML = `
-            <div class="input-group">
-                <input type="text" class="form-control form-control-sm" value="${nombre}" readonly>
-                <input type="hidden" name="especialidades[]" value="${id}">
-                <button type="button" class="btn btn-danger btn-sm" onclick="quitarEspecialidad(this, '${id}')" title="Quitar">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
+        // Crear elemento visual
+        const contenedor = document.getElementById('especialidadesSeleccionadas');
+        const especialidadDiv = document.createElement('div');
+        especialidadDiv.className = 'input-group mt-2';
+        especialidadDiv.setAttribute('data-id', id);
+        especialidadDiv.innerHTML = `
+            <input type="text" class="form-control" value="${nombre}" readonly>
+            <input type="hidden" name="especialidades[]" value="${id}">
+            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
+                <i class="bi bi-x"></i>
+            </button>
         `;
         
-        grid.appendChild(especialidadCol);
+        contenedor.appendChild(especialidadDiv);
         select.selectedIndex = 0;
     }
 
     function quitarEspecialidad(boton, id) {
         // Remover del array
         especialidadesAgregadas = especialidadesAgregadas.filter(espId => espId !== id);
-        // Remover del DOM - buscar el contenedor col
-        const col = boton.closest('.col-12');
-        col.remove();
+        // Remover del DOM
+        boton.parentElement.remove();
     }
 
     // Función para agregar especialidad cuando se repobla desde old()
@@ -349,22 +333,20 @@
         // Agregar al array de control
         especialidadesAgregadas.push(id);
         
-        // Crear elemento visual en grid
-        const grid = document.getElementById('especialidadesGrid');
-        const especialidadCol = document.createElement('div');
-        especialidadCol.className = 'col-12 col-sm-6 col-md-4';
-        especialidadCol.setAttribute('data-id', id);
-        especialidadCol.innerHTML = `
-            <div class="input-group">
-                <input type="text" class="form-control form-control-sm" value="${nombre}" readonly>
-                <input type="hidden" name="especialidades[]" value="${id}">
-                <button type="button" class="btn btn-danger btn-sm" onclick="quitarEspecialidad(this, '${id}')" title="Quitar">
-                    <i class="bi bi-x"></i>
-                </button>
-            </div>
+        // Crear elemento visual
+        const contenedor = document.getElementById('especialidadesSeleccionadas');
+        const especialidadDiv = document.createElement('div');
+        especialidadDiv.className = 'input-group mt-2';
+        especialidadDiv.setAttribute('data-id', id);
+        especialidadDiv.innerHTML = `
+            <input type="text" class="form-control" value="${nombre}" readonly>
+            <input type="hidden" name="especialidades[]" value="${id}">
+            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
+                <i class="bi bi-x"></i>
+            </button>
         `;
         
-        grid.appendChild(especialidadCol);
+        contenedor.appendChild(especialidadDiv);
     }
 
     // ========== FUNCIONES DE BÚSQUEDA ==========
@@ -397,7 +379,6 @@
             window.location.href = '{{ route("seccion.index") }}';
         });
     }
-
 
     // ========== ABRIR MODALES CON ERRORES ==========
     
