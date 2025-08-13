@@ -23,12 +23,14 @@
                     @endif
                 </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalAgregarSeccion"
-                title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
-        </div>
+                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                        data-bs-toggle="modal" data-bs-target="#modalAgregarSeccion"
+                        title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem;">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
+                    </button>
+                @endif
+            </div>
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaSeccion'))
@@ -47,6 +49,7 @@
                 <thead>
                     <tr>
                         <th class="text-center">Sección</th>
+                        <th class="text-center">Especialidad</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
@@ -55,6 +58,15 @@
                     <tr>
                         @if ($seccion->condicion == 1)
                             <td class="text-center">{{ $seccion->nombre }}</td>
+                            <td class="text-center">
+                                @if($seccion->especialidades->count() > 0)
+                                    @foreach($seccion->especialidades as $especialidad)
+                                        {{ $especialidad->nombre }}@if(!$loop->last), @endif
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">Sin especialidades</span>
+                                @endif
+                            </td>
                             <td class="text-center">
                                 @if(Auth::user() && !Auth::user()->hasRole('director'))
                                 <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal"
@@ -89,6 +101,7 @@
                                             @foreach ($errors->all() as $error)
                                                 <div>{{ $error }}</div>
                                             @endforeach
+
                                         </div>
                                     @endif
                                     
@@ -98,11 +111,44 @@
                                         <input type="hidden" name="form_type" value="edit">
                                         <input type="hidden" name="seccion_id" value="{{ $seccion->id }}">
                                         <div class="mb-3">
+
                                             <label class="form-label fw-bold">Nombre de la Sección</label>
                                             <input type="text" name="nombre" class="form-control"
-                                                value="{{ old('nombre', $seccion->nombre) }}" required>
 
+                                                value="{{ old('nombre', $seccion->nombre) }}" required>
+                                            @error('nombre')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Especialidad</label>
+                                            @error('especialidades')
+                                                <div class="text-danger small mb-2">{{ $message }}</div>
+                                            @enderror
+                                            <div class="row">
+                                                @foreach ($especialidades as $especialidad)
+                                                    <div class="col-md-6 mb-2">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" 
+                                                                   name="especialidades[]" 
+                                                                   value="{{ $especialidad->id }}"
+                                                                   id="especialidad-edit-{{ $seccion->id }}-{{ $especialidad->id }}"
+                                                                   @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && old('especialidades') ? 
+                                                                       in_array($especialidad->id, old('especialidades', [])) : 
+                                                                       ($seccion->especialidades->contains('id', $especialidad->id) && 
+                                                                        $seccion->especialidades->where('id', $especialidad->id)->first()->pivot->condicion == 1))
+                                                                       checked
+                                                                   @endif>
+                                                            <label class="form-check-label" for="especialidad-edit-{{ $seccion->id }}-{{ $especialidad->id }}">
+                                                                {{ $especialidad->nombre }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+
                                         <div class="text-center mt-4">
                                             <button type="submit" class="btn btn-primary">Modificar</button>
                                         </div>
@@ -155,6 +201,7 @@
                 <h5 class="modal-title">Crear Nueva Sección</h5>
             </div>
             <div class="modal-body px-4 py-4">
+
                 {{-- Mostrar errores de validación --}}
                 @if ($errors->any())
                     <div class="alert alert-danger">
@@ -165,11 +212,14 @@
                 @endif
                 
                 <form action="{{ route('seccion.store') }}" method="POST">
+
                     @csrf
                     <input type="hidden" name="form_type" value="create">
                     <div class="mb-3">
+
                         <label class="form-label fw-bold">Nombre de la Sección</label>
                         <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>
+
                     </div>
                     <div class="text-center mt-4">
                         <button type="submit" class="btn btn-primary">Crear</button>
@@ -181,6 +231,84 @@
 </div>
 
 <script>
+    // Variables globales para crear sección
+    let especialidadesAgregadas = [];
+
+    // ========== FUNCIONES PARA CREAR SECCIÓN ==========
+
+    function agregarEspecialidad() {
+        const select = document.getElementById('selectEspecialidad');
+        const selectedOption = select.options[select.selectedIndex];
+        
+        if (!selectedOption || !selectedOption.value) {
+            alert('Por favor seleccione una especialidad');
+            return;
+        }
+        
+        const id = selectedOption.value;
+        const nombre = selectedOption.getAttribute('data-nombre');
+        
+        // Verificar si ya está agregada
+        if (especialidadesAgregadas.includes(id)) {
+            alert('Esta especialidad ya está agregada');
+            return;
+        }
+        
+        // Agregar al array de control
+        especialidadesAgregadas.push(id);
+        
+        // Crear elemento visual
+        const contenedor = document.getElementById('especialidadesSeleccionadas');
+        const especialidadDiv = document.createElement('div');
+        especialidadDiv.className = 'input-group mt-2';
+        especialidadDiv.setAttribute('data-id', id);
+        especialidadDiv.innerHTML = `
+            <input type="text" class="form-control" value="${nombre}" readonly>
+            <input type="hidden" name="especialidades[]" value="${id}">
+            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
+                <i class="bi bi-x"></i>
+            </button>
+        `;
+        
+        contenedor.appendChild(especialidadDiv);
+        select.selectedIndex = 0;
+    }
+
+    function quitarEspecialidad(boton, id) {
+        // Remover del array
+        especialidadesAgregadas = especialidadesAgregadas.filter(espId => espId !== id);
+        // Remover del DOM
+        boton.parentElement.remove();
+    }
+
+    // Función para agregar especialidad cuando se repobla desde old()
+    function agregarEspecialidadOld(id, nombre) {
+        // Verificar si ya está agregada
+        if (especialidadesAgregadas.includes(id)) {
+            return;
+        }
+        
+        // Agregar al array de control
+        especialidadesAgregadas.push(id);
+        
+        // Crear elemento visual
+        const contenedor = document.getElementById('especialidadesSeleccionadas');
+        const especialidadDiv = document.createElement('div');
+        especialidadDiv.className = 'input-group mt-2';
+        especialidadDiv.setAttribute('data-id', id);
+        especialidadDiv.innerHTML = `
+            <input type="text" class="form-control" value="${nombre}" readonly>
+            <input type="hidden" name="especialidades[]" value="${id}">
+            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
+                <i class="bi bi-x"></i>
+            </button>
+        `;
+        
+        contenedor.appendChild(especialidadDiv);
+    }
+
+    // ========== FUNCIONES DE BÚSQUEDA ==========
+
     // Funcionalidad de búsqueda en tiempo real
     let timeoutId;
     const inputBusqueda = document.getElementById('inputBusqueda');
@@ -192,10 +320,9 @@
             clearTimeout(timeoutId);
             timeoutId = setTimeout(function() {
                 formBusqueda.submit();
-            }, 500); // Espera 500ms después de que el usuario deje de escribir
+            }, 500);
         });
         
-        // También permitir búsqueda al presionar Enter
         inputBusqueda.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -204,7 +331,6 @@
         });
     }
     
-    // Funcionalidad del botón limpiar
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', function() {
             inputBusqueda.value = '';
@@ -226,6 +352,7 @@
                 var modal = new bootstrap.Modal(document.getElementById('modalEditarSeccion-' + seccionId));
                 modal.show();
             }
+
         });
     @endif
 </script>

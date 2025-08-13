@@ -48,4 +48,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Relación con el modelo Profesor
+     */
+    public function profesor()
+    {
+        return $this->hasOne(Profesor::class, 'usuario_id');
+    }
 }

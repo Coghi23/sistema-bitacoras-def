@@ -5,10 +5,13 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
+                
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title mb-0">Gestión de Roles</h3>
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRoleModal">
-                        <i class="bi bi-plus-circle"></i> Crear Nuevo Rol
+                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                        data-bs-toggle="modal" data-bs-target="#createRoleModal"
+                        title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
                     </button>
                 </div>
                 <div class="card-body">
@@ -51,6 +54,7 @@
                                         </td>
                                         <td>{{ $role->created_at->format('d/m/Y') }}</td>
                                         <td>
+                                            @if(Auth::user() && !Auth::user()->hasRole('director'))
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn btn-sm btn-outline-primary" 
                                                         data-bs-toggle="modal" 
@@ -65,6 +69,9 @@
                                                     <i class="bi bi-trash"></i> Eliminar
                                                 </button>
                                             </div>
+                                            @else
+                                            <span class="text-muted">Solo vista</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -81,6 +88,7 @@
     </div>
 </div>
 
+@if(Auth::user() && !Auth::user()->hasRole('director'))
 <!-- Modal Crear Rol -->
 <div class="modal fade" id="createRoleModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -224,4 +232,5 @@ function setDeleteRole(roleId, roleName) {
     document.getElementById('deleteRoleForm').action = `/role/${roleId}`;
 }
 </script>
+@endif
 @endsection

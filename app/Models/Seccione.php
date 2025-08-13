@@ -12,7 +12,7 @@ class Seccione extends Model
     protected $table = 'seccione';
 
     public function especialidades(){
-        return $this->belongsToMany(Especialidade::class, 'especialidad_seccion', 'id_seccion', 'id_especialidad')
+        return $this->belongsToMany(Especialidade::class, 'especialidad_seccion', 'seccion_id', 'especialidad_id')
             ->withPivot('condicion')
             ->withTimestamps();
     }

@@ -32,7 +32,7 @@ class Especialidade extends Model
     // Relación many-to-many con Seccion (tabla intermedia: especialidad_seccion)
     public function secciones()
     {
-        return $this->belongsToMany(Seccione::class, 'especialidad_seccion', 'id_especialidad', 'id_seccion')
+        return $this->belongsToMany(Seccione::class, 'especialidad_seccion', 'especialidad_id', 'seccion_id')
                     ->withPivot('condicion')
                     ->withTimestamps();
     }
