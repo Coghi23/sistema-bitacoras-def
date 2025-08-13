@@ -135,7 +135,7 @@
                             </div>
                         </div>
 
-                            <!-- Modal eliminar -->
+                        <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $institucion->id }}" tabindex="-1" aria-labelledby="modalInstitucionEliminarLabel-{{ $institucion->id }}" 
                         aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">

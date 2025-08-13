@@ -55,26 +55,28 @@
                 <tbody>
                     @forelse($horarios as $horario)
                     <tr class="record-row">
-                        <td class="col-dia">
+                        @if($horario->condicion == 1)
+                            <td class="col-dia">
                             @if($horario->tipoHorario == false)
                                 {{ $horario->fecha->format('Y/m/d') }}
                             @endif
                             {{ $horario->dia }}
-                        </td>
-                        <td class="col-recinto">{{ $horario->recinto->nombre ?? '' }}</td>
-                        <td class="col-especialidad">{{ $horario->subarea->nombre ?? '' }}</td>
-                        <td class="col-seccion">{{ $horario->seccion->nombre ?? '' }}</td>
-                        <td class="col-entrada">{{ $horario->hora_entrada }}</td>
-                        <td class="col-salida">{{ $horario->hora_salida }}</td>
-                        <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
-                        <td class="col-acciones">
-                            <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
-                                <i class="bi bi-pencil icon-editar"></i>
-                            </button>
-                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
-                                <i class="bi bi-trash icon-eliminar"></i>
-                            </button>
-                        </td>
+                            </td>
+                            <td class="col-recinto">{{ $horario->recinto->nombre ?? '' }}</td>
+                            <td class="col-especialidad">{{ $horario->subarea->nombre ?? '' }}</td>
+                            <td class="col-seccion">{{ $horario->seccion->nombre ?? '' }}</td>
+                            <td class="col-entrada">{{ $horario->hora_entrada }}</td>
+                            <td class="col-salida">{{ $horario->hora_salida }}</td>
+                            <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
+                            <td class="col-acciones">
+                                <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
+                                    <i class="bi bi-pencil icon-editar"></i>
+                                </button>
+                                <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
+                                    <i class="bi bi-trash icon-eliminar"></i>
+                                </button>
+                            </td>
+                        @endif
                     </tr>
                     @empty
                     <tr class="record-row">
@@ -285,34 +287,36 @@
                             <label class="w-50 text-start">Tipo de horario:</label>
                             <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ request('tipoHorario') == '1' ? 'active' : '' }}" type="radio" name="tipoHorario" id="fijoRadio" value="{{old('tipoHorario') }}" required>
-                                    <label class="form-check-label ms-2" for="fijoRadio">Fijo</label>
+                                    <input class="form-check-input" type="radio" name="tipoHorario" id="fijoRadio{{ $horario->id }}" value="fijo" 
+                                    {{ $horario->tipoHorario == 1 ? 'checked' : ''}} required>
+                                    <label class="form-check-label ms-2" for="fijoRadio{{ $horario->id }}">Fijo</label>
                                 </div>
                                 <div style="width:1px; height:24px; background-color:#0d6efd; opacity:0.7;"></div>
                                 <div class="form-check ms-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ request('tipoHorario') == '0' ? 'active' : '' }}" type="radio" name="tipoHorario" id="temporalRadio" value="temporal" required>
-                                    <label class="form-check-label ms-2" for="temporalRadio">Temporal</label>
+                                    <input class="form-check-input" type="radio" name="tipoHorario" id="temporalRadio{{ $horario->id }}" value="temporal"
+                                    {{ $horario->tipoHorario == 0 ? 'checked' : ''}} required>
+                                    <label class="form-check-label ms-2" for="temporalRadio{{ $horario->id }}">Temporal</label>
                                 </div>
                             </div>
                         </div>
                         {{-- Fecha --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-50" @if(old('tipoHorario')=='1') disabled @endif>
+                            <input type="date" name="fecha" class="form-control rounded-4 w-50" value="{{ old('fecha', $horario->fecha ? $horario->fecha->format('Y-m-d') : '') }}">
                         </div>
                         {{-- Día --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Día:</label>
                             <div class="position-relative w-50">
-                                <select name="dia" class="form-select rounded-4 pe-5" @if(old('tipoHorario')=='0') disabled @endif>
-                                    <option value="" hidden selected>Seleccione...</option>
-                                    <option value="Lunes">Lunes</option>
-                                    <option value="Martes">Martes</option>
-                                    <option value="Miércoles">Miércoles</option>
-                                    <option value="Jueves">Jueves</option>
-                                    <option value="Viernes">Viernes</option>
-                                    <option value="Sábado">Sábado</option>
-                                    <option value="Domingo">Domingo</option>
+                                <select name="dia" class="form-select rounded-4 pe-5">
+                                    <option value="" hidden>Seleccione...</option>
+                                    <option value="Lunes" {{ old('dia', $horario->dia) == 'Lunes' ? 'selected' : '' }}>Lunes</option>
+                                    <option value="Martes" {{ old('dia', $horario->dia) == 'Martes' ? 'selected' : '' }}>Martes</option>
+                                    <option value="Miércoles" {{ old('dia', $horario->dia) == 'Miércoles' ? 'selected' : '' }}>Miércoles</option>
+                                    <option value="Jueves" {{ old('dia', $horario->dia) == 'Jueves' ? 'selected' : '' }}>Jueves</option>
+                                    <option value="Viernes" {{ old('dia', $horario->dia) == 'Viernes' ? 'selected' : '' }}>Viernes</option>
+                                    <option value="Sábado" {{ old('dia', $horario->dia) == 'Sábado' ? 'selected' : '' }}>Sábado</option>
+                                    <option value="Domingo" {{ old('dia', $horario->dia) == 'Domingo' ? 'selected' : '' }}>Domingo</option>
                                 </select>
                             </div>
                         </div>
@@ -324,7 +328,10 @@
                                 <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5" required>
                                     <option value="">Seleccione un docente</option>
                                     @foreach ($profesores as $profesor)
-                                        <option value="{{$profesor->id}}" {{ old('user_id') == $profesor->id ? 'selected' : '' }}>{{$profesor->name}}</option>
+                                        <option value="{{$profesor->id}}"
+                                         {{ $horario->user_id == $profesor->id ? 'selected' : '' }}>
+                                            {{ $profesor->name }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -337,7 +344,10 @@
                                 <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5" required>
                                     <option value="">Seleccione un recinto</option>
                                     @foreach ($recintos as $recinto)
-                                        <option value="{{$recinto->id}}" {{ old('idRecinto') == $recinto->id ? 'selected' : '' }}>{{$recinto->nombre}}</option>
+                                        <option value="{{$recinto->id}}"
+                                        {{ $horario->idRecinto == $recinto->id ? 'selected' : '' }}>
+                                            {{ $recinto->nombre }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -350,7 +360,10 @@
                                 <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5" required>
                                     <option value="">Seleccione un docente</option>
                                     @foreach ($subareas as $subarea)
-                                        <option value="{{$subarea->id}}" {{ old('idSubarea') == $subarea->id ? 'selected' : '' }}>{{$subarea->nombre}}</option>
+                                        <option value="{{$subarea->id}}" 
+                                            {{ $horario->idSubarea == $subarea->id ? 'selected' : '' }}>
+                                            {{ $subarea->nombre }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -363,7 +376,10 @@
                                 <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5" required>
                                     <option value="">Seleccione un sección</option>
                                     @foreach ($secciones as $seccion)
-                                        <option value="{{$seccion->id}}" {{ old('idSeccion') == $seccion->id ? 'selected' : '' }}>{{$seccion->nombre}}</option>
+                                        <option value="{{$seccion->id}}" 
+                                        {{ $horario->idSeccion == $seccion->id ? 'selected' : '' }}>
+                                            {{ $seccion->nombre }}
+                                        </option>
                                     @endforeach
                                 </select>
                             </div>
@@ -382,7 +398,8 @@
                                                                     <div class="col-12 col-md-6 mb-2">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                                                value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}">
+                                                                                value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}"
+                                                                                {{ $horario->leccion->contains($leccion->id) ? 'checked' : '' }}>
                                                                             <label class="form-check-label small" for="leccion{{ $leccion->id }}">
                                                                                 {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                                             </label>
@@ -402,12 +419,13 @@
                                                                     <div class="col-12 col-md-6 mb-2">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                                                value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}">
+                                                                                value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}"
+                                                                                {{ $horario->leccion->contains($leccion->id) ? 'checked' : '' }}>
                                                                             <label class="form-check-label small" for="leccion{{ $leccion->id }}">
                                                                                 {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                                             </label>
                                                                         </div>
-                                                                    </div>
+                                                                    </div>  
                                                                 @endif
                                                             @endforeach
                                                         </div>
@@ -432,6 +450,31 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Modal eliminar -->
+                        <div class="modal fade" id="modalEliminarHorario{{ $horario->id }}" tabindex="-1" aria-labelledby="modalEliminarHorarioLabel{{ $horario->id }}" 
+                        aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Desea eliminar el usuario?</p>
+                                        <div class="btn-group-custom">
+                                            <form action="{{ route('horario.destroy', ['horario' => $horario->id]) }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="submit" class="btn btn-custom {{ $horario->condicion == 1 }}">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                     {{-- Modal Éxito Eliminar --}}
                     @if(session('eliminado'))
@@ -549,4 +592,56 @@ function deseleccionarTodasLecciones() {
     const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
     checkboxes.forEach(checkbox => checkbox.checked = false);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modal) {
+        const id = modal.id.replace('modalEditarHorario', '');
+        const fijoRadio = modal.querySelector(`#fijoRadio${id}`);
+        const temporalRadio = modal.querySelector(`#temporalRadio${id}`);
+        const fechaInput = modal.querySelector('input[name="fecha"]');
+        const diaSelect = modal.querySelector('select[name="dia"]');
+
+        function toggleFieldsEditar() {
+            if (fijoRadio && fijoRadio.checked) {
+                if (fechaInput) {
+                    fechaInput.disabled = true;
+                    fechaInput.style.backgroundColor = '#f8f9fa';
+                    fechaInput.style.color = '#6c757d';
+                    fechaInput.style.cursor = 'not-allowed';
+                }
+                if (diaSelect) {
+                    diaSelect.disabled = false;
+                    diaSelect.style.backgroundColor = '';
+                    diaSelect.style.color = '';
+                    diaSelect.style.cursor = '';
+                }
+            } else if (temporalRadio && temporalRadio.checked) {
+                if (diaSelect) {
+                    diaSelect.disabled = true;
+                    diaSelect.style.backgroundColor = '#f8f9fa';
+                    diaSelect.style.color = '#6c757d';
+                    diaSelect.style.cursor = 'not-allowed';
+                }
+                if (fechaInput) {
+                    fechaInput.disabled = false;
+                    fechaInput.style.backgroundColor = '';
+                    fechaInput.style.color = '';
+                    fechaInput.style.cursor = '';
+                }
+            }
+        }
+
+        if (fijoRadio && temporalRadio && fechaInput && diaSelect) {
+            fijoRadio.addEventListener('change', toggleFieldsEditar);
+            temporalRadio.addEventListener('change', toggleFieldsEditar);
+
+            modal.addEventListener('shown.bs.modal', function() {
+                toggleFieldsEditar();
+            });
+
+            // Estado inicial
+            toggleFieldsEditar();
+        }
+    });
+});
 </script>
