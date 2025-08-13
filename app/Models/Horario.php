@@ -12,6 +12,7 @@ class Horario extends Model
                         'idSubarea',
                         'idSeccion',
                         'user_id',
+                        'idLeccion', 
                         'tipoHorario', 
                         'fecha',
                         'dia',
@@ -42,9 +43,7 @@ class Horario extends Model
 
     public function leccion()
     {
-        return $this->belongsToMany(Leccion::class, 'horario_leccion', 'idHorario', 'idLeccion')
-            ->withPivot('condicion')
-            ->withTimestamps();
+        return $this->belongsTo(Leccion::class, 'idLeccion');
     }
 
     public function profesor()
@@ -56,51 +55,5 @@ class Horario extends Model
     {
          return $this->belongsTo(User::class, 'user_id')->where('rol', 'profesor');
     }
-
-    public function getHoraEntradaAttribute()
-    {
-        if ($this->leccion->isEmpty()) {
-            return 'N/A';
-        }
-        
-        return $this->leccion->sortBy(function($leccion) {
-            $hora = $leccion->hora_inicio;
-            $time = explode(':', $hora);
-            $hour = (int)$time[0];
-            $minute = (int)$time[1];
-            
-            // Convertir a formato de 24 horas para ordenamiento
-            if ($hour >= 7 && $hour <= 11) {
-                return sprintf('%02d:%02d', $hour, $minute);
-            } elseif ($hour == 12) {
-                return sprintf('12:%02d', $minute);
-            } else {
-                return sprintf('%02d:%02d', $hour + 12, $minute);
-            }
-        })->first()->hora_inicio;
-    }
-
-    public function getHoraSalidaAttribute()
-    {
-        if ($this->leccion->isEmpty()) {
-            return 'N/A';
-        }
-        
-        return $this->leccion->sortByDesc(function($leccion) {
-            $hora = $leccion->hora_final;
-            $time = explode(':', $hora);
-            $hour = (int)$time[0];
-            $minute = (int)$time[1];
-            
-            // Convertir a formato de 24 horas para ordenamiento
-            if ($hour >= 7 && $hour <= 11) {
-                return sprintf('%02d:%02d', $hour, $minute);
-            } elseif ($hour == 12) {
-                return sprintf('12:%02d', $minute);
-            } else {
-                return sprintf('%02d:%02d', $hour + 12, $minute);
-            }
-        })->first()->hora_final;
-    }
-
 }
+
