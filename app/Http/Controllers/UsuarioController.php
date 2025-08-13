@@ -20,15 +20,27 @@ class UsuarioController extends Controller
     public function index(Request $request)
     {
         $inactivos = $request->query('inactivos');
+        $query = User::with('roles');
+        
         if ($inactivos) {
-            $usuarios = User::with('roles')->where('condicion', false)->get();
+            $query->where('condicion', false);
         } else {
-            $usuarios = User::with('roles')->where('condicion', true)->get();
+            $query->where('condicion', true);
         }
 
-        
+        // Aplicar filtro de búsqueda si existe
+        if ($request->filled('busquedaUsuario')) {
+            $busqueda = $request->get('busquedaUsuario');
+            $query->where(function($q) use ($busqueda) {
+                $q->where('name', 'LIKE', '%' . $busqueda . '%')
+                  ->orWhere('cedula', 'LIKE', '%' . $busqueda . '%')
+                  ->orWhere('email', 'LIKE', '%' . $busqueda . '%');
+            });
+        }
 
+        $usuarios = $query->get();
         $roles = Role::all();
+        
         return view('Usuario.index', compact('usuarios', 'roles'));
     }
 

@@ -15,14 +15,14 @@ class BitacoraController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $bitacoras = Bitacora::with('recinto','usuario','seccione','subarea','horario','evento')->get();
         $recintos = Recinto::all();
         $seccione = Seccione::all();
         $subareas = Subarea::all();
         
-        // Filtrar solo los horarios del profesor logueado
+        // Filtrar solo los horarios del profesor logueado con relaciones
         $horarios = Horario::with('recinto', 'subarea', 'seccion', 'leccion', 'profesor')
                            ->where('user_id', auth()->id())
                            ->get();
@@ -34,13 +34,23 @@ class BitacoraController extends Controller
             $query->where('name', 'profesor');
         })->get();
 
-        // Obtener la fecha del primer horario (ajusta según tu lógica)
-        $fecha = $horarios->first() ? $horarios->first()->fecha : null;
-        $seccion = $seccione->first() ? $seccione->first()->nombre : '';
-        $subarea = $subareas->first() ? $subareas->first()->nombre : '';
+        // Obtener datos del horario seleccionado si existe
+        $horarioSeleccionado = null;
+        if ($request->filled('leccion')) {
+            $horarioSeleccionado = $horarios->where('id', $request->get('leccion'))->first();
+        }
+
+        // Obtener la fecha del primer horario o horario seleccionado
+        $fecha = $horarioSeleccionado ? $horarioSeleccionado->fecha : ($horarios->first() ? $horarios->first()->fecha : null);
+        
+        // Obtener datos dinámicos basados en la selección
+        $seccion = $horarioSeleccionado && $horarioSeleccionado->seccion ? $horarioSeleccionado->seccion->nombre : '';
+        $subarea = $horarioSeleccionado && $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
+        $recinto = $horarioSeleccionado && $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
 
         return view('bitacora.index', compact(
-            'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos', 'fecha', 'seccion', 'subarea'
+            'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos', 
+            'fecha', 'seccion', 'subarea', 'recinto', 'horarioSeleccionado'
         ));
     }
 

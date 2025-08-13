@@ -7,7 +7,7 @@
             {{-- Búsqueda + botón agregar --}}
         <div class="search-bar-wrapper mb-4">
             <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="w-100 position-relative">
+                <form id="busquedaForm" method="GET" action="{{ route('usuario.index') }}" class="w-100 position-relative">
                     <span class="search-icon">
                         <i class="bi bi-search"></i>
                     </span>
@@ -18,6 +18,10 @@
                     <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
                         <i class="bi bi-x-circle"></i>
                     </button>
+                    @endif
+                    {{-- Mantener el parámetro inactivos en la búsqueda --}}
+                    @if(request('inactivos'))
+                        <input type="hidden" name="inactivos" value="1">
                     @endif
                 </form>
             </div>
@@ -67,7 +71,7 @@
                 <i class="bi bi-info-circle me-2"></i>
                 <span>
                     Mostrando {{ $usuarios->count() }} resultado(s) para "<strong>{{ request('busquedaUsuario') }}</strong>"
-                    <a href="{{ route('usuario.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todos</a>
+                    <a href="{{ route('usuario.index', request('inactivos') ? ['inactivos' => 1] : []) }}" class="btn btn-sm btn-outline-primary ms-2">Ver todos</a>
                 </span>
             </div>
         @endif

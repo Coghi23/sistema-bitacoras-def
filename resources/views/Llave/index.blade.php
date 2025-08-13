@@ -32,6 +32,17 @@
         </div>
 
 
+        {{-- Indicador de resultados de búsqueda --}}
+        @if(request('busquedaLlave'))
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <span>
+                    Mostrando {{ $llaves->count() }} resultado(s) para "<strong>{{ request('busquedaLlave') }}</strong>"
+                    <a href="{{ route('llave.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
+                </span>
+            </div>
+        @endif
+
         <!-- Modal Crear Llave -->
         <div class="modal fade" id="modalAgregarLlave" tabindex="-1" aria-labelledby="modalAgregarLlaveLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -191,6 +202,35 @@
 
 @push('scripts')
 <script>
+    // Funcionalidad de búsqueda en tiempo real
+    let timeoutId;
+    const inputBusqueda = document.getElementById('inputBusqueda');
+    const formBusqueda = document.getElementById('busquedaForm');
+    const btnLimpiar = document.getElementById('limpiarBusqueda');
+    
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('input', function() {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function() {
+                formBusqueda.submit();
+            }, 500);
+        });
+        
+        inputBusqueda.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                formBusqueda.submit();
+            }
+        });
+    }
+    
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', function() {
+            inputBusqueda.value = '';
+            window.location.href = '{{ route("llave.index") }}';
+        });
+    }
+
 $(document).ready(function() {
     console.log('🔧 Sistema de Llaves - Tiempo Real Iniciado');
     

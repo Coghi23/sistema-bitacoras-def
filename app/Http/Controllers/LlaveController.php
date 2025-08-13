@@ -9,15 +9,25 @@ use App\Models\Llave;
 use Carbon\Carbon;
 use Exception;
 use PgSql\Lob;
+use Illuminate\Http\Request;
 
 class LlaveController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $llaves = Llave::with('recinto')->get();
+        $query = Llave::with('recinto');
+
+        // Aplicar filtro de búsqueda si existe
+        if ($request->filled('busquedaLlave')) {
+            $busqueda = $request->get('busquedaLlave');
+            $query->where('nombre', 'LIKE', '%' . $busqueda . '%');
+        }
+
+        $llaves = $query->get();
+        
         return view('llave.index', compact('llaves'));
     }
 

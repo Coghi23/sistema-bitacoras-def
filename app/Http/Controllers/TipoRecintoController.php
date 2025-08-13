@@ -8,15 +8,27 @@ use App\Http\Requests\StoreTipoRecintoRequest;
 use App\Models\TipoRecinto;
 use Exception;
 use PgSql\Lob;
+use Illuminate\Http\Request;
 
 class TipoRecintoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-    $tipoRecintos = TipoRecinto::with('recintos')->get();
+
+
+        $query = TipoRecinto::with('recintos');
+
+        // Aplicar filtro de búsqueda si existe
+        if ($request->filled('busquedaTipoRecinto')) {
+            $busqueda = $request->get('busquedaTipoRecinto');
+            $query->where('nombre', 'LIKE', '%' . $busqueda . '%');
+        }
+
+        $tipoRecintos = $query->get();
+        
         return view('tipoRecinto.index', compact('tipoRecintos'));
     }
 

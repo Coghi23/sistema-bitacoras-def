@@ -8,15 +8,25 @@ use App\Http\Requests\StoreEstadoRecintoRequest;
 use App\Models\estadoRecinto;
 use Exception;
 use PgSql\Lob;
+use Illuminate\Http\Request;
 
 class EstadoRecintoController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $estadoRecintos = estadoRecinto::with('recinto')->get();
+        $query = estadoRecinto::query();
+
+        // Aplicar filtro de búsqueda si existe
+        if ($request->filled('busquedaEstadoRecinto')) {
+            $busqueda = $request->get('busquedaEstadoRecinto');
+            $query->where('nombre', 'LIKE', '%' . $busqueda . '%');
+        }
+
+        $estadoRecintos = $query->get();
+        
         return view('estadoRecinto.index', compact('estadoRecintos'));
     }
 
