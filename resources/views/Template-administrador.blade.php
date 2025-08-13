@@ -56,7 +56,7 @@
                 <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
                 <div class="label">Recintos</div>
             </div>
-
+           
             <div class="submenu-popover" id="recinto-submenu">
                 <div class="submenu-arrow"></div>
                 
@@ -64,6 +64,19 @@
                 <a href="{{ asset('tipoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
                 <a href="{{ asset('estadoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
                 
+            </div>
+            <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Opciones extra">
+                <div class="icon-circle"><i class="bi bi-people-fill"></i></div>
+                <div class="label">Opciones Extra</div>
+            </div>
+            <div class="submenu-popover" id="submenu">
+                <div class="submenu-arrow"></div>
+                
+                
+                <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
+                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
+                <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
+                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
             </div>
 
             <a href="{{ asset('usuario') }}" class="sidebar-item">
@@ -101,15 +114,7 @@
                 <div class="label">Personal</div>
             </div>
 
-            <div class="submenu-popover" id="submenu">
-                <div class="submenu-arrow"></div>
-                
-                
-                <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
-                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
-                <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
-                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
-            </div>
+            
 
             <div class="mt-auto mb-3" style="width:100%;">
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">

@@ -21,19 +21,18 @@ class RecintoController extends Controller
      */
     public function index()
     {
-        $query = Recinto::with('institucion', 'estadoRecinto', 'tipoRecinto', 'llave');
+        
+        $query = Recinto::with(['institucion', 'tipoRecinto', 'estadoRecinto', 'llave'])
+            ->where('condicion', 1)
+            ->orderBy('nombre');
 
-        // Filtro por estado
-        if (request('estado')) {
-            $query->whereHas('estadoRecinto', function($q) {
-                $q->where('nombre', request('estado'));
-            });
-        }
-
-        // Filtro por tipo
-        if (request('tipo')) {
-            $query->whereHas('tipoRecinto', function($q) {
-                $q->where('nombre', request('tipo'));
+        if (request('busquedaRecinto')) {
+            $busqueda = request('busquedaRecinto');
+            $query->where(function($q) use ($busqueda) {
+                $q->where('nombre', 'like', "%$busqueda%")
+                  ->orWhereHas('institucion', function($q2) use ($busqueda) {
+                      $q2->where('nombre', 'like', "%$busqueda%");
+                  });
             });
         }
 
