@@ -35,7 +35,7 @@
             <div class="sidebar-logo">
                 <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" />
             </div>
-            <a href="#" class="sidebar-item">
+            <a href="{{route('dashboard')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>

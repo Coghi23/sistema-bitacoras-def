@@ -260,5 +260,64 @@
             }
         });
     @endif
+
+    // Obtener todos los nombres de instituciones existentes en la tabla
+    function obtenerNombresInstituciones() {
+        const nombres = [];
+        document.querySelectorAll('tbody tr td.text-center:first-child').forEach(function(td) {
+            if (td.textContent) {
+                nombres.push(td.textContent.trim().toLowerCase());
+            }
+        });
+        return nombres;
+    }
+
+    // Validación para el formulario de agregar institución
+    document.addEventListener('DOMContentLoaded', function() {
+        var formAgregar = document.querySelector('#modalAgregarInstitucion form');
+        if (formAgregar) {
+            formAgregar.addEventListener('submit', function(e) {
+                var nombre = formAgregar.querySelector('[name="nombre"]');
+                var nombreValor = nombre.value.trim().toLowerCase();
+                var nombresExistentes = obtenerNombresInstituciones();
+                if (!nombre.value.trim() || nombre.value.trim().length < 3) {
+                    e.preventDefault();
+                    alert('El nombre de la institución es obligatorio y debe tener al menos 3 caracteres.');
+                    nombre.focus();
+                    return;
+                }
+                if (nombresExistentes.includes(nombreValor)) {
+                    e.preventDefault();
+                    alert('Ya existe una institución con ese nombre.');
+                    nombre.focus();
+                }
+            });
+        }
+
+        // Validación para los formularios de editar institución
+        document.querySelectorAll('[id^="modalEditarInstitucion-"] form').forEach(function(formEditar) {
+            formEditar.addEventListener('submit', function(e) {
+                var nombre = formEditar.querySelector('[name="nombre"]');
+                var nombreValor = nombre.value.trim().toLowerCase();
+                var nombresExistentes = obtenerNombresInstituciones();
+
+                // Excluir el nombre actual de la institución editada
+                var nombreActual = nombre.getAttribute('value') ? nombre.getAttribute('value').trim().toLowerCase() : '';
+                var nombresSinActual = nombresExistentes.filter(function(n) { return n !== nombreActual; });
+
+                if (!nombre.value.trim() || nombre.value.trim().length < 3) {
+                    e.preventDefault();
+                    alert('El nombre de la institución es obligatorio y debe tener al menos 3 caracteres.');
+                    nombre.focus();
+                    return;
+                }
+                if (nombresSinActual.includes(nombreValor)) {
+                    e.preventDefault();
+                    alert('Ya existe una institución con ese nombre.');
+                    nombre.focus();
+                }
+            });
+        });
+    });
 </script>
 @endpush
