@@ -7,24 +7,23 @@
     <div class="main-content">
 
         {{-- Búsqueda + botón agregar --}}
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div class="input-group w-50">
-                <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="d-flex w-100">
-                    <span class="input-group-text bg-white border-white">
-                        <i class="bi bi-search text-secondary"></i>
+        <div class="search-bar-wrapper mb-4">
+            <div class="search-bar">
+                <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="w-100 position-relative">
+                    <span class="search-icon">
+                        <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0 shadow-sm"
+                    <input type="text" class="form-control"
                         placeholder="Buscar sección..." name="busquedaSeccion" 
-                        value="{{ request('busquedaSeccion') }}" id="inputBusqueda" autocomplete="off" 
-                        style="border-radius: 20px;">
+                        value="{{ request('busquedaSeccion') }}" id="inputBusqueda" autocomplete="off">
                     @if(request('busquedaSeccion'))
-                    <button type="button" class="btn btn-outline-secondary border-0" id="limpiarBusqueda" title="Limpiar búsqueda">
+                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
                         <i class="bi bi-x-circle"></i>
                     </button>
                     @endif
                 </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center"
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                 data-bs-toggle="modal" data-bs-target="#modalAgregarSeccion"
                 title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
