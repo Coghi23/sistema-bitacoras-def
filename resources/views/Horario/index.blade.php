@@ -56,12 +56,16 @@
                         <td class="col-salida">{{ $horario->leccion->hora_final ?? '' }}</td>
                         <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
                         <td class="col-acciones">
+                            @if(Auth::user() && !Auth::user()->hasRole('director'))
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
                                 <i class="bi bi-pencil icon-editar"></i>
                             </button>
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
                                 <i class="bi bi-trash icon-eliminar"></i>
                             </button>
+                            @else
+                            <span class="text-muted">Solo vista</span>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -97,12 +101,16 @@
                         <td class="col-entrada"></td>
                         <td class="col-salida"></td>
                         <td class="col-acciones">
+                            @if(Auth::user() && !Auth::user()->hasRole('director'))
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
                                 <i class="bi bi-pencil icon-editar"></i>
                             </button>
                             <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
                                 <i class="bi bi-trash icon-eliminar"></i>
                             </button>
+                            @else
+                            <span class="text-muted">Solo vista</span>
+                            @endif
                         </td>
                     </tr>
                     @empty
@@ -113,9 +121,8 @@
                 </tbody>
             </table>
         </div>
-    
 
-
+    @if(Auth::user() && !Auth::user()->hasRole('director'))
     {{-- Modal Crear Horario --}}
     <div class="modal fade" id="modalHorario" tabindex="-1" aria-labelledby="modalHorarioLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -482,6 +489,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     {{-- Modal Éxito Eliminar --}}
     @if(session('eliminado'))

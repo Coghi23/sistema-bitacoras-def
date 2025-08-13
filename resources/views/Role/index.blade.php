@@ -54,6 +54,7 @@
                                         </td>
                                         <td>{{ $role->created_at->format('d/m/Y') }}</td>
                                         <td>
+                                            @if(Auth::user() && !Auth::user()->hasRole('director'))
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn btn-sm btn-outline-primary" 
                                                         data-bs-toggle="modal" 
@@ -68,6 +69,9 @@
                                                     <i class="bi bi-trash"></i> Eliminar
                                                 </button>
                                             </div>
+                                            @else
+                                            <span class="text-muted">Solo vista</span>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty
@@ -84,6 +88,7 @@
     </div>
 </div>
 
+@if(Auth::user() && !Auth::user()->hasRole('director'))
 <!-- Modal Crear Rol -->
 <div class="modal fade" id="createRoleModal" tabindex="-1">
     <div class="modal-dialog modal-lg">
@@ -227,4 +232,5 @@ function setDeleteRole(roleId, roleName) {
     document.getElementById('deleteRoleForm').action = `/role/${roleId}`;
 }
 </script>
+@endif
 @endsection
