@@ -14,6 +14,7 @@ return new class extends Migration
          Schema::create('estadoRecinto', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 60);
+            $table->string('color', 60);
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps(); 
         });

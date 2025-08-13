@@ -52,14 +52,18 @@
                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <h5 class="modal-title">Crear Estado de Recinto</h5>
+                        <h5 class="modal-title">Crear Nuevo Estado de Recinto</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
                         <form action="{{ route('estadoRecinto.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="nombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
-                                <input type="text" name="nombre" id="nombreEstadoRecinto" class="form-control" placeholder="Ingrese el nombre del Estado de Recinto" required>
+                                <input type="text" name="nombre" id="nombreEstadoRecinto" class="form-control" placeholder="Ingrese el Nombre del Estado de Recinto" required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="colorEstadoRecinto" class="form-label fw-bold">Color a asignar al estado de recinto</label>
+                                <input type="color"value="#ffffff" name="color" id="colorEstadoRecinto" class="form-control"  required>
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
@@ -71,12 +75,13 @@
         </div>
 
        
-        <!-- Modal Editar estado recinto-->
+        <!-- Modal Editar Estado de Recinto-->
         <div class="table-responsive">
             <table class="table align-middle table-hover">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 90%;">Nombre del Estado de Recinto</th>
+                        <th class="text-center" style="width: 60%;">Nombre del Estado de Recinto</th>
+                        <th class="text-center" style="width: 30%;">Color</th>
                         <th class="text-center" style="width: 10%;">Acciones</th>
                     </tr>
                 </thead>
@@ -85,6 +90,10 @@
                         <tr>
                             @if ($estadoRecinto->condicion == 1)
                                 <td class="text-center">{{ $estadoRecinto->nombre }}</td>
+                                <td class="text-center">
+                                    <span class="badge" style="background-color: {{ $estadoRecinto->color }};">
+                                        {{ $estadoRecinto->color }}
+                                    </span>
                                 <td class="text-center">
                                     @if(Auth::user() && !Auth::user()->hasRole('director'))
                                     <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
@@ -96,7 +105,7 @@
                                             <i class="bi bi-trash"></i>
                                     </button>
                                     @else
-                                    <span class="text-muted">Solo vista</span>
+                                    <span class="text-muted">Solo Vista</span>
                                     @endif
                                 </td>
                             @endif
@@ -124,6 +133,10 @@
                                                         <input type="text" name="nombre" id="nombre" class="form-control"
                                                 value="{{old('nombre',$estadoRecinto->nombre)}}">
                                                     </div>
+                                                    <div class="mb-3">
+                                                 <label for="colorEstadoRecinto" class="form-label fw-bold">Color a asignar al estado de recinto</label>
+                                                    <input type="color"value="{{old('nombre',$estadoRecinto->color)}}" name="color" id="colorEstadoRecinto" class="form-control"  required>
+                                                    </div>
                                                 </div>
                                                 <div class="card-footer text-center">
                                                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
@@ -146,7 +159,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar el estado de recinto?</p>
+                                        <p class="modal-text">¿Desea Eliminar el Estado de Recinto?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('estadoRecinto.destroy', ['estadoRecinto' => $estadoRecinto->id]) }}" method="post">
                                                 @method('DELETE')
@@ -224,4 +237,9 @@
         });
     }
 </script>
+<script>
+       $(document).ready(function() {
+         $('#colorSelector').colorpicker();
+       });
+       </script>
 @endpush

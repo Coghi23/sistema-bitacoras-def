@@ -1,12 +1,21 @@
 /* ------------------ Estilos Generales ------------------ */
 body {
     height: 100vh;
-    background-image: url('../../Logos_Login/fondo-pagina.png'); 
+    background-image: url('../Logos_Login/fondo-pagina.png'); 
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
     font-family: 'Segoe UI', sans-serif; 
     color: #134496;
+}
+
+
+.login-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
 }
 
 /* ------------------ Títulos ------------------ */
@@ -35,7 +44,7 @@ body {
 
 /* ------------------ Card de Login ------------------ */
 .login-card {
-    background-image: url('../../Logos_Login/fondo-card.png'); 
+    background-image: url('/Logos_Login/Frame 18.png'); 
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -137,6 +146,8 @@ body {
   z-index: 9999;
 }
 
+
+
 .popup-card {
   background-color: white;
   padding: 40px 50px;
@@ -164,3 +175,224 @@ body {
   display: none;
 }
 
+/* ==== ICONO DE ÉXITO ==== */
+.swal2-icon.swal2-success {
+  border: none !important;
+  width: 48px !important;
+  height: 50px !important;
+  font-size: 0.6rem !important;
+  border-radius: 100% !important;
+  margin: 1rem auto 0.5rem auto !important;
+  
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #EFC737 !important; /* amarillo */
+}
+
+.swal2-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: #EFC737 !important; /* amarillo */
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: #EFC737!important;
+}
+
+.swal2-confirm {
+  background-color: #1C4482 !important;
+  color: white !important;
+  border: 1px solid #1C4482 !important;
+}
+
+.swal2-title {
+  font-size: 1.1rem !important;
+  font-weight: 600 !important;
+  margin-bottom: 0.5rem !important;
+  color: #134496;
+  margin-top: 10px;
+  padding: 5x;
+  margin: auto;
+}
+
+
+
+.swal2-html-container {
+  font-size: 1.2rem !important;
+  color: #004AAD !important;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+body.swal2-shown {
+  overflow: hidden !important;
+  padding-right: 0 !important;
+}
+
+.mensaje-error2 {
+  position: absolute;
+  top: -5px; 
+  left: 290px;   
+  display: flex;
+  align-items: center;
+  background-color: #FFA1A1;
+  color: #000;
+  padding: 8px 12px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  max-width: fit-content;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px 20px 20px 5px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);
+  z-index: 10;
+}
+
+.icono {
+  width: 28px;
+  height: 28px;
+  background-color: #1c1c1c;
+  color: #FFA1A1;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.d-none {
+  display: none !important;
+}
+
+.mensaje-error {
+  position: absolute;
+  top: -48px;
+  right: -20px;
+  display: flex;
+  align-items: center;
+  background-color: #FFA1A1;
+  color: #000;
+  padding: 10px 15px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px 20px 20px 5px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);
+  z-index: 11;
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+  background-color: #1c1c1c;
+  color: #FFA1A1;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+
+.mensaje-error3 {
+  position: absolute;
+  top: -20px;
+  right: -50px;
+  display: flex;
+  align-items: center;
+  background-color: #FFA1A1;
+  color: #000;
+  padding: 10px 15px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px 20px 20px 5px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);
+  z-index: 11;
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+  background-color: #1c1c1c;
+  color: #FFA1A1;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+
+.mensaje-error4 {
+  position: absolute;
+  left: 650px;
+  top: 500px;     
+  display: flex;
+  align-items: center;
+  background-color: #FFA1A1;
+  color: #000;
+  padding: 10px 15px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px 20px 20px 5px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);
+  z-index: 11;
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+  background-color: #1c1c1c;
+  color: #FFA1A1;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: bold;
+}
+
+.mensaje-error5 {
+  position: absolute;
+  top: -20px;
+  left: 350px;
+  display: flex;
+  align-items: center;
+  background-color: #FFA1A1;
+  color: #000;
+  padding: 10px 15px;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 400;
+  border: 1px solid #d0d0d0;
+  border-radius: 20px 20px 20px 5px;
+  box-shadow: 2px 4px 8px rgba(0, 0, 0, 0.25);
+  z-index: 11;
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+  background-color: #1c1c1c;
+  color: #FFA1A1;
+  border-radius: 50%;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 10px;
+  font-weight: bold;
+}

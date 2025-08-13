@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/delete-alerts.css') }}">
     
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
 </head>
@@ -28,10 +29,12 @@
                 <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
 
                 <div class="separator"></div>
-                <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo COVAO" class="logo" />
+                <img src="https://covao.ed.cr/wp-content/uploads/2025/01/Especialidades-logos-05-e1736905518920.webp" alt="Logo COVAO Nocturno" class="logo" />
+               
             </div>
             <div class="title">Bitácoras HHC</div>
-            <img src="https://nocturno.covao.ed.cr/wp-content/uploads/2024/11/logo-covao-nocturno.webp" alt="Logo COVAO Nocturno" class="logo" />
+            <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo COVAO" class="logo" />
+           
         </div>
 
         <div class="yellow-line"></div>
@@ -45,14 +48,28 @@
             <a href="{{ route('dashboard') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
+
+                
             </a>
+
+            <div class="sidebar-item" id="recinto-btn" data-bs-toggle="tooltip" title="Manejo de Recintos">
+                <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
+                <div class="label">Recintos</div>
+            </div>
+
+            <div class="submenu-popover" id="recinto-submenu">
+                <div class="submenu-arrow"></div>
+                
+                <a href="{{ asset('recinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
+                <a href="{{ asset('tipoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
+                <a href="{{ asset('estadoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
+                
+            </div>
 
             <a href="{{ asset('usuario') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-person"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
             </a>
-
-            
 
             <a href="{{ asset('horario') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
@@ -94,7 +111,7 @@
 
             <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Manejo de Personal">
                 <div class="icon-circle"><i class="bi bi-people-fill"></i></div>
-                <div class="label"></div>
+                <div class="label">Personal</div>
             </div>
 
             <div class="submenu-popover" id="submenu">

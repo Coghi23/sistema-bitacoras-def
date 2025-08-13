@@ -30,8 +30,8 @@
                     </button>
                     <ul class="dropdown-menu">
                         <li><a class="dropdown-item" href="{{ route('horario.index') }}">Todos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'fijo']) }}">Horarios fijos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'temporal']) }}">Horarios temporales</a></li>
+                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'fijo']) }}">Horarios Fijos</a></li>
+                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'temporal']) }}">Horarios Temporales</a></li>
                     </ul>
                 </div>
             </div>
@@ -73,7 +73,7 @@
                     </tr>
                     @empty
                     <tr class="record-row">
-                        <td class="col text-center" colspan="8">No hay horarios fijos registrados.</td>
+                        <td class="col text-center" colspan="8">No Hay Horarios Fijos Registrados.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -114,7 +114,7 @@
                     </tr>
                     @empty
                     <tr class="record-row">
-                        <td class="col text-center" colspan="7">No hay horarios temporales registrados.</td>
+                        <td class="col text-center" colspan="7">No Hay Horarios Temporales Registrados.</td>
                     </tr>
                     @endforelse
                 </tbody>
@@ -131,7 +131,7 @@
                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <h5 class="modal-title">Crear Horario</h5>
+                        <h5 class="modal-title">Crear Nuevo Horario</h5>
                     </div>
                 <form method="POST" action="{{ route('horario.store') }}">
                     @csrf
@@ -147,7 +147,7 @@
                     <div class="modal-body px-4 pt-3">
                         {{-- Tipo de Horario --}}
                         <div class="mb-4 d-flex align-items-center justify-content-between fw-bold">
-                            <label class="w-50 text-start">Tipo de horario:</label>
+                            <label class="w-50 text-start">Tipo de Horario:</label>
                             <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
                                     <input class="form-check-input {{ request('tipoHorario') == '1' ? 'active' : '' }}" type="radio" name="tipoHorario" id="fijoRadio" value="fijo" required>
@@ -182,12 +182,11 @@
                             </div>
                         </div>
                         {{-- Docente --}}
-                    {{-- Docente --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idDocente" class="fw-bold me-3 w-50 text-start">Docente:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un docente</option>
+                                <select data-size="4" title="Seleccione un Docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5" required>
+                                    <option value="">Seleccione un Docente</option>
                                     @foreach ($profesores as $profesor)
                                         <option value="{{$profesor->id}}" {{ old('user_id') == $profesor->id ? 'selected' : '' }}>{{$profesor->name}}</option>
                                     @endforeach
@@ -199,8 +198,8 @@
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="recintoSelect" class="fw-bold me-3 w-50 text-start">Recinto:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un recinto</option>
+                                <select data-size="4" title="Seleccione un Recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5" required>
+                                    <option value="">Seleccione un Recinto</option>
                                     @foreach ($recintos as $recinto)
                                         <option value="{{$recinto->id}}" {{ old('idRecinto') == $recinto->id ? 'selected' : '' }}>{{$recinto->nombre}}</option>
                                     @endforeach
@@ -208,12 +207,12 @@
                             </div>
                         </div>
                         
-                            {{-- Subárea --}}
+                        {{-- Subárea --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idSubarea" class="fw-bold me-3 w-50 text-start">Subárea:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un docente</option>
+                                <select data-size="4" title="Seleccione una Subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5" required>
+                                    <option value="">Seleccione una Subárea</option>
                                     @foreach ($subareas as $subarea)
                                         <option value="{{$subarea->id}}" {{ old('idSubarea') == $subarea->id ? 'selected' : '' }}>{{$subarea->nombre}}</option>
                                     @endforeach
@@ -221,12 +220,12 @@
                             </div>
                         </div>
 
-                            {{-- Sección --}}
+                        {{-- Sección --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Sección:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un sección</option>
+                                <select data-size="4" title="Seleccione una Sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5" required>
+                                    <option value="">Seleccione una Sección</option>
                                     @foreach ($secciones as $seccion)
                                         <option value="{{$seccion->id}}" {{ old('idSeccion') == $seccion->id ? 'selected' : '' }}>{{$seccion->nombre}}</option>
                                     @endforeach
@@ -281,10 +280,10 @@
                                 {{-- Botones para seleccionar/deseleccionar todos --}}
                                 <div class="mt-3 d-flex gap-2 justify-content-center">
                                     <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLecciones()">
-                                        Seleccionar todas
+                                        Seleccionar Todas
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLecciones()">
-                                        Deseleccionar todas
+                                        Deseleccionar Todas
                                     </button>
                                 </div>
                             </div>
@@ -312,13 +311,13 @@
                             </div>
                             <div class="linea-vertical-amarilla ms-2"></div>
                         </button>
-                        <h5 class="modal-title m-0" id="modalEditarHorarioLabel">Modificar horario</h5>
+                        <h5 class="modal-title m-0" id="modalEditarHorarioLabel">Modificar Horario</h5>
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
                     <div class="modal-body px-4 pt-3">
                         {{-- Tipo de Horario --}}
                         <div class="mb-4 d-flex align-items-center justify-content-between fw-bold">
-                            <label class="w-50 text-start">Tipo de horario:</label>
+                            <label class="w-50 text-start">Tipo de Horario:</label>
                             <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
                                     <input class="form-check-input" type="radio" name="tipoHorario" value="true"  disabled>
@@ -374,7 +373,7 @@
                         </div>
                         {{-- Hora de ingreso --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">Hora de ingreso:</label>
+                            <label class="fw-bold me-3 w-50 text-start">Hora de Ingreso:</label>
                             <div class="d-flex w-50">
                                 <input type="text" name="horaEntrada" class="form-control rounded-4 me-2 text-center" placeholder="hh:mm" style="max-width: 90px;" required
                                     value="" />
@@ -386,7 +385,7 @@
                         </div>
                         {{-- Hora de salida --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">Hora de salida:</label>
+                            <label class="fw-bold me-3 w-50 text-start">Hora de Salida:</label>
                             <div class="d-flex w-50">
                                 <input type="text" name="horaSalida" class="form-control rounded-4 me-2 text-center" placeholder="hh:mm" style="max-width: 90px;" required
                                     value="" />
@@ -396,92 +395,92 @@
                                 </select>
                             </div>
                         </div>
-                                            {{-- Subárea + Sección --}}
-                            <div class="mb-3 d-flex align-items-center justify-content-between">
-                                <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Subárea y sección:</label>
-                                <div class="position-relative w-50">
-                                    <select name="idSubareaSeccion" id="idSubareaSeccion" class="form-select rounded-4 pe-5" required>
-                                        <option value="" hidden>Seleccione...</option>
-                                        
-                                    </select>
-                                </div>
+                        {{-- Subárea + Sección --}}
+                        <div class="mb-3 d-flex align-items-center justify-content-between">
+                            <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Subárea y Sección:</label>
+                            <div class="position-relative w-50">
+                                <select name="idSubareaSeccion" id="idSubareaSeccion" class="form-select rounded-4 pe-5" required>
+                                    <option value="" hidden>Seleccione...</option>
+                                    
+                                </select>
                             </div>
+                        </div>
 
-                            {{-- Lecciones --}}
-                            <div class="mb-3">
-                                <label class="fw-bold mb-3">Lecciones:</label>
-                                <div class="border rounded-4 p-3" style="max-height: 300px; overflow-y: auto;">
-                                    {{-- Lecciones Académicas --}}
-                                    <div class="mb-3">
-                                        <h6 class="text-primary mb-2">Lecciones Académicas</h6>
-                                        <div class="row">
-                                            @for($i = 1; $i <= 12; $i++)
-                                            <div class="col-12 col-md-6 mb-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                           value="{{ $i }}" id="leccion{{ $i }}">
-                                                    <label class="form-check-label small" for="leccion{{ $i }}">
-                                                        Lección {{ $i }}
-                                                        @switch($i)
-                                                            @case(1) (07:00 - 07:40) @break
-                                                            @case(2) (07:40 - 08:20) @break
-                                                            @case(3) (08:20 - 09:00) @break
-                                                            @case(4) (09:20 - 10:00) @break
-                                                            @case(5) (10:00 - 10:40) @break
-                                                            @case(6) (10:40 - 11:20) @break
-                                                            @case(7) (12:05 - 12:45) @break
-                                                            @case(8) (12:45 - 01:25) @break
-                                                            @case(9) (01:25 - 02:05) @break
-                                                            @case(10) (02:20 - 03:00) @break
-                                                            @case(11) (03:00 - 03:40) @break
-                                                            @case(12) (03:40 - 04:20) @break
-                                                        @endswitch
-                                                    </label>
-                                                </div>
+                        {{-- Lecciones --}}
+                        <div class="mb-3">
+                            <label class="fw-bold mb-3">Lecciones:</label>
+                            <div class="border rounded-4 p-3" style="max-height: 300px; overflow-y: auto;">
+                                {{-- Lecciones Académicas --}}
+                                <div class="mb-3">
+                                    <h6 class="text-primary mb-2">Lecciones Académicas</h6>
+                                    <div class="row">
+                                        @for($i = 1; $i <= 12; $i++)
+                                        <div class="col-12 col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                       value="{{ $i }}" id="leccion{{ $i }}">
+                                                <label class="form-check-label small" for="leccion{{ $i }}">
+                                                    Lección {{ $i }}
+                                                    @switch($i)
+                                                        @case(1) (07:00 - 07:40) @break
+                                                        @case(2) (07:40 - 08:20) @break
+                                                        @case(3) (08:20 - 09:00) @break
+                                                        @case(4) (09:20 - 10:00) @break
+                                                        @case(5) (10:00 - 10:40) @break
+                                                        @case(6) (10:40 - 11:20) @break
+                                                        @case(7) (12:05 - 12:45) @break
+                                                        @case(8) (12:45 - 01:25) @break
+                                                        @case(9) (01:25 - 02:05) @break
+                                                        @case(10) (02:20 - 03:00) @break
+                                                        @case(11) (03:00 - 03:40) @break
+                                                        @case(12) (03:40 - 04:20) @break
+                                                    @endswitch
+                                                </label>
                                             </div>
-                                            @endfor
                                         </div>
-                                    </div>
-
-                                    {{-- Lecciones Técnicas --}}
-                                    <div>
-                                        <h6 class="text-success mb-2">Lecciones Técnicas</h6>
-                                        <div class="row">
-                                            @for($i = 1; $i <= 8; $i++)
-                                            <div class="col-12 col-md-6 mb-2">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                           value="{{ 12 + $i }}" id="leccionTecnica{{ $i }}">
-                                                    <label class="form-check-label small" for="leccionTecnica{{ $i }}">
-                                                        Lección Técnica {{ $i }}
-                                                        @switch($i)
-                                                            @case(1) (07:00 - 08:00) @break
-                                                            @case(2) (08:00 - 09:00) @break
-                                                            @case(3) (09:20 - 10:20) @break
-                                                            @case(4) (10:20 - 11:20) @break
-                                                            @case(5) (12:05 - 01:05) @break
-                                                            @case(6) (01:05 - 02:05) @break
-                                                            @case(7) (02:20 - 03:20) @break
-                                                            @case(8) (03:20 - 04:20) @break
-                                                        @endswitch
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            @endfor
-                                        </div>
-                                    </div>
-
-                                    {{-- Botones para seleccionar/deseleccionar todos --}}
-                                    <div class="mt-3 d-flex gap-2 justify-content-center">
-                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLecciones()">
-                                            Seleccionar todas
-                                        </button>
-                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLecciones()">
-                                            Deseleccionar todas
-                                        </button>
+                                        @endfor
                                     </div>
                                 </div>
+
+                                {{-- Lecciones Técnicas --}}
+                                <div>
+                                    <h6 class="text-success mb-2">Lecciones Técnicas</h6>
+                                    <div class="row">
+                                        @for($i = 1; $i <= 8; $i++)
+                                        <div class="col-12 col-md-6 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                       value="{{ 12 + $i }}" id="leccionTecnica{{ $i }}">
+                                                <label class="form-check-label small" for="leccionTecnica{{ $i }}">
+                                                    Lección Técnica {{ $i }}
+                                                    @switch($i)
+                                                        @case(1) (07:00 - 08:00) @break
+                                                        @case(2) (08:00 - 09:00) @break
+                                                        @case(3) (09:20 - 10:20) @break
+                                                        @case(4) (10:20 - 11:20) @break
+                                                        @case(5) (12:05 - 01:05) @break
+                                                        @case(6) (01:05 - 02:05) @break
+                                                        @case(7) (02:20 - 03:20) @break
+                                                        @case(8) (03:20 - 04:20) @break
+                                                    @endswitch
+                                                </label>
+                                            </div>
+                                        </div>
+                                        @endfor
+                                    </div>
+                                </div>
+
+                                {{-- Botones para seleccionar/deseleccionar todos --}}
+                                <div class="mt-3 d-flex gap-2 justify-content-center">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLecciones()">
+                                        Seleccionar Todas
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLecciones()">
+                                        Deseleccionar Todas
+                                    </button>
+                                </div>
                             </div>
+                        </div>
                     </div>
                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary btn-modificar">Modificar</button>

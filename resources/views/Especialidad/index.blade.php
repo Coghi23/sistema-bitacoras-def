@@ -7,31 +7,45 @@
 
 <div class="wrapper">
     <div class="main-content">
-        <div class="d-flex justify-content-between align-ins$institucions-center mb-3">
-            <div class="input-group w-50">
-                <form id="busquedaForm" method="GET" action="{{ route('especialidad.index') }}" class="d-flex w-100">
-                    <span class="input-group-text bg-white border-white">
-                        <i class="bi bi-search text-secondary"></i>
+        {{-- Búsqueda + botón agregar --}}
+        <div class="search-bar-wrapper mb-4">
+            <div class="search-bar">
+                <form id="busquedaForm" method="GET" action="{{ route('especialidad.index') }}" class="w-100 position-relative">
+                    <span class="search-icon">
+                        <i class="bi bi-search"></i>
                     </span>
-                    <input type="text" class="form-control border-start-0 shadow-sm" style="border-radius: 20px;" 
-                           placeholder="Buscar especialidad o institución..." name="busquedaEspecialidad" 
-                           value="{{ request('busquedaEspecialidad') }}" id="inputBusqueda" autocomplete="off" />
+                    <input
+                        type="text"
+                        class="form-control"
+                        placeholder="Buscar especialidad o institución..."
+                        name="busquedaEspecialidad"
+                        value="{{ request('busquedaEspecialidad') }}"
+                        id="inputBusqueda"
+                        autocomplete="off"
+                    >
                     @if(request('busquedaEspecialidad'))
-                    <button type="button" class="btn btn-outline-secondary border-0" id="limpiarBusqueda" title="Limpiar búsqueda">
+                    <button
+                        type="button"
+                        class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                        id="limpiarBusqueda"
+                        title="Limpiar búsqueda"
+                        style="background: transparent;"
+                    >
                         <i class="bi bi-x-circle"></i>
                     </button>
                     @endif
                 </form>
             </div>
-            
+
             @if(Auth::user() && !Auth::user()->hasRole('director'))
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center" 
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar" 
                 data-bs-toggle="modal" data-bs-target="#modalAgregarespecialidad" 
                 title="Agregar Especialidad" style="background-color: #134496; font-size: 1.2rem;">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
             @endif
         </div>
+        {{-- Fin búsqueda + botón agregar --}}
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaEspecialidad'))
@@ -52,17 +66,19 @@
                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <h5 class="modal-title">Crear Especialidad</h5>
+                        <h5 class="modal-title">Crear Nueva Especialidad</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
                         <form action="{{ route('especialidad.store') }}" method="POST">
                             @csrf
+                            <input type="hidden" name="form_type" value="create">
                             <div class="mb-3">
                                 <label for="nombreespecialidad" class="form-label fw-bold">Nombre de la Especialidad</label>
                                 <input type="text" name="nombre" id="nombreespecialidad" class="form-control" value="{{old('nombre')}}" placeholder="Ingrese el nombre de la Especialidad" required>
+                                
                                 <label for="id_institucion" class="form-label fw-bold mt-3">Institución</label>
-                                <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="id_institucion" class="form-control selectpicker show-tick" required>
-                                    <option value="">Seleccione una institución</option>
+                                <select name="id_institucion" id="id_institucion" class="form-select" required>
+                                    <option value="">Seleccione una Institución</option>
                                     @foreach ($instituciones as $institucion)
                                         <option value="{{$institucion->id}}" {{ old('id_institucion') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
                                     @endforeach
@@ -107,7 +123,7 @@
                                 <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
                             </button>
                             @else
-                            <span class="text-muted">Solo vista</span>
+                            <span class="text-muted">Solo Vista</span>
                             @endif
                         </td>
                     @endif
@@ -116,7 +132,7 @@
 
 
                <!-- Modal Editar Especialidad -->
-<div class="modal fade" id="modalEditarEspecialidad-{{ $especialidad->id }}" tabindex="-1" aria-labelledby="modalEditarespecialidadLabel" aria-hidden="true">
+<div class="modal fade" id="modalEditarEspecialidad-{{ $especialidad->id }}" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header modal-header-custom">
@@ -126,35 +142,41 @@
                 <h5 class="modal-title">Editar Especialidad</h5>
             </div>
             <div class="modal-body px-4 py-4">
-                <div class="card text-bg-light">
-                   <form action="{{ route('especialidad.update', $especialidad->id ?? 0) }}" method="post">
-                        @csrf
-                        @method('PATCH')
-                        <input type="hidden" name="id" id="editarIdespecialidad">
-                        <div class="card-body">
-                            <div class="mb-3">
-                                <label for="editarNombreespecialidad" class="form-label fw-bold">Nombre de la Especialidad</label>
-                                <input type="text" name="nombre" id="editarNombreespecialidad" class="form-control"
-                                    value="{{old('nombre', isset($especialidad) ? $especialidad->nombre : '')}}">
-                                
-                                <label for="editarInstitucion" class="form-label fw-bold mt-3">Institución</label>
-                                <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="editarInstitucion" class="form-control selectpicker show-tick">
-                                    @if(isset($instituciones))
-                                        @foreach ($instituciones as $institucion)
-                                            <option value="{{$institucion->id}}" 
-                                                {{ (isset($especialidad) && $especialidad->id_institucion == $institucion->id) || old('id_institucion') == $institucion->id ? 'selected' : '' }}>
-                                                {{$institucion->nombre}}
-                                            </option>
-                                        @endforeach
-                                    @endif
-                                </select>
-                            </div>
-                        </div>
-                        <div class="card-footer text-center">
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </div>
-                    </form>
-                </div>
+                {{-- Mostrar errores de validación --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        @foreach ($errors->all() as $error)
+                            <div>{{ $error }}</div>
+                        @endforeach
+                    </div>
+                @endif
+                
+                <form action="{{ route('especialidad.update', $especialidad->id) }}" method="POST">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="form_type" value="edit">
+                    <input type="hidden" name="especialidad_id" value="{{ $especialidad->id }}">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre de la Especialidad</label>
+                        <input type="text" name="nombre" class="form-control"
+                            value="{{ old('nombre', $especialidad->nombre) }}" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Institución</label>
+                        <select name="id_institucion" class="form-select" required>
+                            <option value="">Seleccione una Institución</option>
+                            @foreach ($instituciones as $institucion)
+                                <option value="{{ $institucion->id }}" 
+                                    {{ old('id_institucion', $especialidad->id_institucion) == $institucion->id ? 'selected' : '' }}>
+                                    {{ $institucion->nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Modificar</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -172,7 +194,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar la especialidad?</p>
+                                        <p class="modal-text">¿Desea Eliminar la Especialidad?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('especialidad.destroy', $especialidad->id) }}" method="post">
                                                 @method('DELETE')
@@ -247,5 +269,22 @@
             window.location.href = '{{ route("especialidad.index") }}';
         });
     }
+
+    // Mantener modal abierto si hay errores
+    @if ($errors->any())
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar qué tipo de formulario fue enviado para abrir el modal correcto
+            const formType = '{{ old("form_type") }}';
+            const especialidadId = '{{ old("especialidad_id") }}';
+            
+            if (formType === 'create') {
+                var modal = new bootstrap.Modal(document.getElementById('modalAgregarespecialidad'));
+                modal.show();
+            } else if (formType === 'edit' && especialidadId) {
+                var modal = new bootstrap.Modal(document.getElementById('modalEditarEspecialidad-' + especialidadId));
+                modal.show();
+            }
+        });
+    @endif
 </script>
 @endpush

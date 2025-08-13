@@ -13,17 +13,19 @@
 
 <body>
     <div id="sidebar-navbar">
-        <div class="topbar">
+    <div class="topbar">
             <button class="hamburger d-md-none" onclick="toggleSidebar()">
                 <i class="bi bi-list"></i>
             </button>
             <div class="left-section d-none d-md-flex">
-                <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo Covao" class="logo" />
+                <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
+
                 <div class="separator"></div>
-                <img src="https://nocturno.covao.ed.cr/wp-content/uploads/2024/11/logo-covao-nocturno.webp" alt="Logo Covao Nocturno" class="logo" />
-            </div>
+                <img src="https://covao.ed.cr/wp-content/uploads/2025/01/Especialidades-logos-05-e1736905518920.webp" alt="Logo COVAO Nocturno" class="logo" />
+              
             <div class="title">Bitácoras HHC</div>
-            <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
+            <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo COVAO" class="logo" />
+           
         </div>
         <div class="yellow-line"></div>
         <div class="sidebar-separator d-none d-md-block"></div>

@@ -36,9 +36,9 @@ class Recinto extends Model
         return $this->belongsTo(TipoRecinto::class);
     }
 
-    public function estadoRecinto()
+   public function estadoRecinto()
     {
-        return $this->belongsTo(EstadoRecinto::class);
+    return $this->belongsTo(EstadoRecinto::class, 'estadoRecinto_id');
     }
 
     
