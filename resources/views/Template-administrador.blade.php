@@ -90,19 +90,6 @@
                 <div class="label" data-bs-toggle="tooltip" title="QR Temporales">QR Temporales</div>
 
             </a>
-            <a href="{{ asset('tipoRecinto') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Tipo de Recinto">Tipo de Recinto</div>
-            </a>
-
-            <a href="{{ asset('estadoRecinto') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Estado de Recinto">Estado de Recinto</div>
-            </a>
-
-
-
-            <a href="{{ asset('recinto') }}" class="sidebar-item"><div class="icon-circle"><i class="bi bi-building-fill"></i></div><div class="label" data-bs-toggle="tooltip" title="Recintos">Recintos</div></a>
 
             <a href="{{ url('reportes.html') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>

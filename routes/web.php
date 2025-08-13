@@ -87,6 +87,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Para administradores
         Route::middleware('role:administrador|director')->group(function () {
             Route::get('/admin/qr', [QrController::class, 'indexAdmin'])->name('admin.qr.index');
+            
+            // Rutas para datos en tiempo real del administrador
+            Route::get('/admin/llaves/realtime', [LlaveController::class, 'getLlavesRealTime'])->name('admin.llaves.realtime');
+            Route::get('/admin/qr/realtime-data', [LlaveController::class, 'getQRsTemporalesRealTime'])->name('admin.qr.realtime');
         });
         
         // Ruta para escanear QR (disponible para ambos roles)
