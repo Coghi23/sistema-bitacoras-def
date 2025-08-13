@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="wrapper">
-    <div class="main-content p-4">
+    <div class="main-content p-4" style="margin-left: 90px;">
         <div class="row align-items-end mb-4">
             {{-- Barra de búsqueda --}}
             <div class="col-auto flex-grow-1" style="min-width: 0;">
@@ -89,67 +89,64 @@
         @endif
 
         {{-- Botones para mostrar/ocultar usuarios inactivos --}}
-        <div class="button-group mb-3">
-            <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-agregar btn-inactivos btn-agregar-sm">
-                Mostrar inactivos
-            </a>
-            <a href="{{ route('usuario.index') }}" class="btn btn-agregar btn-activos btn-agregar-sm">
-                Mostrar activos
-            </a>
-        </div>
+        <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+            Mostrar inactivos
+        </a>
+        <a href="{{ route('usuario.index') }}" class="btn btn-primary mb-3">
+            Mostrar activos
+        </a>
 
         <div id="tabla-usuarios">
-            <div class="table-responsive">
-                <table class="table align-middle table-hover">
-                    <thead>
-                        <tr>
-                            <th class="text-center">Nombre</th>
-                            <th class="text-center">Cédula</th>
-                            <th class="text-center">Correo Electrónico</th>
-                            <th class="text-center">Rol</th>
-                            <th class="text-center">Estado</th>
-                            <th class="text-center">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($usuarios as $usuario)
-                        <tr>
-                            <td class="text-center">{{ $usuario->name }}</td>
-                            <td class="text-center">{{ $usuario->cedula }}</td>
-                            <td class="text-center">{{ $usuario->email }}</td>
-                            <td class="text-center">
-                                @if($usuario->getRoleNames()->isNotEmpty())
-                                    {{ ucfirst($usuario->getRoleNames()->first()) }}
-                                @else
-                                    Sin rol
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                <span class="badge {{ isset($usuario->condicion) && $usuario->condicion ? 'bg-success' : 'bg-danger' }}">
-                                    {{ isset($usuario->condicion) && $usuario->condicion ? 'Activo' : 'Inactivo' }}
-                                </span>
-                            </td>
-                            <td class="text-center">
-                                @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario{{ $usuario->id }}">
-                                    <i class="bi bi-pencil" style="font-size: 1.8rem;"></i>
-                                </button>
-                                <button class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarUsuario{{ $usuario->id }}">
-                                    <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
-                                </button>
-                                @else
-                                <span class="text-muted">Solo vista</span>
-                                @endif
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td class="text-center" colspan="6">No hay usuarios registrados.</td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr class="header-row">
+                        <th class="col-dia">Nombre</th>
+                        <th class="col-docente">Cédula</th>
+                        <th class="col-recinto">Correo Electrónico</th>
+                        <th class="col-subarea-seccion">Rol</th>
+                        <th class="col-entrada">Estado</th>
+                        <th class="col-acciones">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($usuarios as $usuario)
+                    <tr class="record-row">
+                        <td class="col-dia">{{ $usuario->name }}</td>
+                        <td class="col-docente">{{ $usuario->cedula }}</td>
+                        <td class="col-recinto">{{ $usuario->email }}</td>
+                        <td class="col-subarea-seccion">
+                            @if($usuario->getRoleNames()->isNotEmpty())
+                                {{ ucfirst($usuario->getRoleNames()->first()) }}
+                            @else
+                                Sin rol
+                            @endif
+                        </td>
+                        <td class="col-entrada">
+                            <span class="badge {{ isset($usuario->condicion) && $usuario->condicion ? 'bg-success' : 'bg-danger' }}">
+                                {{ isset($usuario->condicion) && $usuario->condicion ? 'Activo' : 'Inactivo' }}
+                            </span>
+                        </td>
+                        <td class="col-acciones">
+                            @if(Auth::user() && !Auth::user()->hasRole('director'))
+                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario{{ $usuario->id }}">
+                                <i class="bi bi-pencil icon-editar"></i>
+                            </button>
+                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarUsuario{{ $usuario->id }}">
+                                <i class="bi bi-trash icon-eliminar"></i>
+                            </button>
+                            @else
+                            <span class="text-muted">Solo vista</span>
+                            @endif
+                        </td>
+                    </tr>
+                    @empty
+                    <tr class="record-row">
+                        <td class="text-center" colspan="6">No hay usuarios registrados.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -159,45 +156,45 @@
             <div class="modal-content rounded-4 shadow-lg">
                 <form method="POST" action="{{ route('usuario.store') }}">
                     @csrf
-                    <div class="modal-header modal-header-custom text-white px-4 py-3 position-relative justify-content-center">
+                    <div class="modal-header custom-header text-white px-4 py-3 position-relative justify-content-center">
                         <button type="button" class="btn p-0 d-flex align-items-center position-absolute start-0 ms-3" data-bs-dismiss="modal" aria-label="Cerrar">
                             <div class="circle-yellow d-flex justify-content-center align-items-center">
                                 <i class="fas fa-arrow-left text-blue-forced"></i>
                             </div>
                             <div class="linea-vertical-amarilla ms-2"></div>
                         </button>
-                        <h5 class="modal-title m-0" id="modalUsuarioLabel">Registro de usuarios</h5>
+                        <h5 class="modal-title m-0" id="modalUsuarioLabel">Registro de Usuarios</h5>
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
                     <div class="modal-body px-4 pt-3">
                         {{-- Nombre Completo --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Nombre Completo:
+                                <i class="fas fa-user text-primary me-2"></i>Nombre Completo:
                             </label>
-                            <input type="text" name="name" class="form-control rounded-4 w-50" placeholder="Nombre" required>
+                            <input type="text" name="name" class="form-control rounded-4 w-50" placeholder="Mauricio Vargas" required>
                         </div>
                         
                         {{-- Cédula --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Cédula:
+                                <i class="fas fa-id-card text-info me-2"></i>Cédula:
                             </label>
-                            <input type="text" name="cedula" class="form-control rounded-4 w-50" placeholder="Cédula" required>
+                            <input type="text" name="cedula" class="form-control rounded-4 w-50" placeholder="30458065" required>
                         </div>
                         
                         {{-- Correo Electrónico --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Correo Electrónico:
+                                <i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:
                             </label>
-                            <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="Correo electrónico" required>
+                            <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="MauriVargas17@gmail.com" required>
                         </div>
                         
                         {{-- Contraseña --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Contraseña:
+                                <i class="fas fa-lock text-danger me-2"></i>Contraseña:
                             </label>
                             <input type="password" name="password" class="form-control rounded-4 w-50" placeholder="••••••••" required>
                         </div>
@@ -205,7 +202,7 @@
                         {{-- Confirmar Contraseña --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Confirmar:
+                                <i class="fas fa-lock text-danger me-2"></i>Confirmar:
                             </label>
                             <input type="password" name="password_confirmation" class="form-control rounded-4 w-50" placeholder="••••••••" required>
                         </div>
@@ -213,7 +210,7 @@
                         {{-- Rol --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Rol:
+                                <i class="fas fa-user-tag text-success me-2"></i>Rol:
                             </label>
                             <div class="position-relative w-50">
                                 <select name="role" class="form-control rounded-4" required>
@@ -257,7 +254,7 @@
                         </div>
                         --}}
                     </div>
-                    <div class="modal-footer px-4 pb-3 d-flex justify-content-center">
+                    <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary btn-crear">Registrar</button>
                     </div>
                 </form>
@@ -274,7 +271,7 @@
                 <form method="POST" action="{{ route('usuario.update', $usuario->id) }}">
                     @csrf
                     @method('PUT')
-                    <div class="modal-header modal-header-custom text-white px-4 py-3 position-relative justify-content-end">
+                    <div class="modal-header custom-header text-white px-4 py-3 position-relative justify-content-center">
                         <button type="button" class="btn p-0 d-flex align-items-center position-absolute start-0 ms-3" data-bs-dismiss="modal" aria-label="Cerrar">
                             <div class="circle-yellow d-flex justify-content-center align-items-center">
                                 <i class="fas fa-arrow-left text-blue-forced"></i>
@@ -288,7 +285,7 @@
                         {{-- Nombre Completo --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Nombre Completo:
+                                <i class="fas fa-user text-primary me-2"></i>Nombre Completo:
                             </label>
                             <input type="text" name="name" class="form-control rounded-4 w-50" 
                                 value="{{ $usuario->name }}" required>
@@ -297,7 +294,7 @@
                         {{-- Cédula --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Cédula:
+                                <i class="fas fa-id-card text-info me-2"></i>Cédula:
                             </label>
                             <input type="text" name="cedula" class="form-control rounded-4 w-50" 
                                 value="{{ $usuario->cedula }}" required>
@@ -306,7 +303,7 @@
                         {{-- Correo Electrónico --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Correo Electrónico:
+                                <i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:
                             </label>
                             <input type="email" name="email" class="form-control rounded-4 w-50" 
                                 value="{{ $usuario->email }}" required>
@@ -315,7 +312,7 @@
                         {{-- Rol --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Rol:
+                                <i class="fas fa-user-tag text-success me-2"></i>Rol:
                             </label>
                             <div class="position-relative w-50">
                                 <select name="role" class="form-control rounded-4" required>
@@ -337,7 +334,7 @@
                         {{-- Estado/Condición --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Estado:
+                                <i class="fas fa-toggle-on text-primary me-2"></i>Estado:
                             </label>
                             <div class="position-relative w-50">
                                 <select name="condicion" class="form-control rounded-4" required>
@@ -350,13 +347,13 @@
                         {{-- Contraseña (opcional) --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">
-                                Nueva Contraseña:
+                                <i class="fas fa-lock text-danger me-2"></i>Nueva Contraseña:
                             </label>
                             <input type="password" name="password" class="form-control rounded-4 w-50" 
                                 placeholder="Dejar vacío para mantener actual">
                         </div>
                     </div>
-                    <div class="modal-footer px-4 pb-3 d-flex justify-content-center">
+                    <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary btn-modificar">Editar</button>
                     </div>
                 </form>
@@ -413,7 +410,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script>
-
+        // Funcionalidad de búsqueda en tiempo real
         let timeoutId;
         const inputBusqueda = document.getElementById('inputBusqueda');
         const formBusqueda = document.getElementById('busquedaForm');
@@ -462,8 +459,28 @@
             }
         }
 
-        
+        // Auto-cerrar el modal después de 3 segundos
+        @if(session('eliminado'))
+        setTimeout(function() {
+            cerrarModalExito();
+        }, 3000);
+        @endif
+
+        // Cerrar modal al hacer clic fuera de él
+        @if(session('eliminado'))
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('modalExitoEliminar');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        cerrarModalExito();
+                    }
+                });
+            }
+        });
+        @endif
     </script>
 
 </div>
 @endsection
+
