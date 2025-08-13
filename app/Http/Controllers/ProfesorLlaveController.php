@@ -26,6 +26,12 @@ class ProfesorLlaveController extends Controller
             
             $profesor = Profesor::where('usuario_id', $user->id)->first();
             
+            // Auto-crear perfil si el usuario tiene rol profesor pero no tiene perfil
+            if (!$profesor && $user->hasRole('profesor')) {
+                $profesor = Profesor::create(['usuario_id' => $user->id]);
+                \Log::info("Perfil de profesor auto-creado para usuario: {$user->name}");
+            }
+            
             if (!$profesor) {
                 return view('profesor-llave.index', [
                     'error' => 'No tienes perfil de profesor asignado. Contacta al administrador.',
