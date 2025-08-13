@@ -95,13 +95,15 @@
                                     <h5 class="modal-title">Edición de Sección</h5>
                                 </div>
                                 <div class="modal-body px-4 py-4">
-                                    {{-- Mostrar errores de validación --}}
-                                    @if ($errors->any())
-                                        <div class="alert alert-danger">
-                                            @foreach ($errors->all() as $error)
-                                                <div>{{ $error }}</div>
-                                            @endforeach
 
+                                    {{-- Mostrar errores de validación para editar --}}
+                                    @if (session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->any())
+                                        <div class="alert alert-danger">
+                                            <ul class="mb-0">
+                                                @foreach ($errors->all() as $error)
+                                                    <li>{{ $error }}</li>
+                                                @endforeach
+                                            </ul>
                                         </div>
                                     @endif
                                     
@@ -112,8 +114,8 @@
                                         <input type="hidden" name="seccion_id" value="{{ $seccion->id }}">
                                         <div class="mb-3">
 
-                                            <label class="form-label fw-bold">Nombre de la Sección</label>
-                                            <input type="text" name="nombre" class="form-control"
+                                            <label class="form-label fw-bold">Sección</label>
+                                            <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror"
 
                                                 value="{{ old('nombre', $seccion->nombre) }}" required>
                                             @error('nombre')
@@ -202,23 +204,51 @@
             </div>
             <div class="modal-body px-4 py-4">
 
-                {{-- Mostrar errores de validación --}}
-                @if ($errors->any())
+                {{-- Mostrar errores de validación para crear --}}
+                @if (session('modal_crear') && $errors->any())
                     <div class="alert alert-danger">
-                        @foreach ($errors->all() as $error)
-                            <div>{{ $error }}</div>
-                        @endforeach
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
                 
-                <form action="{{ route('seccion.store') }}" method="POST">
+                <form id="formCrearSeccion" action="{{ route('seccion.store') }}" method="POST">
 
                     @csrf
                     <input type="hidden" name="form_type" value="create">
                     <div class="mb-3">
 
-                        <label class="form-label fw-bold">Nombre de la Sección</label>
-                        <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>
+                        <label class="form-label fw-bold">Sección</label>
+                        <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror" 
+                               value="{{ old('nombre') }}">
+                        @error('nombre')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Especialidad</label>
+                        @error('especialidades')
+                            <div class="text-danger small mb-2">{{ $message }}</div>
+                        @enderror
+                        <div id="especialidades">
+                            <div class="input-group dynamic-group">
+                                <select id="selectEspecialidad" class="form-select">
+                                    <option value="">Seleccione una especialidad</option>
+                                    @foreach ($especialidades as $especialidad)
+                                        <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidad()" style="height: 9%; min-width: 38px; padding: 0;">
+                                    <i class="bi bi-plus" style="height: 49px;"></i>
+                                </button>
+                            </div>
+                            <!-- Contenedor para especialidades seleccionadas -->
+                            <div id="especialidadesSeleccionadas" class="mt-2"></div>
+                        </div>
 
                     </div>
                     <div class="text-center mt-4">
@@ -337,22 +367,34 @@
             window.location.href = '{{ route("seccion.index") }}';
         });
     }
-    
-    // Mantener modal abierto si hay errores
-    @if ($errors->any())
-        document.addEventListener('DOMContentLoaded', function() {
-            // Detectar qué tipo de formulario fue enviado para abrir el modal correcto
-            const formType = '{{ old("form_type") }}';
-            const seccionId = '{{ old("seccion_id") }}';
-            
-            if (formType === 'create') {
-                var modal = new bootstrap.Modal(document.getElementById('modalAgregarSeccion'));
-                modal.show();
-            } else if (formType === 'edit' && seccionId) {
-                var modal = new bootstrap.Modal(document.getElementById('modalEditarSeccion-' + seccionId));
-                modal.show();
-            }
 
+    // ========== ABRIR MODALES CON ERRORES ==========
+    
+    // Abrir modal de crear si hay errores de validación para crear
+    @if (session('modal_crear'))
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalCrear = new bootstrap.Modal(document.getElementById('modalAgregarSeccion'));
+            modalCrear.show();
+            
+            // Repoblar especialidades seleccionadas
+            @if(old('especialidades'))
+                const especialidadesOld = @json(old('especialidades'));
+                const especialidadesData = @json($especialidades->pluck('nombre', 'id'));
+                
+                especialidadesOld.forEach(function(id) {
+                    if (especialidadesData[id]) {
+                        agregarEspecialidadOld(id, especialidadesData[id]);
+                    }
+                });
+            @endif
+        });
+    @endif
+
+    // Abrir modal de editar si hay errores de validación para editar
+    @if (session('modal_editar_id'))
+        document.addEventListener('DOMContentLoaded', function() {
+            var modalEditar = new bootstrap.Modal(document.getElementById('modalEditarSeccion-{{ session('modal_editar_id') }}'));
+            modalEditar.show();
         });
     @endif
 </script>
