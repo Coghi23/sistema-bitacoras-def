@@ -30,59 +30,59 @@
         </div>
       
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-            @foreach($recintos as $recinto)
-                @if ($recinto->condicion == 1)
-                    @if(!request('tipo') || $recinto->tipo == request('tipo'))
-                        <div class="col d-flex">
-                            <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
-                                <div class="card-body pb-2 p-2">
-                                    <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
-                                        <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
-                                            {{ ucfirst($recinto->tipo) }}
-                                        </span>
-                                           <span class="badge px-2 py-1 rounded-pill text-dark"
-                                              style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto->color }};">
-                                            {{ $recinto->estadoRecinto->nombre }}
-                                          </span>
-                                    </div>
-                                    <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
-                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                                        <i class="fas fa-key me-1"></i>Número de llave: {{ $recinto->llave->nombre}}
-                                    </div>
-                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                                        <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
-                                    </div>
-                                    <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                                        <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto->nombre }}
-                                    </div>
-                                    
-                                    
+        @foreach($recintos as $recinto)
+            @if ($recinto->condicion == 1)
+                @if(!request('tipo') || $recinto->tipo == request('tipo'))
+                    <div class="col d-flex">
+                        <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
+                            <div class="card-body pb-2 p-2">
+                                <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
+                                <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
+                                {{ ucfirst($recinto->tipo) }}
+                                </span>
+                                <span class="badge px-2 py-1 rounded-pill text-dark"
+                                    style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto->color }};">
+                                {{ $recinto->estadoRecinto->nombre }}
+                                </span>
+                                </div>
+                                <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
+                                <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                <i class="fas fa-key me-1"></i>Número de llave: {{ $recinto->llave->nombre}}
+                                </div>
+                                <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
+                                </div>
+                                <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                                <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto->nombre }}
+                                </div>
+
+
                                 </div>
                                 <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
-                                    <!--<button class="btn btn-outline-info btn-sm rounded-5 d-flex align-items-center justify-content-center"
-                                            data-bs-toggle="modal" data-bs-target="#modalDevolucionLlave-{{ $recinto->id }}">
-                                        <i class="bi bi-key"></i>
-                                    </button>-->
-                                    <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"
-                                            data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
-                                        <i class="bi bi-pencil"></i>
+                                <!--<button class="btn btn-outline-info btn-sm rounded-5 d-flex align-items-center justify-content-center"
+                                data-bs-toggle="modal" data-bs-target="#modalDevolucionLlave-{{ $recinto->id }}">
+                                <i class="bi bi-key"></i>
+                                </button>-->
+                                <button class="btn btn-outline-secondary btn-sm rounded-5 d-flex align-items-center justify-content-center ms-0 ms-sm-2"
+                                data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
+                                <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Está seguro de que desea eliminar este recinto?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
+                                        <i class="bi bi-trash"></i>
                                     </button>
-                                    <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Está seguro de que desea eliminar este recinto?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                                </form>
                             </div>
                         </div>
-                    @endif
+                    </div>
                 @endif
-          
-                <!-- Eliminado foreach anidado para evitar duplicados -->
+            @endif
 
-                </div>
+     
+
+                
 
             <!-- Modal Editar Recinto -->
             
