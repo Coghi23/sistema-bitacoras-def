@@ -53,20 +53,26 @@
             <table class="table align-middle table-hover">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 60%;">Nombre de la llave</th>
+                        <th class="text-center" style="width: 50%;">Nombre de la llave</th>
                         <th class="text-center" style="width: 25%;">Estado</th>
+                        <th class="text-center" style="width: 10%;">Última actualización</th>
                         <th class="text-center" style="width: 15%;">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="llaves-table-body">
                     @foreach ($llaves as $llave)
-                        <tr>
+                        <tr id="llave-row-{{ $llave->id }}" data-llave-id="{{ $llave->id }}">
                             @if ($llave->condicion == 1)
                                 <td class="text-center">{{ $llave->nombre }}</td>
                                 <td class="text-center">
-                                    <span class="badge {{ $llave->estadoBadgeClass }}">
+                                    <span class="badge estado-badge {{ $llave->estadoBadgeClass }}" data-estado="{{ $llave->estado }}">
                                         {{ $llave->estadoEntregaText }}
                                     </span>
+                                </td>
+                                <td class="text-center">
+                                    <small class="text-muted ultima-actualizacion">
+                                        {{ $llave->updated_at->format('d/m/Y H:i:s') }}
+                                    </small>
                                 </td>
                                 <td class="text-center">
                                     <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
@@ -172,6 +178,193 @@
 @endsection
 
 @push('scripts')
+<script>
+$(document).ready(function() {
+    console.log('🔧 Sistema de Llaves - Tiempo Real Iniciado');
+    
+    let pollingInterval;
+    let lastUpdate = '';
+    
+    // Inicializar sistema de tiempo real
+    function initRealTimeSystem() {
+        console.log('🚀 Iniciando polling de llaves cada 2 segundos');
+        updateLlavesRealTime();
+        pollingInterval = setInterval(updateLlavesRealTime, 2000); // Cada 2 segundos
+    }
+    
+    // Actualizar llaves en tiempo real
+    function updateLlavesRealTime() {
+        console.log('🔄 Actualizando estado de llaves...');
+        
+        $.ajax({
+            url: '{{ route("admin.llaves.realtime") }}',
+            method: 'GET',
+            timeout: 5000,
+            cache: false,
+            success: function(response) {
+                if (response.status === 'success') {
+                    console.log('✅ Datos recibidos:', response.llaves.length, 'llaves');
+                    
+                    response.llaves.forEach(function(llave) {
+                        updateLlaveRow(llave);
+                    });
+                    
+                    // Mostrar indicador de última actualización (comentado para ocultar mensaje)
+                    // showUpdateIndicator(response.timestamp);
+                } else {
+                    console.warn('⚠️ Respuesta sin datos:', response);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('❌ Error al actualizar llaves:', error);
+                
+                // Si hay error, reducir frecuencia de polling
+                if (pollingInterval) {
+                    clearInterval(pollingInterval);
+                    setTimeout(() => {
+                        pollingInterval = setInterval(updateLlavesRealTime, 5000); // Reducir a 5 segundos
+                    }, 5000);
+                }
+            }
+        });
+    }
+    
+    // Actualizar fila individual de llave
+    function updateLlaveRow(llave) {
+        const row = $(`#llave-row-${llave.id}`);
+        if (row.length === 0) {
+            console.log(`⚠️ Fila no encontrada para llave ID: ${llave.id}`);
+            return;
+        }
+        
+        const estadoBadge = row.find('.estado-badge');
+        const ultimaActualizacion = row.find('.ultima-actualizacion');
+        
+        // Verificar si el estado cambió
+        const currentEstado = estadoBadge.data('estado');
+        if (currentEstado !== llave.estado) {
+            console.log(`🔄 Estado cambiado para ${llave.nombre}: ${currentEstado} → ${llave.estado}`);
+            
+            // Actualizar badge de estado con animación
+            estadoBadge.removeClass('bg-success bg-warning text-dark');
+            estadoBadge.addClass(llave.estado_badge_class);
+            estadoBadge.text(llave.estado_texto);
+            estadoBadge.data('estado', llave.estado);
+            
+            // Agregar animación de cambio
+            estadoBadge.addClass('estado-actualizado');
+            row.addClass('fila-actualizada');
+            
+            // Remover animación después de un tiempo
+            setTimeout(() => {
+                estadoBadge.removeClass('estado-actualizado');
+                row.removeClass('fila-actualizada');
+            }, 2000);
+            
+            // Mostrar notificación
+            showToast(`🔑 ${llave.nombre}: ${llave.estado_texto}`, 'info', 3000);
+        }
+        
+        // Actualizar tiempo de última actualización
+        ultimaActualizacion.text(llave.ultima_actualizacion);
+    }
+    
+    // Mostrar indicador de actualización
+    function showUpdateIndicator(timestamp) {
+        if (lastUpdate !== timestamp) {
+            lastUpdate = timestamp;
+            
+            // Agregar indicador visual en la esquina superior derecha
+            let indicator = $('#update-indicator');
+            if (indicator.length === 0) {
+                $('body').append(`
+                    <div id="update-indicator" class="position-fixed top-0 end-0 m-3 p-2 bg-success text-white rounded-pill" style="z-index: 9999; opacity: 0;">
+                        <i class="bi bi-arrow-clockwise"></i> Actualizado
+                    </div>
+                `);
+                indicator = $('#update-indicator');
+            }
+            
+            indicator.stop().animate({opacity: 1}, 200).delay(1000).animate({opacity: 0}, 500);
+        }
+    }
+    
+    // Función para mostrar notificaciones toast
+    function showToast(message, type = 'info', duration = 3000) {
+        const toastTypes = {
+            success: 'bg-success',
+            error: 'bg-danger',
+            warning: 'bg-warning',
+            info: 'bg-info'
+        };
+        
+        const toastClass = toastTypes[type] || 'bg-info';
+        const toastId = 'toast-' + Date.now();
+        
+        const toastHTML = `
+            <div id="${toastId}" class="toast align-items-center text-white ${toastClass} border-0 mb-2" role="alert" style="opacity: 0;">
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" onclick="$('#${toastId}').remove()"></button>
+                </div>
+            </div>
+        `;
+        
+        // Agregar al contenedor de toasts
+        let container = $('.toast-container');
+        if (container.length === 0) {
+            $('body').append('<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
+            container = $('.toast-container');
+        }
+        
+        container.append(toastHTML);
+        const toast = $(`#${toastId}`);
+        
+        // Mostrar con animación
+        toast.animate({opacity: 1}, 300);
+        
+        // Auto-remover después del tiempo especificado
+        setTimeout(() => {
+            toast.animate({opacity: 0}, 300, function() {
+                $(this).remove();
+            });
+        }, duration);
+    }
+    
+    // Inicializar sistema al cargar la página
+    initRealTimeSystem();
+    
+    // Limpiar interval al salir de la página
+    $(window).on('beforeunload', function() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+    });
+    
+    console.log('✅ Sistema de tiempo real configurado correctamente');
+});
+</script>
 
+<style>
+/* Animaciones para cambios de estado */
+.estado-actualizado {
+    animation: pulso 1s ease-in-out;
+}
 
+.fila-actualizada {
+    background-color: #e3f2fd !important;
+    transition: background-color 2s ease-out;
+}
+
+@keyframes pulso {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+/* Indicador de actualización */
+#update-indicator {
+    font-size: 0.8rem;
+    transition: opacity 0.3s ease;
+}
+</style>
 @endpush
