@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\Seccione; 
 use App\Models\Especialidade;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreSeccionRequest;
 use App\Http\Requests\UpdateSeccionRequest;
 use Exception; 
@@ -53,29 +52,21 @@ class SeccionController extends Controller
     public function store(StoreSeccionRequest $request)
     {
         try{
-            // Debug: ver qué datos llegan
-            \Log::info('Datos del request completo:', $request->all());
-            
             DB::beginTransaction();
             
             // Crear la sección
             $seccion = Seccione::create($request->validated());
-            \Log::info('Sección creada con ID:', ['id' => $seccion->id]);
             
             // Asociar especialidades si existen
             if ($request->has('especialidades') && is_array($request->especialidades)) {
                 $especialidades = array_filter($request->especialidades); // Filtrar valores vacíos
-                \Log::info('Especialidades a asociar:', $especialidades);
                 if (!empty($especialidades)) {
                     $seccion->especialidades()->attach($especialidades, [
                         'condicion' => 1,
                         'created_at' => now(),
                         'updated_at' => now()
                     ]);
-                    \Log::info('Especialidades asociadas exitosamente');
                 }
-            } else {
-                \Log::warning('No se encontraron especialidades en el request');
             }
             
             DB::commit();
@@ -110,19 +101,14 @@ class SeccionController extends Controller
     public function update(UpdateSeccionRequest $request, Seccione $seccion)
     {
         try {
-            // Debug: ver qué datos llegan
-            \Log::info('Datos del request de actualización:', $request->all());
-            
             DB::beginTransaction();
             
             // Actualizar la sección
             $seccion->update($request->validated());
-            \Log::info('Sección actualizada con ID:', ['id' => $seccion->id]);
             
             // Sincronizar especialidades
             if ($request->has('especialidades') && is_array($request->especialidades)) {
                 $especialidades = array_filter($request->especialidades); // Filtrar valores vacíos
-                \Log::info('Especialidades a sincronizar:', $especialidades);
                 
                 if (!empty($especialidades)) {
                     // Preparar datos para la tabla pivot con condición = 1
@@ -137,10 +123,10 @@ class SeccionController extends Controller
                     
                     // Sincronizar especialidades (elimina las anteriores y agrega las nuevas)
                     $seccion->especialidades()->sync($pivotData);
-                    \Log::info('Especialidades sincronizadas exitosamente');
                 }
             } else {
-                \Log::warning('No se encontraron especialidades en el request de actualización');
+                // Si no hay especialidades seleccionadas, desconectar todas
+                $seccion->especialidades()->sync([]);
             }
             
             DB::commit();

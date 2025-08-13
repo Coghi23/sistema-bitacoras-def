@@ -24,7 +24,7 @@ class UpdateSeccionRequest extends FormRequest
         $seccion = $this->route('seccion');
         $seccionId = $seccion->id;
         return [
-            'nombre' => 'required|string|max:55',
+            'nombre' => 'required|string|max:55|unique:seccione,nombre,' . $seccionId . ',id,condicion,1',
             'especialidades' => 'required|array|min:1',
             'especialidades.*' => 'required|exists:especialidad,id',
         ];  
@@ -36,11 +36,23 @@ class UpdateSeccionRequest extends FormRequest
             'nombre.required' => 'El nombre de la sección es obligatorio.',
             'nombre.string' => 'El nombre debe ser un texto válido.',
             'nombre.max' => 'El nombre no puede exceder los 55 caracteres.',
+            'nombre.unique' => 'Ya existe una sección con este nombre.',
             'especialidades.required' => 'Debe seleccionar al menos una especialidad.',
             'especialidades.array' => 'Las especialidades deben ser un listado válido.',
             'especialidades.min' => 'Debe seleccionar al menos una especialidad.',
             'especialidades.*.required' => 'Cada especialidad debe ser válida.',
             'especialidades.*.exists' => 'Una de las especialidades seleccionadas no existe.',
         ];
+    }
+
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        $seccion = $this->route('seccion');
+        $response = redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('modal_editar_id', $seccion->id);
+        
+        throw new \Illuminate\Validation\ValidationException($validator, $response);
     }
 }
