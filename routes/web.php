@@ -10,6 +10,7 @@ use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\TipoRecintoController;
 use App\Http\Controllers\EstadoRecintoController;
 use App\Http\Controllers\LlaveController;
+use App\Http\Controllers\QrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EventoController;
@@ -18,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
 
-    
+
     return view('welcome');
 
 
@@ -66,10 +67,58 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('/template-administrador', 'template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'template-profesor')->name('template-profesor');
     Route::view('/template-soporte', 'template-soporte')->name('template-soporte');
-
     
 
 });
+
+    // Rutas para gestión de QR temporales
+    Route::middleware(['auth'])->group(function () {
+        // Para profesores
+        Route::middleware('role:profesor')->group(function () {
+            Route::get('/profesor/llaves', [QrController::class, 'indexProfesor'])->name('profesor.llaves.index');
+            Route::post('/qr/generar', [QrController::class, 'generarQr'])->name('qr.generar');
+        });
+        
+        // Ruta temporal para debug (sin middleware de rol)
+        Route::get('/test-profesor-llaves', [QrController::class, 'indexProfesor'])->name('test.profesor.llaves');
+        
+        // NUEVAS RUTAS PARA PROFESOR-LLAVE (estructura separada)
+        Route::middleware('role:profesor')->group(function () {
+            Route::get('/profesor-llave', [App\Http\Controllers\ProfesorLlaveController::class, 'index'])->name('profesor-llave.index');
+            Route::post('/profesor-llave/generar-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'generarQr'])->name('profesor-llave.generar-qr');
+            Route::post('/profesor-llave/escanear-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'escanearQr'])->name('profesor-llave.escanear-qr');
+        });
+        
+        // Para administradores
+        Route::middleware('role:administrador|director')->group(function () {
+            Route::get('/admin/qr', [QrController::class, 'indexAdmin'])->name('admin.qr.index');
+        });
+        
+        // Ruta para escanear QR (disponible para ambos roles)
+        Route::post('/qr/escanear', [QrController::class, 'escanearQr'])->name('qr.escanear');
+    });
+
+        // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
+        Route::middleware(['role:administrador|director'])->group(function () {
+            Route::get('/template-administrador', function () {
+                return view('template-administrador');
+            })->name('template-administrador');
+        });
+        
+        // Rutas para profesor
+        Route::middleware('role:profesor')->group(function () {
+            Route::get('/template-profesor', function () {
+                return view('template-profesor');
+            })->name('template-profesor');
+        });
+        
+        // Rutas para soporte
+        Route::middleware('role:soporte')->group(function () {
+            Route::get('/template-soporte', function () {
+                return view('template-soporte');
+            })->name('template-soporte');
+        });
+    
 
 Route::get('/dashboard', function () {
     $user = Auth::user();

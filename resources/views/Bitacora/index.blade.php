@@ -3,6 +3,9 @@
 @section('title', 'Bitácoras')
 
 @section('content')
+<head>
+    <link rel="stylesheet" href="{{ asset('CSS/Bitacora.css') }}">
+</head>
 
 <head> 
       <link rel="stylesheet" href="{{ asset('Css/Bitacoras.css') }}">
@@ -20,10 +23,98 @@
               <div class="card p-3 mb-3" id="cuadInfo">
                 <div class="row g-3">
 
-                    <!-- Docente -->
-                    <div class="col-md-6 position-relative">
-                      <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                      <input class="form-control ps-5" disabled value="Docente: {{ Auth::user()->name }}" />
+              <!-- Docente -->
+              <div class="col-md-6 position-relative">
+                <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                <input class="form-control ps-5" disabled id="docenteInput" value="Docente: {{ Auth::user()->name }}" />
+              </div>
+
+              <!-- Recinto -->
+              <div class="col-md-6 position-relative d-none" id="recintoGroup">
+                <i class="bi bi-pc-display position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                <input class="form-control ps-5" disabled id="recintoInput" value="" />
+              </div>
+
+              <!-- Fecha -->
+              <div class="col-md-6 position-relative">
+                <i class="bi bi-calendar-week position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                <input class="form-control ps-5" id="fechaDispositivo" readonly />
+              </div>
+
+              <!-- Sección -->
+              <div class="col-md-6 position-relative d-none" id="seccionGroup">
+                <i class="bi bi-easel position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                <input class="form-control ps-5" disabled id="seccionInput" value="" />
+              </div>
+
+              <!-- SubÁrea -->
+              <div class="col-md-6 position-relative d-none" id="subareaGroup">
+                <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                <input class="form-control ps-5" disabled id="subareaInput" value="" />
+              </div>
+
+
+              <!-- Lección -->
+              <div class="col-md-6 position-relative">
+                <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
+                <select class="form-control ps-5" name="leccion" id="leccionSelect">
+                  <option value="">Seleccione la lección</option>
+                  @foreach($horarios as $horario)
+                    <option value="{{ $horario->id }}"
+                      data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
+                      data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
+                      data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                      data-hora="{{ optional($horario->leccion)->hora_inicio ?? '' }} - {{ optional($horario->leccion)->hora_final ?? '' }}"
+                      data-tipo="{{ optional($horario->leccion)->tipoLeccion ?? '' }}"
+                    >
+                      {{ optional($horario->leccion)->leccion ?? 'Lección ' . $horario->id }}
+                      @if(optional($horario->leccion)->tipoLeccion)
+                        - {{ optional($horario->leccion)->tipoLeccion }}
+                      @endif
+                      @if(optional($horario->leccion)->hora_inicio)
+                        - {{ optional($horario->leccion)->hora_inicio }} a {{ optional($horario->leccion)->hora_final }}
+                      @endif
+                    </option>
+                  @endforeach
+                </select>
+              </div>
+
+          </div>
+        </div>
+
+
+    <div class="container-fluid d-flex justify-content-center mb-3">
+        <div class="container-fluid" id="estadoRec">
+          <div class="container-fluid button-box">
+            <div class="container-fluid" id="btn"></div>
+            <button type="button" class="toggle-btn" id="btn-orden" onclick="leftClick()">
+                <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en orden</h5>
+              </button>
+              
+              <button type="button" class="toggle-btn" id="btn-problema" onclick="rightClick()">
+                <h5><i class="bi bi-exclamation-circle icono-estado"></i>Reportar Problema</h5>
+              </button>
+              
+          </div>
+        </div>
+      </div>
+
+      <div class="container-fluid justify-content-center d-flex" >
+        <button class="btn" id="btnEnviarOrden" data-bs-toggle="modal"
+        data-bs-target="#modalOrden">Enviar Bitácora</button>
+      </div>
+
+     
+    
+      <!-- Contenido que se muestra/oculta -->
+      <div id="contenido-problema" class="content-slide">
+        <div class="row position-relative">
+            <div class="col-md-6" >
+                <h5>Prioridad</h5>
+                <div class="row d-flex" id="prioridad">
+                    <div class="col">
+                        <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Alta</div>
+                        <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Media</div>
                     </div>
 
                     <!-- Recinto -->
@@ -205,6 +296,125 @@
         }
     });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ocultar campos al inicio
+    document.getElementById('recintoGroup').classList.add('d-none');
+    document.getElementById('seccionGroup').classList.add('d-none');
+    document.getElementById('subareaGroup').classList.add('d-none');
+    document.getElementById('recintoInput').value = '';
+    document.getElementById('seccionInput').value = '';
+    document.getElementById('subareaInput').value = '';
+
+    document.getElementById('leccionSelect').addEventListener('change', function() {
+        var selected = this.options[this.selectedIndex];
+        var recinto = selected.getAttribute('data-recinto') || '';
+        var seccion = selected.getAttribute('data-seccion') || '';
+        var subarea = selected.getAttribute('data-subarea') || '';
+
+        if (this.value) {
+            document.getElementById('recintoGroup').classList.remove('d-none');
+            document.getElementById('seccionGroup').classList.remove('d-none');
+            document.getElementById('subareaGroup').classList.remove('d-none');
+            document.getElementById('recintoInput').value = 'Recinto: ' + recinto;
+            document.getElementById('seccionInput').value = 'Sección: ' + seccion;
+            document.getElementById('subareaInput').value = 'SubÁrea: ' + subarea;
+        } else {
+            document.getElementById('recintoGroup').classList.add('d-none');
+            document.getElementById('seccionGroup').classList.add('d-none');
+            document.getElementById('subareaGroup').classList.add('d-none');
+            document.getElementById('recintoInput').value = '';
+            document.getElementById('seccionInput').value = '';
+            document.getElementById('subareaInput').value = '';
+        }
+    });
+});
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Funciones para manejar los botones de estado del recinto
+    window.leftClick = function() {
+        // Mover el fondo al botón izquierdo (Todo en orden)
+        var btn = document.getElementById('btn');
+        if (btn) {
+            btn.style.left = '2px';
+        }
+        // Ocultar el contenido de reportar problema
+        var contenidoProblema = document.getElementById('contenido-problema');
+        if (contenidoProblema) {
+            contenidoProblema.classList.remove('active');
+        }
+    };
+
+    window.rightClick = function() {
+        // Mover el fondo al botón derecho (Reportar problema)
+        var btn = document.getElementById('btn');
+        if (btn) {
+            btn.style.left = 'calc(50% - 2px)';
+        }
+        // Mostrar el contenido de reportar problema
+        var contenidoProblema = document.getElementById('contenido-problema');
+        if (contenidoProblema) {
+            contenidoProblema.classList.add('active');
+        }
+    };
+
+    window.limpiarFormularioProblema = function() {
+        // Limpiar los radio buttons de prioridad
+        var radiosPrioridad = document.querySelectorAll('input[name="prioridad"]');
+        radiosPrioridad.forEach(function(radio) {
+            radio.checked = false;
+        });
+        
+        // Limpiar el textarea de observaciones
+        var textarea = document.querySelector('#observaciones textarea');
+        if (textarea) {
+            textarea.value = '';
+        }
+        
+        // Ocultar mensaje de error
+        var mensajeError = document.getElementById('mensajeError');
+        if (mensajeError) {
+            mensajeError.classList.add('d-none');
+        }
+        
+        // Cambiar a "Todo en orden"
+        leftClick();
+    };
+
+    window.validarDatos = function() {
+        var prioridadSeleccionada = document.querySelector('input[name="prioridad"]:checked');
+        var observaciones = document.querySelector('#observaciones textarea').value.trim();
+        var mensajeError = document.getElementById('mensajeError');
+        
+        if (!prioridadSeleccionada || !observaciones) {
+            // Mostrar mensaje de error
+            mensajeError.classList.remove('d-none');
+            return false;
+        } else {
+            // Ocultar mensaje de error y proceder
+            mensajeError.classList.add('d-none');
+            // Aquí puedes abrir el modal de confirmación o procesar el formulario
+            var modalProblema = new bootstrap.Modal(document.getElementById('modalProblema'));
+            modalProblema.show();
+            return true;
+        }
+    };
+
+    window.confirmarEnvioComentario = function() {
+        // Aquí puedes procesar el envío del formulario
+        // Por ejemplo, enviar los datos via AJAX o submit del formulario
+        console.log('Enviando bitácora...');
+        // Mostrar mensaje de éxito con SweetAlert
+        Swal.fire({
+            title: '¡Éxito!',
+            text: 'Bitácora enviada correctamente',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        });
+    };
+});
+</script>
 @endpush
 
 <!------------------------------------------------------------------------------------------------------------------------->
