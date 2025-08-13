@@ -32,7 +32,7 @@
                 <img src="https://covao.ed.cr/wp-content/uploads/2025/01/Especialidades-logos-05-e1736905518920.webp" alt="Logo COVAO Nocturno" class="logo" />
                
             </div>
-            <div class="title">Bitácoras HHC</div>
+            <div class="title">SIREBI</div>
             <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo COVAO" class="logo" />
            
         </div>
