@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('llave', function (Blueprint $table) {
             $table->id();
             $table->string('nombre', 60);
-            
-            $table->tinyInteger('condicion')->default(1);
+            $table->tinyInteger('estado')->default(0); // 0: No entregada, 1: Entregada
+            $table->tinyInteger('condicion')->default(1); // 1: Activa, 0: Inactiva (eliminación lógica)
             $table->timestamps(); 
         });
     }

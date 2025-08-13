@@ -1,0 +1,222 @@
+@extends('Template-profesor')
+
+@section('title', 'Gestión de Llaves - Profesor')
+
+@section('content')
+<div class="wrapper">
+    <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="mb-0">Gestión de Llaves</h2>
+            @if(isset($profesor) && $profesor)
+                <div class="badge bg-info fs-6">
+                    <i class="bi bi-person"></i> {{ $profesor->usuario->name }}
+                </div>
+            @endif
+        </div>
+
+        @if(isset($error))
+            <div class="alert alert-warning">
+                <h4><i class="bi bi-exclamation-triangle"></i> Atención</h4>
+                <p>{{ $error }}</p>
+            </div>
+        @endif
+
+        @if(!isset($error) && $recintos->count() > 0)
+            <div class="row">
+                @foreach($recintos as $item)
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card shadow-sm border-primary">
+                            <div class="card-header bg-primary text-white">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-0">
+                                        <i class="bi bi-building"></i> {{ $item->recinto_nombre }}
+                                    </h6>
+                                    <span class="badge {{ $item->llave_estado == 0 ? 'bg-success' : 'bg-warning text-dark' }}">
+                                        {{ $item->llave_estado == 0 ? 'No Entregada' : 'Entregada' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    <strong><i class="bi bi-key"></i> Llave:</strong>
+                                    <span class="text-primary">{{ $item->llave_nombre }}</span>
+                                </div>
+                                
+                                <div class="text-center">
+                                    <button class="btn btn-success btn-generar-qr" 
+                                            data-recinto-id="{{ $item->recinto_id }}"
+                                            data-llave-id="{{ $item->llave_id }}"
+                                            data-recinto-nombre="{{ $item->recinto_nombre }}"
+                                            data-llave-nombre="{{ $item->llave_nombre }}">
+                                        <i class="bi bi-qr-code"></i> Generar QR
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        @endif
+
+        @if(!isset($error) && $recintos->count() == 0 && isset($profesor))
+            <div class="text-center py-5">
+                <i class="bi bi-building" style="font-size: 4rem; color: #6c757d;"></i>
+                <h4 class="mt-3 text-muted">No tienes recintos asignados</h4>
+                <p class="text-muted">Contacta al administrador para que te asigne recintos en tus horarios.</p>
+            </div>
+        @endif
+
+        <!-- QRs Temporales Activos -->
+        @if(!isset($error) && $qrsTemporales->count() > 0)
+            <div class="mt-5">
+                <h4><i class="bi bi-clock-history"></i> QRs Temporales Activos</h4>
+                <div class="row">
+                    @foreach($qrsTemporales as $qr)
+                        <div class="col-md-6 col-lg-4 mb-3">
+                            <div class="card border-success">
+                                <div class="card-body">
+                                    <h6 class="card-title">{{ $qr->codigo_qr }}</h6>
+                                    <p class="card-text">
+                                        <strong>Recinto:</strong> {{ $qr->recinto_nombre }}<br>
+                                        <strong>Llave:</strong> {{ $qr->llave_nombre }}<br>
+                                        <strong>Expira:</strong> {{ \Carbon\Carbon::parse($qr->expira_en)->format('d/m/Y H:i') }}
+                                    </p>
+                                    <button class="btn btn-outline-primary btn-sm btn-ver-qr" 
+                                            data-qr-code="{{ $qr->codigo_qr }}"
+                                            data-recinto-nombre="{{ $qr->recinto_nombre }}"
+                                            data-llave-nombre="{{ $qr->llave_nombre }}">
+                                        <i class="bi bi-eye"></i> Ver QR
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
+
+<!-- Modal para mostrar QR -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="qrModalLabel">
+                    <i class="bi bi-qr-code"></i> Código QR Generado
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div id="qr-info" class="mb-3">
+                    <p><strong>Recinto:</strong> <span id="modal-recinto"></span></p>
+                    <p><strong>Llave:</strong> <span id="modal-llave"></span></p>
+                    <p><strong>Código:</strong> <span id="modal-codigo"></span></p>
+                </div>
+                
+                <div id="qr-image-container">
+                    <img id="qr-image" src="" alt="Código QR" style="max-width: 100%; height: auto;">
+                </div>
+                
+                <div class="mt-3">
+                    <small class="text-muted">El código QR expira en 30 minutos</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@endsection
+
+@push('scripts')
+<script>
+$(document).ready(function() {
+    // Generar QR
+    $('.btn-generar-qr').click(function() {
+        const button = $(this);
+        const recintoId = button.data('recinto-id');
+        const llaveId = button.data('llave-id');
+        const recintoNombre = button.data('recinto-nombre');
+        const llaveNombre = button.data('llave-nombre');
+        
+        button.prop('disabled', true).html('<i class="spinner-border spinner-border-sm"></i> Generando...');
+        
+        $.ajax({
+            url: '{{ route("profesor-llave.generar-qr") }}',
+            method: 'POST',
+            data: {
+                recinto_id: recintoId,
+                llave_id: llaveId,
+                _token: '{{ csrf_token() }}'
+            },
+            success: function(response) {
+                if (response.success) {
+                    // Actualizar modal
+                    $('#modal-recinto').text(recintoNombre);
+                    $('#modal-llave').text(llaveNombre);
+                    $('#modal-codigo').text(response.codigo_qr);
+                    $('#qr-image').attr('src', response.qr_url);
+                    
+                    // Mostrar modal
+                    $('#qrModal').modal('show');
+                    
+                    // Recargar página después de cerrar modal
+                    $('#qrModal').on('hidden.bs.modal', function () {
+                        location.reload();
+                    });
+                }
+            },
+            error: function(xhr) {
+                const error = xhr.responseJSON?.message || 'Error al generar QR';
+                alert('Error: ' + error);
+            },
+            complete: function() {
+                button.prop('disabled', false).html('<i class="bi bi-qr-code"></i> Generar QR');
+            }
+        });
+    });
+    
+    // Ver QR existente
+    $('.btn-ver-qr').click(function() {
+        const qrCode = $(this).data('qr-code');
+        const recintoNombre = $(this).data('recinto-nombre');
+        const llaveNombre = $(this).data('llave-nombre');
+        const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrCode}`;
+        
+        // Llenar información del modal
+        $('#modal-recinto').text(recintoNombre);
+        $('#modal-llave').text(llaveNombre);
+        $('#modal-codigo').text(qrCode);
+        $('#qr-image').attr('src', qrUrl);
+        
+        // Mostrar modal
+        $('#qrModal').modal('show');
+    });
+});
+</script>
+@endpush
+
+@push('styles')
+<style>
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+}
+
+.wrapper {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.main-content {
+    background: #f8f9fa;
+    min-height: 100vh;
+    padding: 20px;
+    border-radius: 10px;
+}
+</style>
+@endpush

@@ -80,8 +80,6 @@
                                               style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto->color }};">
                                             {{ $recinto->estadoRecinto->nombre }}
                                           </span>
-                                        
-      
                                     </div>
                                     <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                     <div class="mb-1 text-secondary" style="font-size:0.93em;">
