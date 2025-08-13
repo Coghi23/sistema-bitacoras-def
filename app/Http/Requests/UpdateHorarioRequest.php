@@ -22,14 +22,15 @@ class UpdateHorarioRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'idRecinto' => 'required|exists:recintos,id',
-            'idSubareaSeccion' => 'nullable|exists:subarea_seccions,id',
-            'user_id' => 'required|exists:profesors,id',
-            'tipoHorario' => 'required|string|max:50',
-            'horaEntrada' => 'required|date_format:H:i',
-            'horaSalida' => 'required|date_format:H:i|after:horaEntrada',
-            'dia' => 'required|string|max:10',
-            'condicion' => 'required|string|max:20'
+            'idRecinto' => 'required|exists:recinto,id',
+            'idSubarea' => 'required|exists:subarea,id',
+            'idSeccion' => 'required|exists:seccione,id',
+            'user_id' => 'required|exists:users,id',
+            'tipoHorario' => 'required|in:fijo,temporal',
+            'fecha' => 'nullable|date|required_if:tipoHorario,temporal',
+            'dia' => 'nullable|string|required_if:tipoHorario,fijo|in:Lunes,Martes,Miércoles,Jueves,Viernes,Sábado,Domingo',
+            'lecciones' => 'required|array|min:1',
+            'lecciones.*' => 'exists:leccion,id',
         ];
     }
 }

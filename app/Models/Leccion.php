@@ -11,6 +11,7 @@ class Leccion extends Model
     protected $table = 'leccion';
 
     protected $fillable = [
+        'tipoLeccion',
         'leccion',
         'hora_inicio',
         'hora_final',
@@ -19,7 +20,9 @@ class Leccion extends Model
 
     public function horarios()
     {
-        return $this->hasMany(Horario::class);
+        return $this->belongsToMany(Horario::class, 'horario_leccion', 'idLeccion', 'idHorario')
+            ->withPivot('condicion')
+            ->withTimestamps();
     }
 
     public function bitacoras()
