@@ -14,7 +14,7 @@ class Bitacora extends Model
         'id_seccion',
         'id_subarea',
         'id_horario',
-        'id_usuario',
+        'usuario_id',
         'condicion',
     ];
 
