@@ -1,11 +1,8 @@
-
-
 /*****************************************************************************************************************************/
 
 
 body {
     font-family: 'Segoe UI', sans-serif;
-    margin: 30px;
   }
 
   #cuadInfo{
@@ -31,7 +28,6 @@ body {
     color: #000 !important;
   }
 
-  
   /**********************************************************Estado del Recinto***************************************************************/
   #estadoRec {
     background-color: #e7e3e3;
@@ -106,7 +102,7 @@ body {
     vertical-align: middle;
     margin-top: 10px;
   }
-  
+
   /*****************************************PRIORIDAD Y OBSERVACIONES*****************************************************************/
   #prioridad{
     border: 1px solid #00A0E6 ;
@@ -279,15 +275,3 @@ body {
 #mensajeError .bi{
   margin: 5px;
 }
-
-
-
-
-
-
-
-
-
-
-
-

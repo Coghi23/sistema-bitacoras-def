@@ -3,6 +3,9 @@
 @section('title', 'Bitácoras')
 
 @section('content')
+<head>
+    <link rel="stylesheet" href="{{ asset('CSS/Bitacora.css') }}">
+</head>
 
 <!------------------------------------------------------------------------------------------------------------------------->
 <div class="container my-4">
@@ -21,9 +24,9 @@
               </div>
 
               <!-- Recinto -->
-              <div class="col-md-6 position-relative">
+              <div class="col-md-6 position-relative d-none" id="recintoGroup">
                 <i class="bi bi-pc-display position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Recinto: {{ Auth::user()->recinto->nombre ?? 'Sin recinto asignado' }}" />
+                <input class="form-control ps-5" disabled id="recintoInput" value="" />
               </div>
 
               <!-- Fecha -->
@@ -33,15 +36,15 @@
               </div>
 
               <!-- Sección -->
-              <div class="col-md-6 position-relative">
+              <div class="col-md-6 position-relative d-none" id="seccionGroup">
                 <i class="bi bi-easel position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="Sección: {{ $seccion ?? '' }}" />
+                <input class="form-control ps-5" disabled id="seccionInput" value="" />
               </div>
 
               <!-- SubÁrea -->
-              <div class="col-md-6 position-relative">
+              <div class="col-md-6 position-relative d-none" id="subareaGroup">
                 <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled value="SubÁrea: {{ $subarea }}" />
+                <input class="form-control ps-5" disabled id="subareaInput" value="" />
               </div>
 
               <!-- Lección -->
@@ -49,12 +52,15 @@
                 <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
                 <select class="form-control ps-5" name="leccion" id="leccionSelect">
                   <option value="">Seleccione la lección</option>
-                  @for($i = 1; $i <= 12; $i++)
-                    <option value="{{ $i }}">Lección {{ $i }}</option>
-                  @endfor
-                  @for($i = 1; $i <= 8; $i++)
-                    <option value="{{ 12 + $i }}">Lección Técnica {{ $i }}</option>
-                  @endfor
+                  @foreach($horarios as $horario)
+                    <option value="{{ $horario->id }}"
+                      data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
+                      data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
+                      data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                    >
+                      {{ optional($horario->leccion)->leccion ?? $horario->nombre ?? 'Lección ' . $horario->id }}
+                    </option>
+                  @endforeach
                 </select>
               </div>
 
@@ -195,7 +201,40 @@
         }
     });
     </script>
-    
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Ocultar campos al inicio
+    document.getElementById('recintoGroup').classList.add('d-none');
+    document.getElementById('seccionGroup').classList.add('d-none');
+    document.getElementById('subareaGroup').classList.add('d-none');
+    document.getElementById('recintoInput').value = '';
+    document.getElementById('seccionInput').value = '';
+    document.getElementById('subareaInput').value = '';
+
+    document.getElementById('leccionSelect').addEventListener('change', function() {
+        var selected = this.options[this.selectedIndex];
+        var recinto = selected.getAttribute('data-recinto') || '';
+        var seccion = selected.getAttribute('data-seccion') || '';
+        var subarea = selected.getAttribute('data-subarea') || '';
+
+        if (this.value) {
+            document.getElementById('recintoGroup').classList.remove('d-none');
+            document.getElementById('seccionGroup').classList.remove('d-none');
+            document.getElementById('subareaGroup').classList.remove('d-none');
+            document.getElementById('recintoInput').value = 'Recinto: ' + recinto;
+            document.getElementById('seccionInput').value = 'Sección: ' + seccion;
+            document.getElementById('subareaInput').value = 'SubÁrea: ' + subarea;
+        } else {
+            document.getElementById('recintoGroup').classList.add('d-none');
+            document.getElementById('seccionGroup').classList.add('d-none');
+            document.getElementById('subareaGroup').classList.add('d-none');
+            document.getElementById('recintoInput').value = '';
+            document.getElementById('seccionInput').value = '';
+            document.getElementById('subareaInput').value = '';
+        }
+    });
+});
+</script>
 @endpush
 
 <!------------------------------------------------------------------------------------------------------------------------->
