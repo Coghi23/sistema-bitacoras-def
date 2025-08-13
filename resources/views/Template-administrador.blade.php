@@ -48,9 +48,34 @@
             <a href="{{ route('dashboard') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
-
-                
             </a>
+
+            <a href="{{ route('role.index') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Roles">Roles</div>
+            </a>
+
+            <a href="{{ asset('usuario') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-person"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
+            </a>
+
+            <a href="{{ asset('llave') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
+            </a>
+
+            <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Opciones extra">
+                <div class="icon-circle"><i class="bi bi-clipboard-fill"></i></div>
+                <div class="label">Otras opciones</div>
+            </div>
+            <div class="submenu-popover" id="submenu">
+                <div class="submenu-arrow"></div>
+                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
+                <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
+                <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
+                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
+            </div>
 
             <div class="sidebar-item" id="recinto-btn" data-bs-toggle="tooltip" title="Manejo de Recintos">
                 <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
@@ -59,44 +84,21 @@
            
             <div class="submenu-popover" id="recinto-submenu">
                 <div class="submenu-arrow"></div>
-                
                 <a href="{{ asset('recinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
                 <a href="{{ asset('tipoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
                 <a href="{{ asset('estadoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
                 
             </div>
-            <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Opciones extra">
-                <div class="icon-circle"><i class="bi bi-people-fill"></i></div>
-                <div class="label">Opciones Extra</div>
-            </div>
-            <div class="submenu-popover" id="submenu">
-                <div class="submenu-arrow"></div>
-                
-                
-                <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
-                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
-                <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
-                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
-            </div>
+            
 
-            <a href="{{ asset('usuario') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-person"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
-            </a>
+            
 
             <a href="{{ asset('horario') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
             </a>
-            <a href="{{ asset('llave') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
-            </a>
+            
 
-            <a href="{{ route('role.index') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Roles">Roles</div>
-            </a>
             
             <a href="{{ route('admin.qr.index') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-qr-code-scan"></i></div>
@@ -109,10 +111,7 @@
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>
 
-            <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Manejo de Personal">
-                <div class="icon-circle"><i class="bi bi-people-fill"></i></div>
-                <div class="label">Personal</div>
-            </div>
+            
 
             
 
