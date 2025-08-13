@@ -5,46 +5,28 @@
 @section('content')
 <div class="wrapper">
     <div class="main-content">
-        <div class="row mb-5 mt-4">
-            <div class="col-8 col-sm-8 col-md-8 text-center mt-3">
-                <div class="position-relative search-box shadow-sm ">
-                    <i class="bi bi-search"></i>
-                    <input aria-label="Buscar recintos" type="search" name="buscar" value="{{ request('buscar') }}" placeholder="Buscar" class="form-control search-input"/>
-                </div>
-            </div>
-            <div class="col-4 col-sm-4 col-md-2 text-center mt-3">
-                <div class="dropdown">
-                    <button aria-label="Filtros" class="btn dropdown-toggle border border-dark rounded-5" type="button" style="width: 100%;" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-filter"></i>
-                        Filtros
+        {{-- Búsqueda + botón agregar --}}
+        <div class="search-bar-wrapper mb-4">
+            <div class="search-bar">
+                <form id="busquedaForm" method="GET" action="{{ route('recinto.index') }}" class="w-100 position-relative">
+                    <span class="search-icon">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" class="form-control"
+                        placeholder="Buscar recinto..." name="busquedaRecinto" 
+                        value="{{ request('busquedaRecinto') }}" id="inputBusqueda" autocomplete="off">
+                    @if(request('busquedaRecinto'))
+                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
+                        <i class="bi bi-x-circle"></i>
                     </button>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->except('estado'))) }}">
-                                Todos
-                            </a>
-                        </li>
-                        @foreach($estadosRecinto as $estadoRecinto)
-                            <li>
-                                <a class="dropdown-item" href="{{ route('recinto.index', array_merge(request()->query(), ['estado' => $estadoRecinto->nombre])) }}">
-                                    {{ $estadoRecinto->nombre }}
-                                </a>
-                            </li>
-                        @endforeach
-                    </ul>
-                </div>
+                    @endif
+                </form>
             </div>
-            <div class="col-12 col-sm-12 col-md-2 text-center mt-3">
-                <button aria-label="Agregar recinto" class="btn rounded-pill text-white"
-                  data-bs-toggle="modal" 
-                  data-bs-target="#modalAgregarRecinto" 
-                  type="button" 
-                  style="width: 100%; background-color: #134496">
-                  Agregar
-                  <i class="fas fa-plus-circle"></i>
-                </button>
-            </div>
-            
+            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                data-bs-toggle="modal" data-bs-target="#modalAgregarRecinto"
+                title="Agregar Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                Agregar <i class="bi bi-plus-circle ms-2"></i>
+            </button>
         </div>
         <div class="container">
             <div class="row align-items-center filter-tabs rounded-3 mb-4 altura-lg altura-md altura-sm" id="filterTabs">
@@ -313,6 +295,38 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
+
+// Funcionalidad de búsqueda en tiempo real
+    let timeoutId;
+    const inputBusqueda = document.getElementById('inputBusqueda');
+    const formBusqueda = document.getElementById('busquedaForm');
+    const btnLimpiar = document.getElementById('limpiarBusqueda');
+    
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('input', function() {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function() {
+                formBusqueda.submit();
+            }, 500); // Espera 500ms después de que el usuario deje de escribir
+        });
+        
+        // También permitir búsqueda al presionar Enter
+        inputBusqueda.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                formBusqueda.submit();
+            }
+        });
+    }
+    
+    // Funcionalidad del botón limpiar
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', function() {
+            inputBusqueda.value = '';
+            window.location.href = '{{ route("recinto.index") }}';
+        });
+    }
+
 function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
     const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
     const qrDiv = document.getElementById(`qrCode-${recintoId}`);
