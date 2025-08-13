@@ -28,25 +28,7 @@
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
         </div>
-        <div class="container">
-            <div class="row align-items-center filter-tabs rounded-3 mb-4 altura-lg altura-md altura-sm" id="filterTabs">
-                <div class="tab-indicator"></div>
-                       <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                           <a href="{{ route('recinto.index') }}">
-                               <button class="btn btn-lightrounded tab-btn {{ request('tipo') ? '' : 'active' }}" type="button" style="width: 100%;">Todos</button>
-                           </a>
-                       </div>
-                @foreach($tiposRecinto as $tipoRecinto)
-                    <div class="col-12 col-sm-6 col-md-3 text-center rounded-4 btn-tabs">
-                        <a href="{{ route('recinto.index', ['tipo' => $tipoRecinto->nombre]) }}">
-                            <button class="btn tab-btn {{ request('tipo') == $tipoRecinto->nombre ? 'active' : '' }}" type="button" style="width: 100%;">
-                                {{ $tipoRecinto->nombre }}
-                            </button>
-                        </a>
-                    </div>
-                @endforeach
-            </div>
-        </div>
+      
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
             @foreach($recintos as $recinto)
                 @if ($recinto->condicion == 1)
