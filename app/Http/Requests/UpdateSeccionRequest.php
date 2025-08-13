@@ -24,8 +24,9 @@ class UpdateSeccionRequest extends FormRequest
         $seccion = $this->route('seccion');
         $seccionId = $seccion->id;
         return [
-
-            'nombre' => 'required|string|max:55|unique:seccione,nombre,' . $seccionId
+            'nombre' => 'required|string|max:55|unique:seccione,nombre,' . $seccionId . ',id,condicion,1',
+            'especialidades' => 'required|array|min:1',
+            'especialidades.*' => 'required|exists:especialidad,id',
         ];  
     }
 
