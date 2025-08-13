@@ -123,36 +123,6 @@
                 <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
                 <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
             </div>
-            
-
-            <a href="{{ asset('horario') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
-            </a>
-            <a href="{{ asset('llave') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
-            </a>
-        
-
-
-            
-
-           
-
-
-           
-            <a href="{{ url('reportes.html') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
-            </a>
-
-            
-
-            <a href="{{ route('role.index') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Roles">Roles</div>
-            </a>
 
             <div class="mt-auto mb-3" style="width:100%;">
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">
