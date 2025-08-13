@@ -47,6 +47,7 @@
                 <input class="form-control ps-5" disabled id="subareaInput" value="" />
               </div>
 
+
               <!-- Lección -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
@@ -57,8 +58,16 @@
                       data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
                       data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
                       data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                      data-hora="{{ optional($horario->leccion)->hora_inicio ?? '' }} - {{ optional($horario->leccion)->hora_final ?? '' }}"
+                      data-tipo="{{ optional($horario->leccion)->tipoLeccion ?? '' }}"
                     >
-                      {{ optional($horario->leccion)->leccion ?? $horario->nombre ?? 'Lección ' . $horario->id }}
+                      {{ optional($horario->leccion)->leccion ?? 'Lección ' . $horario->id }}
+                      @if(optional($horario->leccion)->tipoLeccion)
+                        - {{ optional($horario->leccion)->tipoLeccion }}
+                      @endif
+                      @if(optional($horario->leccion)->hora_inicio)
+                        - {{ optional($horario->leccion)->hora_inicio }} a {{ optional($horario->leccion)->hora_final }}
+                      @endif
                     </option>
                   @endforeach
                 </select>
