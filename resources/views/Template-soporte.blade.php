@@ -23,7 +23,7 @@
                 <div class="separator"></div>
                 <img src="https://covao.ed.cr/wp-content/uploads/2025/01/Especialidades-logos-05-e1736905518920.webp" alt="Logo COVAO Nocturno" class="logo" />
               
-            <div class="title">SIREBI</div>
+            <div class="title">Sistema Integrado de Registro de Bitácoras</div>
             <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo COVAO" class="logo" />
            
         </div>
