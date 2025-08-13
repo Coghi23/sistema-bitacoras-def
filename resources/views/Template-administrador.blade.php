@@ -68,6 +68,7 @@
             <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Opciones extra">
                 <div class="icon-circle"><i class="bi bi-people-fill"></i></div>
                 <div class="label">Opciones Extra</div>
+            </div>
             <div class="submenu-popover" id="submenu">
                 <div class="submenu-arrow"></div>
                 

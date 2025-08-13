@@ -16,7 +16,7 @@ class TipoRecintoController extends Controller
      */
     public function index()
     {
-        $tipoRecintos = TipoRecinto::with('recinto')->get();
+    $tipoRecintos = TipoRecinto::with('recintos')->get();
         return view('tipoRecinto.index', compact('tipoRecintos'));
     }
 
@@ -66,7 +66,7 @@ class TipoRecintoController extends Controller
      */
     public function edit(TipoRecinto $tipoRecinto)
     {
-        $tipoRecintos = TipoRecinto::with('recinto')->get();
+    $tipoRecintos = TipoRecinto::with('recintos')->get();
         return view('tipoRecinto.index', compact('tipoRecintos', 'tipoRecinto'));
     }
 
