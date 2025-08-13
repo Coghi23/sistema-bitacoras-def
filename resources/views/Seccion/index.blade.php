@@ -3,6 +3,28 @@
 @section('title', 'Registro de Sección')
 
 @section('content')
+<style>
+    /* Fix for dropdown arrow positioning */
+    .form-select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 0.75rem center !important;
+        background-size: 16px 12px !important;
+        padding-right: 2.25rem !important;
+    }
+    
+    /* Ensure no conflicting pseudo-elements */
+    .form-select::after,
+    .form-select::before {
+        display: none !important;
+    }
+    
+    /* Fix for input-group select styling */
+    .input-group .form-select {
+        position: relative;
+        z-index: 1;
+    }
+</style>
 <div class="wrapper">
     <div class="main-content">
 
@@ -104,6 +126,7 @@
                                                     <li>{{ $error }}</li>
                                                 @endforeach
                                             </ul>
+
                                         </div>
                                     @endif
                                     
@@ -242,12 +265,14 @@
                                         <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
                                     @endforeach
                                 </select>
-                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidad()" style="height: 9%; min-width: 38px; padding: 0;">
-                                    <i class="bi bi-plus" style="height: 49px;"></i>
+                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidad()" style="min-width: 38px; padding: 0;">
+                                    <i class="bi bi-plus"></i>
                                 </button>
                             </div>
                             <!-- Contenedor para especialidades seleccionadas -->
-                            <div id="especialidadesSeleccionadas" class="mt-2"></div>
+                            <div id="especialidadesSeleccionadas" class="mt-2">
+                                <div class="row g-2" id="especialidadesGrid"></div>
+                            </div>
                         </div>
 
                     </div>
@@ -287,28 +312,31 @@
         // Agregar al array de control
         especialidadesAgregadas.push(id);
         
-        // Crear elemento visual
-        const contenedor = document.getElementById('especialidadesSeleccionadas');
-        const especialidadDiv = document.createElement('div');
-        especialidadDiv.className = 'input-group mt-2';
-        especialidadDiv.setAttribute('data-id', id);
-        especialidadDiv.innerHTML = `
-            <input type="text" class="form-control" value="${nombre}" readonly>
-            <input type="hidden" name="especialidades[]" value="${id}">
-            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
-                <i class="bi bi-x"></i>
-            </button>
+        // Crear elemento visual en grid
+        const grid = document.getElementById('especialidadesGrid');
+        const especialidadCol = document.createElement('div');
+        especialidadCol.className = 'col-12 col-sm-6 col-md-4';
+        especialidadCol.setAttribute('data-id', id);
+        especialidadCol.innerHTML = `
+            <div class="input-group">
+                <input type="text" class="form-control form-control-sm" value="${nombre}" readonly>
+                <input type="hidden" name="especialidades[]" value="${id}">
+                <button type="button" class="btn btn-danger btn-sm" onclick="quitarEspecialidad(this, '${id}')" title="Quitar">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
         `;
         
-        contenedor.appendChild(especialidadDiv);
+        grid.appendChild(especialidadCol);
         select.selectedIndex = 0;
     }
 
     function quitarEspecialidad(boton, id) {
         // Remover del array
         especialidadesAgregadas = especialidadesAgregadas.filter(espId => espId !== id);
-        // Remover del DOM
-        boton.parentElement.remove();
+        // Remover del DOM - buscar el contenedor col
+        const col = boton.closest('.col-12');
+        col.remove();
     }
 
     // Función para agregar especialidad cuando se repobla desde old()
@@ -321,20 +349,22 @@
         // Agregar al array de control
         especialidadesAgregadas.push(id);
         
-        // Crear elemento visual
-        const contenedor = document.getElementById('especialidadesSeleccionadas');
-        const especialidadDiv = document.createElement('div');
-        especialidadDiv.className = 'input-group mt-2';
-        especialidadDiv.setAttribute('data-id', id);
-        especialidadDiv.innerHTML = `
-            <input type="text" class="form-control" value="${nombre}" readonly>
-            <input type="hidden" name="especialidades[]" value="${id}">
-            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
-                <i class="bi bi-x"></i>
-            </button>
+        // Crear elemento visual en grid
+        const grid = document.getElementById('especialidadesGrid');
+        const especialidadCol = document.createElement('div');
+        especialidadCol.className = 'col-12 col-sm-6 col-md-4';
+        especialidadCol.setAttribute('data-id', id);
+        especialidadCol.innerHTML = `
+            <div class="input-group">
+                <input type="text" class="form-control form-control-sm" value="${nombre}" readonly>
+                <input type="hidden" name="especialidades[]" value="${id}">
+                <button type="button" class="btn btn-danger btn-sm" onclick="quitarEspecialidad(this, '${id}')" title="Quitar">
+                    <i class="bi bi-x"></i>
+                </button>
+            </div>
         `;
         
-        contenedor.appendChild(especialidadDiv);
+        grid.appendChild(especialidadCol);
     }
 
     // ========== FUNCIONES DE BÚSQUEDA ==========
@@ -367,6 +397,7 @@
             window.location.href = '{{ route("seccion.index") }}';
         });
     }
+
 
     // ========== ABRIR MODALES CON ERRORES ==========
     

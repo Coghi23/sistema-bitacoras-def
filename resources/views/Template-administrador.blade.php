@@ -60,11 +60,6 @@
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
             </a>
 
-            <a href="{{ asset('llave') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
-            </a>
-
             <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Opciones extra">
                 <div class="icon-circle"><i class="bi bi-clipboard-fill"></i></div>
                 <div class="label">Otras opciones</div>
@@ -77,6 +72,11 @@
                 <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
             </div>
 
+            <a href="{{ asset('llave') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
+            </a>
+
             <div class="sidebar-item" id="recinto-btn" data-bs-toggle="tooltip" title="Manejo de Recintos">
                 <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
                 <div class="label">Recintos</div>
@@ -84,10 +84,9 @@
            
             <div class="submenu-popover" id="recinto-submenu">
                 <div class="submenu-arrow"></div>
-                <a href="{{ asset('recinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
                 <a href="{{ asset('tipoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
                 <a href="{{ asset('estadoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
-                
+                <a href="{{ asset('recinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
             </div>
             
 
