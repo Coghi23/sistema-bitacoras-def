@@ -1,7 +1,7 @@
 /* ------------------ Estilos Generales ------------------ */
 body {
     height: 100vh;
-    background-image: url('../img/fondo-pagina.png'); 
+    background-image: url('/img/fondo-pagina.png'); 
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
@@ -44,7 +44,7 @@ body {
 
 /* ------------------ Card de Login ------------------ */
 .login-card {
-    background-image: url('../img/Frame 18.png'); 
+    background-image: url('/img/Frame 18.png'); 
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;

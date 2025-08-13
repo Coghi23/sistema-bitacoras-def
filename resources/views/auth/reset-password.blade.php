@@ -3,46 +3,40 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Restablecer Contraseña</title>
+    <title>Recuperar Contraseña</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('Css/Login.css') }}">
 </head>
 <body>
-    <div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center p-3"> 
-        <div class="login-card">
+<div class="login-wrapper">
+    <div class="login-card row">
             <div class="row g-0 h-100">
-                <div class="col-12 d-flex flex-column align-items-center justify-content-center px-4 py-3">
+                <div class="col-md-6 d-flex flex-column align-items-center justify-content-center px-4 py-2">
                     <!-- Logos -->
-                    <div class="logo-container mb-3 d-flex align-items-center flex-wrap justify-content-center">
-                        <img src="{{ asset('Logos_Login/logo1.png') }}" alt="Logo 1" class="logo">
-                        <div class="divider d-none d-sm-block"></div>
-                        <img src="{{ asset('Logos_Login/logo2.png') }}" alt="Logo 2" class="logo">
-                        <div class="divider d-none d-sm-block"></div>
-                        <img src="{{ asset('Logos_Login/logo3.png') }}" alt="Logo 3" class="logo">
-                    </div>
+                    <div class="logo-container mb-4">
+                    <img src="{{ asset('img/logo1.png') }}" alt="Logo 1" class="logo">
+                    <div class="divider d-none d-sm-block"></div>
+                    <img src="{{ asset('img/logo2.png') }}" alt="Logo 2" class="logo">
+                    <div class="divider d-none d-sm-block"></div>
+                    <img src="{{ asset('img/logo3.png') }}" alt="Logo 3" class="logo">
+                </div>
 
                     <!-- Mensaje de estado de sesión -->
                     @if (session('status'))
-                        <div class="alert alert-success mb-3 w-100" style="max-width: 400px;">
+                        <div class="alert alert-success mb-3 w-100">
                             {{ session('status') }}
                         </div>
                     @endif
 
                     <!-- Título con botón de regreso -->
-                    <div class="d-flex align-items-center justify-content-center mb-2">
-                        <a href="{{ route('login') }}" class="btn btn-link p-0 me-3" style="color: #EFC737; font-size: 1.5rem;">
-                            <i class="bi bi-arrow-left-circle-fill"></i>
-                        </a>
-                        <h4 class="inicio text-center mb-0">Restablecer Contraseña</h4>
-                    </div>
-                    <div class="underline mx-auto"></div>
+                    <h5 class="inicio2">
+                        <i class="biO bi-arrow-left-circle-fill " style="cursor: pointer;" "> | </i>
+                        Cambio de contraseña
+                    </h5>
+                    <div class="underline2"></div>
                     
-                    <!-- Mensaje explicativo -->
-                    <p class="text-center mt-3 mb-4" style="color: #134496; max-width: 400px;">
-                        Ingresa tu nueva contraseña para completar el restablecimiento.
-                    </p>
 
                     <!-- Formulario -->
                     <form id="reset-form" method="POST" action="{{ route('password.store') }}" class="w-100" style="max-width: 400px;">
@@ -89,7 +83,6 @@
 
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 mb-2">
                             <button type="submit" class="btn-custom">Restablecer Contraseña</button>
-                            <a href="{{ route('login') }}" class="olvidé-contraseña text-center">Volver al login</a>
                         </div>
                     </form>
                 </div>

@@ -17,11 +17,11 @@
                 
                 <!-- Logos -->
                 <div class="logo-container mb-3 d-flex align-items-center flex-wrap justify-content-center">
-                    <img src="{{ asset('Logos_Login/logo1.png') }}" alt="Logo 1" class="logo">
+                    <img src="{{ asset('img/logo1.png') }}" alt="Logo 1" class="logo">
                     <div class="divider d-none d-sm-block"></div>
-                    <img src="{{ asset('Logos_Login/logo2.png') }}" alt="Logo 2" class="logo">
+                    <img src="{{ asset('img/logo2.png') }}" alt="Logo 2" class="logo">
                     <div class="divider d-none d-sm-block"></div>
-                    <img src="{{ asset('Logos_Login/logo3.png') }}" alt="Logo 3" class="logo">
+                    <img src="{{ asset('img/logo3.png') }}" alt="Logo 3" class="logo">
                 </div>
 
                 <!-- Mensaje de estado -->
