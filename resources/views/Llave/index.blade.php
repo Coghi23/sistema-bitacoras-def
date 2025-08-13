@@ -29,14 +29,14 @@
                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <h5 class="modal-title">Crear Llave</h5>
+                        <h5 class="modal-title">Crear Nueva Llave</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
                         <form action="{{ route('llave.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="nombreLlave" class="form-label fw-bold">Nombre de la Llave</label>
-                                <input type="text" name="nombre" id="nombreLlave" class="form-control" placeholder="Ingrese el nombre de la Llave" required>
+                                <input type="text" name="nombre" id="nombreLlave" class="form-control" placeholder="Ingrese el Nombre de la Llave" required>
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
@@ -48,14 +48,13 @@
         </div>
 
        
-        <!-- Modal Editar Institución -->
+        <!-- Modal Editar Llave -->
         <div class="table-responsive">
             <table class="table align-middle table-hover">
                 <thead>
                     <tr>
-                        <th class="text-center" style="width: 60%;">Nombre de la llave</th>
-                        <th class="text-center" style="width: 25%;">Estado</th>
-                        <th class="text-center" style="width: 15%;">Acciones</th>
+                        <th class="text-center" style="width: 90%;">Nombre de la Llave</th>
+                        <th class="text-center" style="width: 10%;">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -126,7 +125,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar la llave?</p>
+                                        <p class="modal-text">¿Desea Eliminar la Llave?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('llave.destroy', ['llave' => $llave->id]) }}" method="post">
                                                 @method('DELETE')

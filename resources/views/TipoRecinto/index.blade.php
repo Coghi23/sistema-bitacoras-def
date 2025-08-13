@@ -29,14 +29,14 @@
                         <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
                             <i class="bi bi-arrow-left"></i>
                         </button>
-                        <h5 class="modal-title">Crear Tipo de Recinto</h5>
+                        <h5 class="modal-title">Crear Nuevo Tipo de Recinto</h5>
                     </div>
                     <div class="modal-body px-4 py-4">
                         <form action="{{ route('tipoRecinto.store') }}" method="POST">
                             @csrf
                             <div class="mb-3">
                                 <label for="nombreTipoRecinto" class="form-label fw-bold">Nombre del Tipo de Recinto</label>
-                                <input type="text" name="nombre" id="nombreTipoRecinto" class="form-control" placeholder="Ingrese el nombre del Tipo de Recinto" required>
+                                <input type="text" name="nombre" id="nombreTipoRecinto" class="form-control" placeholder="Ingrese el Nombre del Tipo de Recinto" required>
                             </div>
                             <div class="text-center mt-4">
                                 <button type="submit" class="btn btn-crear">Crear</button>
@@ -119,7 +119,7 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea eliminar el tipo de recinto?</p>
+                                        <p class="modal-text">¿Desea Eliminar el Tipo de Recinto?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('tipoRecinto.destroy', ['tipoRecinto' => $tipoRecinto->id]) }}" method="post">
                                                 @method('DELETE')

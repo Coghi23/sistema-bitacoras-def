@@ -163,7 +163,7 @@
                             </div>
                             <div class="linea-vertical-amarilla ms-2"></div>
                         </button>
-                        <h5 class="modal-title m-0" id="modalUsuarioLabel">Registro de usuarios</h5>
+                        <h5 class="modal-title m-0" id="modalUsuarioLabel">Registro de Usuarios</h5>
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
                     <div class="modal-body px-4 pt-3">

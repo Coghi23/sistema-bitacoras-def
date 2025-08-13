@@ -96,7 +96,7 @@
                                             data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Desea eliminar este recinto?');">
+                                    <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Está seguro de que desea eliminar este recinto?');">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
@@ -121,7 +121,7 @@
                         <i><img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="external-ui-basic-ui-solid-adri-ansyah-26"/></i>
                     </span>
                     </button>
-                    <h3 class="flex-grow-1">Editar recinto</h3>
+                    <h3 class="flex-grow-1">Editar Recinto</h3>
                 </div>
                 <div class="modal-body pb-0" style="border-bottom: 8px solid #003366;">
                     <form id="formEditarRecinto-{{ $recinto->id }}" action="{{ route('recinto.update', $recinto->id) }}" method="POST">
@@ -129,12 +129,12 @@
                     @method('PATCH')
                     
                     <div class="mb-3">
-                        <label for="nombreRecinto-{{ $recinto->id }}" class="form-label mb-1">Nombre</label>
+                        <label for="nombreRecinto-{{ $recinto->id }}" class="form-label mb-1">Nombre del Recinto</label>
                         <input type="text" class="form-control" id="nombreRecinto-{{ $recinto->id }}" name="nombre" value="{{ $recinto->nombre }}" required>
                     </div>
                     <div class="mb-3">
-                        <label for="tipoRecinto-{{ $recinto->id }}" class="form-label mb-1">Tipo Recinto</label>
-                        <select data-size="4" title="Seleccione un tipo de recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick">
+                        <label for="tipoRecinto-{{ $recinto->id }}" class="form-label mb-1">Tipo de Recinto</label>
+                        <select data-size="4" title="Seleccione un Tipo de Recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick">
                             @if(isset($tiposRecinto))
                                 @foreach ($tiposRecinto as $tipoRecinto)
                                     <option value="{{$tipoRecinto->id}}" 
@@ -146,8 +146,8 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="estadoRecinto-{{ $recinto->id }}" class="form-label mb-1">Estado Recinto</label>
-                        <select data-size="4" title="Seleccione un estado de recinto" data-live-search="true" name="estadoRecinto_id" id="editarEstadoRecinto" class="form-control selectpicker show-tick">
+                        <label for="estadoRecinto-{{ $recinto->id }}" class="form-label mb-1">Estado del Recinto</label>
+                        <select data-size="4" title="Seleccione un Estado de Recinto" data-live-search="true" name="estadoRecinto_id" id="editarEstadoRecinto" class="form-control selectpicker show-tick">
                             @if(isset($estadosRecinto))
                                 @foreach ($estadosRecinto as $estadoRecinto)
                                     <option value="{{$estadoRecinto->id}}" 
@@ -159,8 +159,8 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="llaveRecinto-{{ $recinto->id }}" class="form-label mb-1">Numero de llave</label>
-                        <select data-size="4" title="Seleccione una llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick">
+                        <label for="llaveRecinto-{{ $recinto->id }}" class="form-label mb-1">Número de Llave</label>
+                        <select data-size="4" title="Seleccione una Llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick">
                             @if(isset($llaves))
                                 @foreach ($llaves as $llave)
                                     <option value="{{$llave->id}}" 
@@ -173,7 +173,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="institucionRecinto-{{ $recinto->id }}" class="form-label mb-1">Institución</label>
-                        <select data-size="4" title="Seleccione una institución" data-live-search="true" name="institucion_id" id="editarInstitucion" class="form-control selectpicker show-tick">
+                        <select data-size="4" title="Seleccione una Institución" data-live-search="true" name="institucion_id" id="editarInstitucion" class="form-control selectpicker show-tick">
                             @if(isset($instituciones))
                                 @foreach ($instituciones as $institucion)
                                     <option value="{{$institucion->id}}" 
@@ -205,20 +205,20 @@
                         <i><img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="external-ui-basic-ui-solid-adri-ansyah-26"/></i>
                     </span>
                     </button>
-                    <h3 class="flex-grow-1">Crear nuevo recinto</h3>
+                    <h3 class="flex-grow-1">Crear Nuevo Recinto</h3>
                 </div>
                 <div class="modal-body pb-0" style="border-bottom: 8px solid #003366;">
                     <form action="{{ route('recinto.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="nombreRecinto" class="form-label mb-1">Nombre</label>
-                            <input type="text" class="form-control" id="nombreRecinto" name="nombre" placeholder="Nombre del recinto" required>
+                            <label for="nombreRecinto" class="form-label mb-1">Nombre del Recinto</label>
+                            <input type="text" class="form-control" id="nombreRecinto" name="nombre" placeholder="Nombre del Recinto" required>
                         </div>
                         <div class="mb-3">
-                            <label for="tipoRecinto" class="form-label mb-1">Tipo recinto</label>
+                            <label for="tipoRecinto" class="form-label mb-1">Tipo de Recinto</label>
 
-                            <select data-size="4" title="Seleccione un tipo de recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick" required>
-                                <option value="">Seleccione un tipo de recinto</option>
+                            <select data-size="4" title="Seleccione un Tipo de Recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione un Tipo de Recinto</option>
                                 @foreach ($tiposRecinto as $tipoRecinto)
                                     <option value="{{$tipoRecinto->id}}" {{ old('tipoRecinto_id') == $tipoRecinto->id ? 'selected' : '' }}>{{$tipoRecinto->nombre}}</option>
                                 @endforeach
@@ -226,20 +226,20 @@
                         </div>
                         
                         <div class="mb-3">
-                            <label for="estadoRecinto" class="form-label mb-1">Estado recinto</label>
+                            <label for="estadoRecinto" class="form-label mb-1">Estado del Recinto</label>
 
-                            <select data-size="4" title="Seleccione un estado de recinto" data-live-search="true" name="estadoRecinto_id" id="estadoRecinto_id" class="form-control selectpicker show-tick" required>
-                                <option value="">Seleccione un estado de recinto</option>
+                            <select data-size="4" title="Seleccione un Estado de Recinto" data-live-search="true" name="estadoRecinto_id" id="estadoRecinto_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione un Estado de Recinto</option>
                                 @foreach ($estadosRecinto as $estadoRecinto)
                                     <option value="{{$estadoRecinto->id}}" {{ old('estadoRecinto_id') == $estadoRecinto->id ? 'selected' : '' }}>{{$estadoRecinto->nombre}}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="llaveRecinto" class="form-label mb-1">Numero de llave</label>
+                            <label for="llaveRecinto" class="form-label mb-1">Número de Llave</label>
                             
-                            <select data-size="4" title="Seleccione una llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick" required>
-                                <option value="">Seleccione una llave</option>
+                            <select data-size="4" title="Seleccione una Llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione una Llave</option>
                                 @foreach ($llaves as $llave)
                                     <option value="{{$llave->id}}" {{ old('llave_id') == $llave->id ? 'selected' : '' }}>{{$llave->nombre}}</option>
                                 @endforeach
@@ -248,8 +248,8 @@
                         <div class="mb-3">
                             <label for="institucionRecinto" class="form-label mb-1">Institución</label>
                             
-                            <select data-size="4" title="Seleccione una institución" data-live-search="true" name="institucion_id" id="institucion_id" class="form-control selectpicker show-tick" required>
-                                <option value="">Seleccione una institución</option>
+                            <select data-size="4" title="Seleccione una Institución" data-live-search="true" name="institucion_id" id="institucion_id" class="form-control selectpicker show-tick" required>
+                                <option value="">Seleccione una Institución</option>
                                 @foreach ($instituciones as $institucion)
                                     <option value="{{$institucion->id}}" {{ old('institucion_id') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
                                 @endforeach
@@ -285,7 +285,7 @@
             <div class="modal-body pb-0 text-center" style="border-bottom: 8px solid #003366;">
                 <div class="mb-4">
                     <h5>{{ $recinto->nombre }}</h5>
-                    <p class="text-secondary">Número de llave: <strong>{{ $recinto->llave->nombre }}</strong></p>
+                    <p class="text-secondary">Número de Llave: <strong>{{ $recinto->llave->nombre }}</strong></p>
                 </div>
                 
                 <div id="qrCode-{{ $recinto->id }}" class="mb-4" style="display: none;">
