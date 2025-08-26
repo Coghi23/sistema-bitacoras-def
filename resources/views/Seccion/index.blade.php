@@ -29,11 +29,16 @@
     <div class="main-content">
 
         {{-- Búsqueda + botón agregar --}}
-        <div class="search-bar-wrapper mb-4">
-            <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="w-100 position-relative">
-                    <span class="search-icon">
-                        <i class="bi bi-search"></i>
+
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="input-group w-50">
+                <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="d-flex w-100">
+                    <span         });
+        
+        console.log('DOM loaded and event listeners added safely');
+    });s="input-group-text bg-white border-white">
+                        <i class="bi bi-search text-secondary"></i>
+
                     </span>
                     <input type="text" class="form-control"
                         placeholder="Buscar sección..." name="busquedaSeccion" 
@@ -143,26 +148,49 @@
                                         <div class="mb-3">
                                             <label class="form-label fw-bold">Especialidad</label>
                                             @error('especialidades')
-                                                <div class="text-danger small mb-2">{{ $message }}</div>
+                                                <div class="text-danger small mb-2">
+                                                    {{ $message }}
+                                                    <br><small><i class="bi bi-info-circle"></i> Una sección debe tener al menos una especialidad asignada.</small>
+                                                </div>
                                             @enderror
-                                            <div class="row">
-                                                @foreach ($especialidades as $especialidad)
-                                                    <div class="col-md-6 mb-2">
-                                                        <div class="form-check">
-                                                            <input class="form-check-input" type="checkbox" 
-                                                                   name="especialidades[]" 
-                                                                   value="{{ $especialidad->id }}"
-                                                                   id="especialidad-edit-{{ $seccion->id }}-{{ $especialidad->id }}"
-                                                                   @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && old('especialidades') ? 
-                                                                       in_array($especialidad->id, old('especialidades', [])) : 
-                                                                       ($seccion->especialidades->contains('id', $especialidad->id) && 
-                                                                        $seccion->especialidades->where('id', $especialidad->id)->first()->pivot->condicion == 1))
-                                                                       checked
-                                                                   @endif>
-                                                            <label class="form-check-label" for="especialidad-edit-{{ $seccion->id }}-{{ $especialidad->id }}">
-                                                                {{ $especialidad->nombre }}
-                                                            </label>
-                                                        </div>
+                                            
+                                            <!-- Especialidades actualmente asignadas como checkboxes ocultos -->
+                                            <div style="display: none;">
+                                                @foreach($especialidades as $especialidad)
+                                                    <input type="checkbox" 
+                                                           id="esp-{{ $seccion->id }}-{{ $especialidad->id }}"
+                                                           name="especialidades[]" 
+                                                           value="{{ $especialidad->id }}"
+                                                           @if($seccion->especialidades->where('id', $especialidad->id)->where('pivot.condicion', 1)->count() > 0) checked @endif>
+                                                @endforeach
+                                            </div>
+                                            
+                                            <!-- Select para agregar especialidades -->
+                                            <div class="input-group dynamic-group mb-3">
+                                                <select id="selectEspecialidadEdit-{{ $seccion->id }}" class="form-select">
+                                                    <option value="">Seleccione una especialidad para agregar</option>
+                                                    @foreach ($especialidades as $especialidad)
+                                                        <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidadSimple('{{ $seccion->id }}');" style="min-width: 38px; padding: 8px;">
+                                                    <i class="bi bi-plus"></i>
+                                                </button>
+                                            </div>
+                                            
+                                            <!-- Contenedor para mensajes de validación -->
+                                            <div id="mensajeValidacion-{{ $seccion->id }}" class="alert alert-danger d-none" role="alert">
+                                                <i class="bi bi-exclamation-triangle"></i> <span id="textoMensaje-{{ $seccion->id }}"></span>
+                                            </div>
+                                            
+                                            <!-- Especialidades visibles actualmente asignadas -->
+                                            <div id="especialidadesVisuales-{{ $seccion->id }}">
+                                                @foreach($seccion->especialidades->where('pivot.condicion', 1) as $especialidadAsignada)
+                                                    <div class="input-group mt-2 especialidad-visual" data-id="{{ $especialidadAsignada->id }}">
+                                                        <input type="text" class="form-control" value="{{ $especialidadAsignada->nombre }}" readonly>
+                                                        <button type="button" class="btn btn-danger" onclick="eliminarEspecialidadSimple('{{ $seccion->id }}', '{{ $especialidadAsignada->id }}')">
+                                                            <i class="bi bi-x"></i>
+                                                        </button>
                                                     </div>
                                                 @endforeach
                                             </div>
@@ -245,7 +273,10 @@
                     <div class="mb-3">
                         <label class="form-label fw-bold">Especialidad</label>
                         @error('especialidades')
-                            <div class="text-danger small mb-2">{{ $message }}</div>
+                            <div class="text-danger small mb-2">
+                                {{ $message }}
+                                <br><small><i class="bi bi-info-circle"></i> Una sección debe tener al menos una especialidad asignada.</small>
+                            </div>
                         @enderror
                         <div id="especialidades">
                             <div class="input-group dynamic-group">
@@ -261,6 +292,11 @@
                             </div>
                             <!-- Contenedor para especialidades seleccionadas -->
                             <div id="especialidadesSeleccionadas" class="mt-2"></div>
+                            
+                            <!-- Contenedor para mensajes de validación -->
+                            <div id="mensajeValidacionCrear" class="alert alert-danger d-none mt-2" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> <span id="textoMensajeCrear"></span>
+                            </div>
                         </div>
                     </div>
                     <div class="text-center mt-4">
@@ -276,14 +312,64 @@
     // Variables globales para crear sección
     let especialidadesAgregadas = [];
 
+    // ========== FUNCIONES PARA VALIDACIÓN ==========
+    
+    function mostrarMensajeValidacion(seccionId, mensaje) {
+        const contenedorMensaje = document.getElementById(`mensajeValidacion-${seccionId}`);
+        const textoMensaje = document.getElementById(`textoMensaje-${seccionId}`);
+        
+        if (contenedorMensaje && textoMensaje) {
+            textoMensaje.textContent = mensaje;
+            contenedorMensaje.classList.remove('d-none');
+            
+            // Auto-ocultar después de 4 segundos
+            setTimeout(() => {
+                ocultarMensajeValidacion(seccionId);
+            }, 4000);
+        }
+    }
+    
+    function ocultarMensajeValidacion(seccionId) {
+        const contenedorMensaje = document.getElementById(`mensajeValidacion-${seccionId}`);
+        if (contenedorMensaje) {
+            contenedorMensaje.classList.add('d-none');
+        }
+    }
+    
+    // Funciones para validación del modal de crear
+    function mostrarMensajeValidacionCrear(mensaje) {
+        const contenedorMensaje = document.getElementById('mensajeValidacionCrear');
+        const textoMensaje = document.getElementById('textoMensajeCrear');
+        
+        if (contenedorMensaje && textoMensaje) {
+            textoMensaje.textContent = mensaje;
+            contenedorMensaje.classList.remove('d-none');
+            
+            // Auto-ocultar después de 4 segundos
+            setTimeout(() => {
+                ocultarMensajeValidacionCrear();
+            }, 4000);
+        }
+    }
+    
+    function ocultarMensajeValidacionCrear() {
+        const contenedorMensaje = document.getElementById('mensajeValidacionCrear');
+        if (contenedorMensaje) {
+            contenedorMensaje.classList.add('d-none');
+        }
+    }
+
     // ========== FUNCIONES PARA CREAR SECCIÓN ==========
 
     function agregarEspecialidad() {
+        // Ocultar mensaje de validación anterior
+        ocultarMensajeValidacionCrear();
+        
         const select = document.getElementById('selectEspecialidad');
         const selectedOption = select.options[select.selectedIndex];
         
         if (!selectedOption || !selectedOption.value) {
-            alert('Por favor seleccione una especialidad');
+            mostrarMensajeValidacionCrear('Por favor seleccione una especialidad');
             return;
         }
         
@@ -292,7 +378,7 @@
         
         // Verificar si ya está agregada
         if (especialidadesAgregadas.includes(id)) {
-            alert('Esta especialidad ya está agregada');
+            mostrarMensajeValidacionCrear('Esta especialidad ya está agregada');
             return;
         }
         
@@ -304,19 +390,45 @@
         const especialidadDiv = document.createElement('div');
         especialidadDiv.className = 'input-group mt-2';
         especialidadDiv.setAttribute('data-id', id);
-        especialidadDiv.innerHTML = `
-            <input type="text" class="form-control" value="${nombre}" readonly>
-            <input type="hidden" name="especialidades[]" value="${id}">
-            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
-                <i class="bi bi-x"></i>
-            </button>
-        `;
+        
+        // Crear los elementos por separado para evitar problemas con comillas
+        const inputTexto = document.createElement('input');
+        inputTexto.type = 'text';
+        inputTexto.className = 'form-control';
+        inputTexto.value = nombre;
+        inputTexto.readOnly = true;
+        
+        const inputHidden = document.createElement('input');
+        inputHidden.type = 'hidden';
+        inputHidden.name = 'especialidades[]';
+        inputHidden.value = id;
+        
+        const btnEliminar = document.createElement('button');
+        btnEliminar.type = 'button';
+        btnEliminar.className = 'btn btn-danger';
+        btnEliminar.innerHTML = '<i class="bi bi-x"></i>';
+        btnEliminar.onclick = function() {
+            quitarEspecialidad(this, id);
+        };
+        
+        especialidadDiv.appendChild(inputTexto);
+        especialidadDiv.appendChild(inputHidden);
+        especialidadDiv.appendChild(btnEliminar);
         
         contenedor.appendChild(especialidadDiv);
         select.selectedIndex = 0;
     }
 
     function quitarEspecialidad(boton, id) {
+        // Verificar si es la última especialidad
+        const contenedor = document.getElementById('especialidadesSeleccionadas');
+        const especialidadesActuales = contenedor.querySelectorAll('[data-id]');
+        
+        if (especialidadesActuales.length <= 1) {
+            alert('No se puede eliminar la última especialidad. Una sección debe tener al menos una especialidad asignada.');
+            return;
+        }
+        
         // Remover del array
         especialidadesAgregadas = especialidadesAgregadas.filter(espId => espId !== id);
         // Remover del DOM
@@ -338,46 +450,32 @@
         const especialidadDiv = document.createElement('div');
         especialidadDiv.className = 'input-group mt-2';
         especialidadDiv.setAttribute('data-id', id);
-        especialidadDiv.innerHTML = `
-            <input type="text" class="form-control" value="${nombre}" readonly>
-            <input type="hidden" name="especialidades[]" value="${id}">
-            <button type="button" class="btn btn-danger" onclick="quitarEspecialidad(this, '${id}')">
-                <i class="bi bi-x"></i>
-            </button>
-        `;
+        
+        // Crear los elementos por separado para evitar problemas con comillas
+        const inputTexto = document.createElement('input');
+        inputTexto.type = 'text';
+        inputTexto.className = 'form-control';
+        inputTexto.value = nombre;
+        inputTexto.readOnly = true;
+        
+        const inputHidden = document.createElement('input');
+        inputHidden.type = 'hidden';
+        inputHidden.name = 'especialidades[]';
+        inputHidden.value = id;
+        
+        const btnEliminar = document.createElement('button');
+        btnEliminar.type = 'button';
+        btnEliminar.className = 'btn btn-danger';
+        btnEliminar.innerHTML = '<i class="bi bi-x"></i>';
+        btnEliminar.onclick = function() {
+            quitarEspecialidad(this, id);
+        };
+        
+        especialidadDiv.appendChild(inputTexto);
+        especialidadDiv.appendChild(inputHidden);
+        especialidadDiv.appendChild(btnEliminar);
         
         contenedor.appendChild(especialidadDiv);
-    }
-
-    // ========== FUNCIONES DE BÚSQUEDA ==========
-
-    // Funcionalidad de búsqueda en tiempo real
-    let timeoutId;
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const formBusqueda = document.getElementById('busquedaForm');
-    const btnLimpiar = document.getElementById('limpiarBusqueda');
-    
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function() {
-                formBusqueda.submit();
-            }, 500);
-        });
-        
-        inputBusqueda.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                formBusqueda.submit();
-            }
-        });
-    }
-    
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
-            window.location.href = '{{ route("seccion.index") }}';
-        });
     }
 
     // ========== ABRIR MODALES CON ERRORES ==========
@@ -409,6 +507,218 @@
             modalEditar.show();
         });
     @endif
+
+    // ========== FUNCIONES DE BÚSQUEDA ==========
+
+    // Funcionalidad de búsqueda en tiempo real - con verificación de existencia
+    document.addEventListener('DOMContentLoaded', function() {
+        let timeoutId;
+        const inputBusqueda = document.getElementById('inputBusqueda');
+        const formBusqueda = document.getElementById('busquedaForm');
+        const btnLimpiar = document.getElementById('limpiarBusqueda');
+        
+        if (inputBusqueda && formBusqueda) {
+            inputBusqueda.addEventListener('input', function() {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function() {
+                    formBusqueda.submit();
+                }, 500);
+            });
+            
+            inputBusqueda.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    formBusqueda.submit();
+                }
+            });
+        }
+        
+        if (btnLimpiar) {
+            btnLimpiar.addEventListener('click', function() {
+                if (inputBusqueda) {
+                    inputBusqueda.value = '';
+                }
+                window.location.href = '{{ route("seccion.index") }}';
+            });
+        }
+        
+    });
+
+    // Función simplificada para agregar especialidad
+    function agregarEspecialidadSimple(seccionId) {
+        // Ocultar mensaje de validación anterior
+        ocultarMensajeValidacion(seccionId);
+        
+        const select = document.getElementById(`selectEspecialidadEdit-${seccionId}`);
+        const especialidadId = select.value;
+        const nombreEspecialidad = select.options[select.selectedIndex].getAttribute('data-nombre');
+        
+        if (!especialidadId) {
+            mostrarMensajeValidacion(seccionId, 'Por favor seleccione una especialidad');
+            return;
+        }
+        
+        // Verificar que no esté ya visible en la interfaz
+        const contenedorVisual = document.getElementById(`especialidadesVisuales-${seccionId}`);
+        const existeVisual = contenedorVisual.querySelector(`[data-id="${especialidadId}"]`);
+        
+        if (existeVisual) {
+            mostrarMensajeValidacion(seccionId, 'Esta especialidad ya está asignada a la sección');
+            return;
+        }
+        
+        // Marcar el checkbox oculto
+        const checkbox = document.getElementById(`esp-${seccionId}-${especialidadId}`);
+        if (checkbox) {
+            checkbox.checked = true;
+        }
+        
+        // Agregar visual
+        const elementoVisual = document.createElement('div');
+        elementoVisual.className = 'input-group mt-2 especialidad-visual';
+        elementoVisual.setAttribute('data-id', especialidadId);
+        elementoVisual.innerHTML = `
+            <input type="text" class="form-control" value="${nombreEspecialidad}" readonly>
+            <button type="button" class="btn btn-danger" onclick="eliminarEspecialidadSimple('${seccionId}', '${especialidadId}')">
+                <i class="bi bi-x"></i>
+            </button>
+        `;
+        contenedorVisual.appendChild(elementoVisual);
+        
+        // Resetear select
+        select.value = '';
+        
+        // Actualizar opciones del select para ocultar la especialidad agregada
+        actualizarOpcionesSelect(seccionId);
+    }
+    
+    // Función simplificada para eliminar especialidad
+    function eliminarEspecialidadSimple(seccionId, especialidadId) {
+        // Desmarcar checkbox oculto
+        const checkbox = document.getElementById(`esp-${seccionId}-${especialidadId}`);
+        if (checkbox) {
+            checkbox.checked = false;
+        }
+        
+        // Eliminar elemento visual
+        const elementoVisual = document.querySelector(`#especialidadesVisuales-${seccionId} .especialidad-visual[data-id="${especialidadId}"]`);
+        if (elementoVisual) {
+            elementoVisual.remove();
+        }
+        
+        // Actualizar opciones del select para mostrar la especialidad nuevamente
+        actualizarOpcionesSelect(seccionId);
+    }
+    
+    // Función para actualizar las opciones del select
+    function actualizarOpcionesSelect(seccionId) {
+        const select = document.getElementById(`selectEspecialidadEdit-${seccionId}`);
+        const contenedorVisual = document.getElementById(`especialidadesVisuales-${seccionId}`);
+        
+        // Obtener IDs de especialidades visualmente asignadas
+        const especialidadesAsignadas = [];
+        const elementosVisuales = contenedorVisual.querySelectorAll('.especialidad-visual');
+        elementosVisuales.forEach(elemento => {
+            especialidadesAsignadas.push(elemento.getAttribute('data-id'));
+        });
+        
+        // Mostrar/ocultar opciones del select
+        Array.from(select.options).forEach(option => {
+            if (option.value === '') {
+                // Mantener la opción por defecto
+                option.style.display = '';
+                return;
+            }
+            
+            if (especialidadesAsignadas.includes(option.value)) {
+                option.style.display = 'none';
+            } else {
+                option.style.display = '';
+            }
+        });
+        
+        // Resetear selección si la opción actual está oculta
+        if (select.value && especialidadesAsignadas.includes(select.value)) {
+            select.value = '';
+        }
+    }
+    
+    // Event listener para formularios de editar
+    document.addEventListener('DOMContentLoaded', function() {
+        // Event listener para formulario de crear
+        const modalCrear = document.getElementById('modalAgregarSeccion');
+        const formCrear = modalCrear.querySelector('form');
+        
+        if (formCrear) {
+            formCrear.addEventListener('submit', function(e) {
+                // Ocultar mensajes de validación anteriores
+                ocultarMensajeValidacionCrear();
+                
+                // Validar que haya al menos una especialidad
+                if (especialidadesAgregadas.length === 0) {
+                    e.preventDefault();
+                    mostrarMensajeValidacionCrear('Debe asignar al menos una especialidad a la sección');
+                    return false;
+                }
+            });
+        }
+        
+        // Limpiar mensajes al abrir modal de crear
+        modalCrear.addEventListener('shown.bs.modal', function() {
+            ocultarMensajeValidacionCrear();
+        });
+        
+        // Limpiar mensajes al cerrar modal de crear
+        modalCrear.addEventListener('hidden.bs.modal', function() {
+            ocultarMensajeValidacionCrear();
+        });
+        
+        // Event listener para formulario de editar
+        const modalEditar = document.getElementById('modalEditarSeccion');
+        
+        modalEditar.addEventListener('shown.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const seccionId = button.getAttribute('data-id');
+            const form = modalEditar.querySelector('form');
+            
+            // Ocultar mensajes de validación al abrir el modal
+            ocultarMensajeValidacion(seccionId);
+            
+            // Actualizar opciones del select al abrir el modal
+            actualizarOpcionesSelect(seccionId);
+            
+            // Agregar event listener al formulario si no lo tiene
+            if (!form.hasAttribute('data-listener-added')) {
+                form.addEventListener('submit', function(e) {
+                    // Ocultar mensajes de validación anteriores
+                    ocultarMensajeValidacion(seccionId);
+                    
+                    // Validar especialidades usando checkboxes
+                    const checkboxesChecked = form.querySelectorAll('input[name="especialidades[]"]:checked');
+                    
+                    if (checkboxesChecked.length === 0) {
+                        e.preventDefault();
+                        mostrarMensajeValidacion(seccionId, 'Debe asignar al menos una especialidad a la sección');
+                        return false;
+                    }
+                });
+                
+                form.setAttribute('data-listener-added', 'true');
+            }
+        });
+        
+        // Limpiar mensajes al cerrar modal de editar
+        modalEditar.addEventListener('hidden.bs.modal', function() {
+            // Obtener el ID de la sección del modal
+            const form = modalEditar.querySelector('form');
+            const seccionIdInput = form ? form.querySelector('input[name="id"]') : null;
+            const seccionId = seccionIdInput ? seccionIdInput.value : null;
+            
+            if (seccionId) {
+                ocultarMensajeValidacion(seccionId);
+            }
+        });
+    });
 </script>
 @endsection
 

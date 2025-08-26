@@ -158,8 +158,10 @@
       'file' => 
       array (
         'driver' => 'file',
+
         'path' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
         'lock_path' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\framework/cache/data',
+
       ),
       'memcached' => 
       array (
@@ -332,7 +334,9 @@
       'local' => 
       array (
         'driver' => 'local',
+
         'root' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\app/private',
+
         'serve' => true,
         'throw' => false,
         'report' => false,
@@ -340,7 +344,9 @@
       'public' => 
       array (
         'driver' => 'local',
+
         'root' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+
         'url' => 'http://sistema-bitacoras-def.test/storage',
         'visibility' => 'public',
         'throw' => false,
@@ -362,7 +368,9 @@
     ),
     'links' => 
     array (
+
       'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\public\\storage' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\app/public',
+
     ),
   ),
   'logging' => 
@@ -387,14 +395,18 @@
       'single' => 
       array (
         'driver' => 'single',
+
         'path' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
         'level' => 'debug',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
+
         'path' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
         'level' => 'debug',
         'days' => 14,
         'replace_placeholders' => true,
@@ -459,7 +471,9 @@
       ),
       'emergency' => 
       array (
+
         'path' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\logs/laravel.log',
+
       ),
       'deprecations' => 
       array (
@@ -470,7 +484,9 @@
   ),
   'mail' => 
   array (
+
     'default' => 'smtp',
+
     'mailers' => 
     array (
       'smtp' => 
@@ -480,8 +496,10 @@
         'url' => NULL,
         'host' => 'sandbox.smtp.mailtrap.io',
         'port' => '2525',
+
         'username' => '3f9312d2661c06',
         'password' => '67ff95ffeae831',
+
         'timeout' => NULL,
         'local_domain' => 'sistema-bitacoras-def.test',
       ),
@@ -534,15 +552,19 @@
     ),
     'from' => 
     array (
+
       'address' => 'hello@example.com',
       'name' => 'Example',
+
     ),
     'markdown' => 
     array (
       'theme' => 'default',
       'paths' => 
       array (
+
         0 => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\resources\\views/vendor/mail',
+
       ),
     ),
   ),
@@ -679,7 +701,9 @@
     'lifetime' => 120,
     'expire_on_close' => false,
     'encrypt' => false,
+
     'files' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\framework/sessions',
+
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -806,9 +830,11 @@
   array (
     'paths' => 
     array (
+
       0 => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\resources\\views',
     ),
     'compiled' => 'C:\\Users\\chale\\OneDrive\\Documentos\\GitHub\\sistema-bitacoras-def\\storage\\framework\\views',
+
   ),
   'tinker' => 
   array (
