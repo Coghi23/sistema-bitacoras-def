@@ -42,9 +42,7 @@ class Horario extends Model
 
     public function leccion()
     {
-        return $this->belongsToMany(Leccion::class, 'horario_leccion', 'idHorario', 'idLeccion')
-            ->withPivot('condicion')
-            ->withTimestamps();
+        return $this->belongsToMany(Leccion::class, 'horario_leccion', 'idHorario', 'idLeccion');
     }
 
     public function profesor()

@@ -57,25 +57,13 @@
               <div class="col-md-6 position-relative">
                 <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
                 <form method="GET" action="{{ route('bitacora.index') }}" id="leccionForm">
-                  <select class="form-control ps-5" name="leccion" id="leccionSelect">
-                    <option value="">Seleccione la lección</option>
-                    @foreach($horarios as $horario)
-                      <option value="{{ $horario->id }}" 
-                              data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
-                              data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
-                              data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
-                              data-hora="{{ optional($horario->leccion)->hora_inicio ?? '' }} - {{ optional($horario->leccion)->hora_final ?? '' }}"
-                              data-tipo="{{ optional($horario->leccion)->tipoLeccion ?? '' }}"
-                              @if(request('leccion') == $horario->id) selected @endif>
-                        {{ optional($horario->leccion)->leccion ?? 'Lección ' . $horario->id }}
-                        @if(optional($horario->leccion)->tipoLeccion)
-                          - {{ optional($horario->leccion)->tipoLeccion }}
-                        @endif
-                        @if(optional($horario->leccion)->hora_inicio)
-                          - {{ optional($horario->leccion)->hora_inicio }} a {{ optional($horario->leccion)->hora_final }}
-                        @endif
-                      </option>
-                    @endforeach
+                  <select name="leccion" id="leccionSelect" class="form-control ps-5">
+                      <option value="">Seleccione una lección</option>
+                      @foreach($lecciones as $leccion)
+                          <option value="{{ $leccion->id }}">
+                              {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
+                          </option>
+                      @endforeach
                   </select>
                 </form>
               </div>
