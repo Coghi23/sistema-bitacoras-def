@@ -29,7 +29,7 @@ Route::get('/', function () {
 
 Route::resource('bitacora', BitacoraController::class);
 
-// Rutas que requieren autenticación
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de recursos con protección para directores en acciones de escritura
 
