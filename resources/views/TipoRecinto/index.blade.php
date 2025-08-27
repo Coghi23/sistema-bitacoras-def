@@ -31,16 +31,7 @@
             </button>
         </div>
 
-        {{-- Indicador de resultados de búsqueda --}}
-        @if(request('busquedaTipoRecinto'))
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                <span>
-                    Mostrando {{ $tipoRecintos->count() }} resultado(s) para "<strong>{{ request('busquedaTipoRecinto') }}</strong>"
-                    <a href="{{ route('tipoRecinto.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
-                </span>
-            </div>
-        @endif
+      
 
         <!-- Modal Crear Tipo de Recinto -->
         <div class="modal fade" id="modalAgregarTipoRecinto" tabindex="-1" aria-labelledby="modalAgregarTipoRecintoLabel" aria-hidden="true">
@@ -178,37 +169,40 @@
         </div> 
     </div>
 </div>
-
 <script>
-    // Funcionalidad de búsqueda en tiempo real
-    let timeoutId;
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const formBusqueda = document.getElementById('busquedaForm');
-    const btnLimpiar = document.getElementById('limpiarBusqueda');
-    
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function() {
-                formBusqueda.submit();
-            }, 500);
-        });
-        
-        inputBusqueda.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                formBusqueda.submit();
+
+
+
+const inputBusqueda = document.getElementById('inputBusqueda');
+const tiporecintosList = document.getElementById('tiporecintos-list');
+const btnLimpiar = document.getElementById('limpiarBusqueda');
+ event.preventDefault(); /
+if (inputBusqueda && tiporecintosList) {
+    inputBusqueda.addEventListener('input', function () {
+        const valor = inputBusqueda.value.trim().toLowerCase();
+        const items = tiporecintosList.querySelectorAll('.tiporecinto-item');
+        items.forEach(function (item) {
+            const nombre = item.getAttribute('data-nombre').toLowerCase();
+            if (!valor || nombre.includes(valor)) {
+                item.style.display = ''; // Show item
+            } else {
+                item.style.display = 'none'; // Hide item
             }
         });
-    }
-    
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
-            window.location.href = '{{ route("tipoRecinto.index") }}';
+    });
+}
+
+if (btnLimpiar && inputBusqueda && recintosList) {
+    btnLimpiar.addEventListener('click', function () {
+        inputBusqueda.value = ''; // Clear input field
+        const items = tiporecintosList.querySelectorAll('.tiporecinto-item');
+        items.forEach(function (item) {
+            item.style.display = ''; // Show all items
         });
-    }
+    });
+}
 </script>
+
 
 @endsection
 

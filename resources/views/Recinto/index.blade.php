@@ -285,38 +285,37 @@
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const inputBusqueda = document.getElementById('inputBusqueda');
+    const recintosList = document.getElementById('recintos-list');
+    const btnLimpiar = document.getElementById('limpiarBusqueda');
 
+    if (inputBusqueda && recintosList) {
+        inputBusqueda.addEventListener('input', function () {
+            const valor = inputBusqueda.value.trim().toLowerCase();
+            const items = recintosList.querySelectorAll('.recinto-item');
 
-
-const inputBusqueda = document.getElementById('inputBusqueda');
-const recintosList = document.getElementById('recintos-list');
-const btnLimpiar = document.getElementById('limpiarBusqueda');
-event.preventDefault(); /
-if (inputBusqueda && recintosList) {
-    inputBusqueda.addEventListener('input', function () {
-        const valor = inputBusqueda.value.trim().toLowerCase();
-        const items = recintosList.querySelectorAll('.recinto-item');
-        items.forEach(function (item) {
-            const nombre = item.getAttribute('data-nombre').toLowerCase();
-            if (!valor || nombre.includes(valor)) {
-                item.style.display = ''; // Show item
-            } else {
-                item.style.display = 'none'; // Hide item
-            }
+            items.forEach(function (item) {
+                const nombre = item.getAttribute('data-nombre').toLowerCase();
+                item.style.display = (!valor || nombre.includes(valor)) ? '' : 'none';
+            });
         });
-    });
-}
+    }
 
-if (btnLimpiar && inputBusqueda && recintosList) {
-    btnLimpiar.addEventListener('click', function () {
-        inputBusqueda.value = ''; // Clear input field
-        const items = recintosList.querySelectorAll('.recinto-item');
-        items.forEach(function (item) {
-            item.style.display = ''; // Show all items
+    if (btnLimpiar && inputBusqueda && recintosList) {
+        btnLimpiar.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevenir cualquier acción por defecto
+            inputBusqueda.value = ''; // Limpiar campo
+            inputBusqueda.focus(); // Enfocar nuevamente
+            const items = recintosList.querySelectorAll('.recinto-item');
+            items.forEach(function (item) {
+                item.style.display = ''; // Mostrar todos los ítems
+            });
         });
-    });
-}
+    }
+});
 </script>
+
 <script>
 function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
     const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
