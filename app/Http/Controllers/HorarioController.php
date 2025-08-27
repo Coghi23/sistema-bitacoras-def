@@ -21,7 +21,7 @@ class HorarioController extends Controller
     public function index()
     {
 
-        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'profesor', 'leccion')->get();
+        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'profesor')->get();
         $recintos = Recinto::all();
         $subareas = Subarea::all();
         $secciones = Seccione::all();
@@ -53,25 +53,20 @@ class HorarioController extends Controller
             
             $tipoHorario = $request->tipoHorario === 'fijo' ? 1 : 0;
             
-            // Crear UN SOLO horario
-            $horario = Horario::create([
-                'idRecinto' => $request->idRecinto,
-                'idSubarea' => $request->idSubarea,
-                'idSeccion' => $request->idSeccion,
-                'user_id' => $request->user_id,
-                'tipoHorario' => $tipoHorario,
-                'fecha' => $request->tipoHorario === 'temporal' ? $request->fecha : null,
-                'dia' => $request->tipoHorario === 'fijo' ? $request->dia : null,
-                'condicion' => 1
-            ]);
-            
-            // Asociar las lecciones usando la tabla pivot
             if ($request->has('lecciones') && is_array($request->lecciones)) {
-                $leccionesData = [];
                 foreach ($request->lecciones as $leccionId) {
-                    $leccionesData[$leccionId] = ['condicion' => 1];
+                    Horario::create([
+                        'idRecinto' => $request->idRecinto,
+                        'idSubarea' => $request->idSubarea,
+                        'idSeccion' => $request->idSeccion,
+                        'user_id' => $request->user_id,
+                        'tipoHorario' => $tipoHorario,
+                        'fecha' => $request->tipoHorario === 'temporal' ? $request->fecha : null,
+                        'dia' => $request->tipoHorario === 'fijo' ? $request->dia : null,
+                        'idLeccion' => $leccionId,
+                        'condicion' => 1
+                    ]);
                 }
-                $horario->leccion()->attach($leccionesData);
             }
             
             DB::commit();
