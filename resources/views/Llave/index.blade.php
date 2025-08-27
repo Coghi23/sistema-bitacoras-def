@@ -207,34 +207,8 @@
 
 @push('scripts')
 <script>
-    // Funcionalidad de búsqueda en tiempo real
-    let timeoutId;
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const formBusqueda = document.getElementById('busquedaForm');
-    const btnLimpiar = document.getElementById('limpiarBusqueda');
     
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function() {
-                formBusqueda.submit();
-            }, 500);
-        });
-        
-        inputBusqueda.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                formBusqueda.submit();
-            }
-        });
-    }
-    
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
-            window.location.href = '{{ route("llave.index") }}';
-        });
-    }
+   
 
 $(document).ready(function() {
     console.log('🔧 Sistema de Llaves - Tiempo Real Iniciado');
@@ -424,4 +398,37 @@ $(document).ready(function() {
     transition: opacity 0.3s ease;
 }
 </style>
+<script>
+
+
+
+const inputBusqueda = document.getElementById('inputBusqueda');
+const llavesList = document.getElementById('llaves-list');
+const btnLimpiar = document.getElementById('limpiarBusqueda');
+ event.preventDefault(); /
+if (inputBusqueda && llavesList) {
+    inputBusqueda.addEventListener('input', function () {
+        const valor = inputBusqueda.value.trim().toLowerCase();
+        const items = llavesList.querySelectorAll('.llave-item');
+        items.forEach(function (item) {
+            const nombre = item.getAttribute('data-nombre').toLowerCase();
+            if (!valor || nombre.includes(valor)) {
+                item.style.display = ''; // Show item
+            } else {
+                item.style.display = 'none'; // Hide item
+            }
+        });
+    });
+}
+
+if (btnLimpiar && inputBusqueda && llavesList) {
+    btnLimpiar.addEventListener('click', function () {
+        inputBusqueda.value = ''; // Clear input field
+        const items = llavesList.querySelectorAll('.llave-item');
+        items.forEach(function (item) {
+            item.style.display = ''; // Show all items
+        });
+    });
+}
+</script>
 @endpush
