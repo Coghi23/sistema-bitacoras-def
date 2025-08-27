@@ -291,32 +291,33 @@
 const inputBusqueda = document.getElementById('inputBusqueda');
 const recintosList = document.getElementById('recintos-list');
 const btnLimpiar = document.getElementById('limpiarBusqueda');
-
+event.preventDefault(); /
 if (inputBusqueda && recintosList) {
-    inputBusqueda.addEventListener('input', function() {
+    inputBusqueda.addEventListener('input', function () {
         const valor = inputBusqueda.value.trim().toLowerCase();
         const items = recintosList.querySelectorAll('.recinto-item');
-        items.forEach(function(item) {
-            const nombre = item.getAttribute('data-nombre');
+        items.forEach(function (item) {
+            const nombre = item.getAttribute('data-nombre').toLowerCase();
             if (!valor || nombre.includes(valor)) {
-                item.style.display = '';
+                item.style.display = ''; // Show item
             } else {
-                item.style.display = 'none';
+                item.style.display = 'none'; // Hide item
             }
         });
     });
 }
 
 if (btnLimpiar && inputBusqueda && recintosList) {
-    btnLimpiar.addEventListener('click', function() {
-        inputBusqueda.value = '';
+    btnLimpiar.addEventListener('click', function () {
+        inputBusqueda.value = ''; // Clear input field
         const items = recintosList.querySelectorAll('.recinto-item');
-        items.forEach(function(item) {
-            item.style.display = '';
+        items.forEach(function (item) {
+            item.style.display = ''; // Show all items
         });
     });
 }
-
+</script>
+<script>
 function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
     const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
     const qrDiv = document.getElementById(`qrCode-${recintoId}`);
@@ -350,5 +351,6 @@ function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
     });
 }
 </script>
+
 @endsection
 

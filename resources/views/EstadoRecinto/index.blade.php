@@ -10,19 +10,19 @@
         {{-- Búsqueda + botón agregar --}}
         <div class="search-bar-wrapper mb-4">
             <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('estadoRecinto.index') }}" class="w-100 position-relative">
-                    <span class="search-icon">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="text" class="form-control"
-                        placeholder="Buscar estado recinto..." name="busquedaEstadoRecinto" 
-                        value="{{ request('busquedaEstadoRecinto') }}" id="inputBusqueda" autocomplete="off">
-                    @if(request('busquedaEstadoRecinto'))
-                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
-                        <i class="bi bi-x-circle"></i>
-                    </button>
-                    @endif
-                </form>
+            <form id="busquedaForm" method="GET" action="{{ route('estadoRecinto.index') }}" class="w-100 position-relative">
+                <span class="search-icon">
+                    <i class="bi bi-search"></i>
+                </span>
+                <input type="text" class="form-control"
+                    placeholder="Buscar estado recinto..." name="busquedaEstadoRecinto" 
+                    value="{{ request('busquedaEstadoRecinto') }}" id="inputBusqueda" autocomplete="off">
+                @if(request('busquedaEstadoRecinto'))
+                <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
+                    <i class="bi bi-x-circle"></i>
+                </button>
+                @endif
+            </form>
             </div>
             <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                 data-bs-toggle="modal" data-bs-target="#modalAgregarEstadoRecinto"
@@ -32,16 +32,7 @@
         </div>
 
 
-        {{-- Indicador de resultados de búsqueda --}}
-        @if(request('busquedaEstadoRecinto'))
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                <span>
-                    Mostrando {{ $estadoRecintos->count() }} resultado(s) para "<strong>{{ request('busquedaEstadoRecinto') }}</strong>"
-                    <a href="{{ route('estadoRecinto.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
-                </span>
-            </div>
-        @endif
+      
 
         <!-- Modal Crear estado recinto -->
     <div class="modal fade" id="modalAgregarEstadoRecinto" tabindex="-1" aria-labelledby="modalAgregarEstadoRecintoLabel" aria-hidden="true">
@@ -205,36 +196,34 @@
 
 @push('scripts')
 <script>
-    // Funcionalidad de búsqueda en tiempo real
-    let timeoutId;
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const formBusqueda = document.getElementById('busquedaForm');
-    const btnLimpiar = document.getElementById('limpiarBusqueda');
-    
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function() {
-                formBusqueda.submit();
-            }, 500); // Espera 500ms después de que el usuario deje de escribir
-        });
-        
-        // También permitir búsqueda al presionar Enter
-        inputBusqueda.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                formBusqueda.submit();
+const inputBusqueda = document.getElementById('inputBusqueda');
+const estadoRecintosList = document.getElementById('estado-recintos-list');
+const btnLimpiar = document.getElementById('limpiarBusqueda');
+event.preventDefault(); 
+if (inputBusqueda && estadoRecintosList) {
+    inputBusqueda.addEventListener('input', function () {
+        const valor = inputBusqueda.value.trim().toLowerCase();
+        const items = estadoRecintosList.querySelectorAll('.estado-recinto-item');
+        items.forEach(function (item) {
+            const nombre = item.getAttribute('data-nombre').toLowerCase();
+            if (!valor || nombre.includes(valor)) {
+                item.style.display = ''; // Mostrar elemento
+            } else {
+                item.style.display = 'none'; // Ocultar elemento
             }
         });
-    }
-    
-    // Funcionalidad del botón limpiar
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
-            window.location.href = '{{ route("estadoRecinto.index") }}';
+    });
+}
+
+if (btnLimpiar && inputBusqueda && estadoRecintosList) {
+    btnLimpiar.addEventListener('click', function () {
+        inputBusqueda.value = ''; // Limpiar campo de búsqueda
+        const items = estadoRecintosList.querySelectorAll('.estado-recinto-item');
+        items.forEach(function (item) {
+            item.style.display = ''; // Mostrar todos los elementos
         });
-    }
+    });
+}
 </script>
 <script>
        $(document).ready(function() {

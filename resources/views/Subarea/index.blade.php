@@ -9,31 +9,19 @@
         {{-- Encabezado de búsqueda y botón Agregar --}}
         <div class="search-bar-wrapper mb-4">
             <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('subarea.index') }}" class="w-100 position-relative">
+            <form id="busquedaForm" method="GET" action="{{ route('subarea.index') }}" class="w-100 position-relative">
                     <span class="search-icon">
                         <i class="bi bi-search"></i>
                     </span>
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Buscar subárea..."
-                        name="busquedaSubarea"
-                        value="{{ request('busquedaSubarea') }}"
-                        id="inputBusqueda"
-                        autocomplete="off"
-                    >
+                    <input type="text" class="form-control"
+                        placeholder="Buscar subarea..." name="busquedaSubarea" 
+                        value="{{ request('busquedaSubarea') }}" id="inputBusqueda" autocomplete="off">
                     @if(request('busquedaSubarea'))
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
-                        id="limpiarBusqueda"
-                        title="Limpiar búsqueda"
-                        style="background: transparent;"
-                    >
+                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
                         <i class="bi bi-x-circle"></i>
                     </button>
                     @endif
-                </form>
+                </form> 
             </div>
             @if(Auth::user() && !Auth::user()->hasRole('director'))
                 <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
@@ -44,16 +32,7 @@
             @endif
         </div>
 
-        {{-- Indicador de resultados de búsqueda --}}
-        @if(request('busquedaSubarea'))
-            <div class="alert alert-info d-flex align-items-center" role="alert">
-                <i class="bi bi-info-circle me-2"></i>
-                <span>
-                    Mostrando {{ $subareas->count() }} resultado(s) para "<strong>{{ request('busquedaSubarea') }}</strong>"
-                    <a href="{{ route('subarea.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
-                </span>
-            </div>
-        @endif
+       
 
         {{-- Tabla de Subáreas --}}
         <div class="table-responsive">
@@ -213,33 +192,44 @@
     </div>
 </div>
 <script>
-// Búsqueda en tiempo real + limpiar
-let timeoutId;
+
+
+
 const inputBusqueda = document.getElementById('inputBusqueda');
-const formBusqueda = document.getElementById('busquedaForm');
+const subareaList = document.getElementById('subarea-list');
 const btnLimpiar = document.getElementById('limpiarBusqueda');
 
-if (inputBusqueda) {
-    inputBusqueda.addEventListener('input', function() {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(function() {
-            formBusqueda.submit();
-        }, 500);
-    });
-    inputBusqueda.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            formBusqueda.submit();
-        }
+ event.preventDefault(); // Evita que la página se recargue
+  
+
+
+if (inputBusqueda && subareaList) {
+    inputBusqueda.addEventListener('input', function () {
+        const valor = inputBusqueda.value.trim().toLowerCase();
+        const items = subareaList.querySelectorAll('.subarea-item');
+        items.forEach(function (item) {
+            const nombre = item.getAttribute('data-nombre').toLowerCase();
+            if (!valor || nombre.includes(valor)) {
+                item.style.display = ''; // Show item
+            } else {
+                item.style.display = 'none'; // Hide item
+            }
+        });
     });
 }
 
-if (btnLimpiar) {
-    btnLimpiar.addEventListener('click', function() {
-        inputBusqueda.value = '';
-        window.location.href = '{{ route("subarea.index") }}';
+if (btnLimpiar && inputBusqueda && recintosList) {
+    btnLimpiar.addEventListener('click', function () {
+        inputBusqueda.value = ''; // Clear input field
+        const items = subareaList.querySelectorAll('.subarea-item');
+        items.forEach(function (item) {
+            item.style.display = ''; // Show all items
+        });
     });
 }
+</script>
+<script>
+
 
 // Mantener modal abierto si hay errores
 @if ($errors->any())
