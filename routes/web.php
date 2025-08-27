@@ -37,6 +37,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::resource('usuario', UsuarioController::class)->except(['store', 'update', 'destroy']);
     Route::resource('usuario', UsuarioController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
+    
+    // Ruta para reenviar email de configuración de contraseña
+    Route::post('/usuario/{usuario}/resend-password-setup', [UsuarioController::class, 'resendPasswordSetup'])
+        ->name('usuario.resend-password-setup')
+        ->middleware('director.readonly');
 
     Route::resource('institucion', InstitucionController::class)->except(['store', 'update', 'destroy']);
     Route::resource('institucion', InstitucionController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
