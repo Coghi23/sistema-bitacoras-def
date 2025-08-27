@@ -207,12 +207,12 @@
                                     <h6 class="text-primary mb-2">Lecciones Académicas</h6>
                                     <div class="row">
                                         @foreach($lecciones as $leccion)
-                                            @if($leccion->tipoLeccion == 'Academica')
+                                            @if(strtolower($leccion->tipoLeccion) == 'academica')
                                                 <div class="col-12 col-md-6 mb-2">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                            value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}">
-                                                        <label class="form-check-label small" for="leccion{{ $leccion->id }}">
+                                                            value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}">
+                                                        <label class="form-check-label small" for="leccion_create_{{ $leccion->id }}">
                                                             {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                         </label>
                                                     </div>
@@ -227,12 +227,12 @@
                                     <h6 class="text-success mb-2">Lecciones Técnicas</h6>
                                     <div class="row">
                                         @foreach($lecciones as $leccion)
-                                            @if($leccion->tipoLeccion == 'Tecnica')
+                                            @if(strtolower($leccion->tipoLeccion) == 'tecnica')
                                                 <div class="col-12 col-md-6 mb-2">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                            value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}">
-                                                        <label class="form-check-label small" for="leccion{{ $leccion->id }}">
+                                                            value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}">
+                                                        <label class="form-check-label small" for="leccion_create_{{ $leccion->id }}">
                                                             {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                         </label>
                                                     </div>
@@ -244,10 +244,10 @@
 
                                 {{-- Botones para seleccionar/deseleccionar todos --}}
                                 <div class="mt-3 d-flex gap-2 justify-content-center">
-                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLecciones()">
+                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLeccionesCrear()">
                                         Seleccionar todas
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLecciones()">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLeccionesCrear()">
                                         Deseleccionar todas
                                     </button>
                                 </div>
@@ -394,13 +394,13 @@
                                                         <h6 class="text-primary mb-2">Lecciones Académicas</h6>
                                                         <div class="row">
                                                             @foreach($lecciones as $leccion)
-                                                                @if($leccion->tipoLeccion == 'Academica')
+                                                                @if(strtolower($leccion->tipoLeccion) == 'academica')
                                                                     <div class="col-12 col-md-6 mb-2">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                                                value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}"
+                                                                                value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
                                                                                 {{ $horario->leccion->contains($leccion->id) ? 'checked' : '' }}>
-                                                                            <label class="form-check-label small" for="leccion{{ $leccion->id }}">
+                                                                            <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
                                                                                 {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                                             </label>
                                                                         </div>
@@ -415,13 +415,13 @@
                                                         <h6 class="text-success mb-2">Lecciones Técnicas</h6>
                                                         <div class="row">
                                                             @foreach($lecciones as $leccion)
-                                                                @if($leccion->tipoLeccion == 'Tecnica')
+                                                                @if(strtolower($leccion->tipoLeccion) == 'tecnica')
                                                                     <div class="col-12 col-md-6 mb-2">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                                                value="{{ $leccion->id }}" id="leccion{{ $leccion->id }}"
+                                                                                value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
                                                                                 {{ $horario->leccion->contains($leccion->id) ? 'checked' : '' }}>
-                                                                            <label class="form-check-label small" for="leccion{{ $leccion->id }}">
+                                                                            <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
                                                                                 {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                                             </label>
                                                                         </div>
@@ -433,10 +433,10 @@
 
                                                     {{-- Botones para seleccionar/deseleccionar todos --}}
                                                     <div class="mt-3 d-flex gap-2 justify-content-center">
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLecciones()">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLeccionesEditar('{{ $horario->id }}')">
                                                             Seleccionar todas
                                                         </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLecciones()">
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLeccionesEditar('{{ $horario->id }}')">
                                                             Deseleccionar todas
                                                         </button>
                                                     </div>
@@ -582,7 +582,29 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-// Funciones para manejar selección de lecciones
+// Funciones para manejar selección de lecciones en modal crear
+function seleccionarTodasLeccionesCrear() {
+    const checkboxes = document.querySelectorAll('#modalHorario input[name="lecciones[]"]');
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+}
+
+function deseleccionarTodasLeccionesCrear() {
+    const checkboxes = document.querySelectorAll('#modalHorario input[name="lecciones[]"]');
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+}
+
+// Funciones para manejar selección de lecciones en modal editar
+function seleccionarTodasLeccionesEditar(horarioId) {
+    const checkboxes = document.querySelectorAll(`#modalEditarHorario${horarioId} input[name="lecciones[]"]`);
+    checkboxes.forEach(checkbox => checkbox.checked = true);
+}
+
+function deseleccionarTodasLeccionesEditar(horarioId) {
+    const checkboxes = document.querySelectorAll(`#modalEditarHorario${horarioId} input[name="lecciones[]"]`);
+    checkboxes.forEach(checkbox => checkbox.checked = false);
+}
+
+// Funciones para manejar selección de lecciones (mantener compatibilidad)
 function seleccionarTodasLecciones() {
     const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
     checkboxes.forEach(checkbox => checkbox.checked = true);
