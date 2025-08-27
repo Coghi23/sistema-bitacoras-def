@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
 use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Str;
 
 class UsuarioController extends Controller
 {
@@ -59,37 +61,43 @@ class UsuarioController extends Controller
             'name' => 'required',
             'cedula' => 'required',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required',
             'role' => 'required|exists:roles,name',
         ]);
+        
         try {
             DB::beginTransaction();
 
-            // Hashea la contraseña
-            $fieldHash = Hash::make($request->password);
-
-            // Crea el usuario solo con los campos válidos
+            // Crear el usuario con una contraseña temporal (será reemplazada por el reset)
             $usuario = User::create([
                 'name' => $request->name,
                 'cedula' => $request->cedula,
                 'email' => $request->email,
-                'password' => $fieldHash,
-                // agrega aquí otros campos reales de tu tabla users si los tienes
+                'password' => Hash::make(Str::random(32)), // Contraseña temporal aleatoria
             ]);
 
-            // Asigna el rol
+            // Asignar el rol
             $usuario->assignRole($request->role);
 
+            // Enviar email de reset password automáticamente
+            $status = Password::sendResetLink(['email' => $usuario->email]);
+
             DB::commit();
-        } 
-        catch (\Exception $e) {
+
+            if ($status == Password::RESET_LINK_SENT) {
+                return redirect()->route('usuario.index')
+                    ->with('success', 'Usuario creado exitosamente. Se ha enviado un correo para establecer la contraseña.');
+            } else {
+                return redirect()->route('usuario.index')
+                    ->with('warning', 'Usuario creado, pero no se pudo enviar el correo de configuración de contraseña. Error: ' . __($status));
+            }
+            
+        } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('usuario.index')
                 ->with('error', 'Error al crear el usuario: ' . $e->getMessage());
         }
-            
-        return redirect()->route('usuario.index')->with('success', 'Usuario creado exitosamente.');
     }
+
     /**
      * Update the specified resource in storage.
      */
@@ -118,6 +126,35 @@ class UsuarioController extends Controller
         }
 
         return redirect()->route('usuario.index')->with('success', 'Usuario actualizado exitosamente.');
+    }
+
+    /**
+     * Reenviar email de configuración de contraseña
+     */
+    public function resendPasswordSetup(User $usuario)
+    {
+        try {
+            // Verificar que el usuario esté activo
+            if (!$usuario->condicion) {
+                return redirect()->route('usuario.index')
+                    ->with('error', 'No se puede enviar el correo a un usuario inactivo.');
+            }
+
+            // Enviar email de reset password
+            $status = Password::sendResetLink(['email' => $usuario->email]);
+
+            if ($status == Password::RESET_LINK_SENT) {
+                return redirect()->route('usuario.index')
+                    ->with('success', 'Correo de configuración de contraseña reenviado exitosamente a ' . $usuario->email);
+            } else {
+                return redirect()->route('usuario.index')
+                    ->with('error', 'No se pudo enviar el correo. Error: ' . __($status));
+            }
+            
+        } catch (\Exception $e) {
+            return redirect()->route('usuario.index')
+                ->with('error', 'Error al enviar el correo: ' . $e->getMessage());
+        }
     }
 
     /**
