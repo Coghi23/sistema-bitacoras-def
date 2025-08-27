@@ -97,36 +97,31 @@
 
                             <!-- Modal Editar -->
                             <div class="modal fade" id="modalEditarTipoRecinto-{{ $tipoRecinto->id }}" tabindex="-1" aria-labelledby="modalEditarTipoRecintoLabel-{{ $tipoRecinto->id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header modal-header-custom">
-                                            <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                                                <i class="bi bi-arrow-left"></i>
-                                            </button>
-                                            <h5 class="modal-title">Editar Tipo de Recinto</h5>
-                                        </div>
-                                        <div class="modal-body px-4 py-4">
-                                            <div class="card text-bg-light">
-                                            <form action="{{ route('tipoRecinto.update',['tipoRecinto'=>$tipoRecinto]) }}" method="post">
-                                                    @csrf
-                                                    @method('PATCH')
-                                                    <input type="hidden" name="id" id="editarIdTipoRecinto">
-                                                    <div class="card-body">
-                                                        <div class="mb-3">
-                                                            <label for="editarNombreTipoRecinto" class="form-label fw-bold">Nombre del Tipo de Recinto</label>
-                                                            <input type="text" name="nombre" id="nombre" class="form-control"
-                                                    value="{{old('nombre',$tipoRecinto->nombre)}}">
-                                                        </div>
-                                                    </div>
-                                                    <div class="card-footer text-center">
-                                                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-custom">
+                <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <h5 class="modal-title">Editar Tipo de Recinto</h5>
+            </div>
+            <div class="modal-body px-4 py-4">
+                <form action="{{ route('tipoRecinto.update',['tipoRecinto'=>$tipoRecinto]) }}" method="post">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="id" id="editarIdTipoRecinto">
+                    <div class="mb-3">
+                        <label for="editarNombreTipoRecinto" class="form-label fw-bold">Nombre del Tipo de Recinto</label>
+                        <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre',$tipoRecinto->nombre)}}">
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
                             <!-- Modal eliminar -->
                             <div class="modal fade" id="modalConfirmacionEliminar-{{ $tipoRecinto->id }}" tabindex="-1" aria-labelledby="modalTipoRecintoEliminarLabel-{{ $tipoRecinto->id }}" 
