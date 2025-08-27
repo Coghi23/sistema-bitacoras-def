@@ -31,96 +31,100 @@
         </div>
 
         {{-- Tabla Horarios Fijos --}}
-        <div id="tabla-horarios-fijos" @if(request('tipo')=='temporal') style="display:none;" @endif>
-            <table class="table">
-                <thead>
-                    <tr class="header-row">
-                        <th class="col-dia">Día</th>
-                        <th class="col-recinto">Recinto</th>
-                        <th class="col-especialidad">Especialidad</th>
-                        <th class="col-seccion">Sección</th>
-                        <th class="col-entrada">Entrada</th>
-                        <th class="col-salida">Salida</th>
-                        <th class="col-docente">Docente</th>
-                        <th class="col-acciones">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($horarios->where('tipoHorario', true) as $horario)
-                    <tr class="record-row">
-                        <td class="col-dia">{{ $horario->dia }}</td>
-                        <td class="col-recinto">{{ $horario->recinto->nombre ?? '' }}</td>
-                        <td class="col-especialidad">{{ $horario->subarea->nombre ?? '' }}</td>
-                        <td class="col-seccion">{{ $horario->seccion->nombre ?? '' }}</td>
-                        <td class="col-entrada">{{ $horario->leccion->hora_inicio ?? '' }}</td>
-                        <td class="col-salida">{{ $horario->leccion->hora_final ?? '' }}</td>
-                        <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
-                        <td class="col-acciones">
-                            @if(Auth::user() && !Auth::user()->hasRole('director'))
-                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
-                                <i class="bi bi-pencil icon-editar"></i>
-                            </button>
-                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
-                                <i class="bi bi-trash icon-eliminar"></i>
-                            </button>
-                            @else
-                            <span class="text-muted">Solo vista</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr class="record-row">
-                        <td class="col text-center" colspan="8">No Hay Horarios Fijos Registrados.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+<div id="tabla-horarios-fijos" @if(request('tipo')=='temporal') style="display:none;" @endif>
+    <div class="horarios-responsive">
+        <table class="table">
+            <thead>
+                <tr class="header-row">
+                    <th class="col-dia">Día</th>
+                    <th class="col-recinto">Recinto</th>
+                    <th class="col-especialidad">Especialidad</th>
+                    <th class="col-seccion">Sección</th>
+                    <th class="col-entrada">Entrada</th>
+                    <th class="col-salida">Salida</th>
+                    <th class="col-docente">Docente</th>
+                    <th class="col-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($horarios->where('tipoHorario', true) as $horario)
+                <tr class="record-row">
+                    <td class="col-dia">{{ $horario->dia }}</td>
+                    <td class="col-recinto">{{ $horario->recinto->nombre ?? '' }}</td>
+                    <td class="col-especialidad">{{ $horario->subarea->nombre ?? '' }}</td>
+                    <td class="col-seccion">{{ $horario->seccion->nombre ?? '' }}</td>
+                    <td class="col-entrada">{{ $horario->leccion->hora_inicio ?? '' }}</td>
+                    <td class="col-salida">{{ $horario->leccion->hora_final ?? '' }}</td>
+                    <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
+                    <td class="col-acciones">
+                        @if(Auth::user() && !Auth::user()->hasRole('director'))
+                        <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
+                            <i class="bi bi-pencil icon-editar"></i>
+                        </button>
+                        <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
+                            <i class="bi bi-trash icon-eliminar"></i>
+                        </button>
+                        @else
+                        <span class="text-muted">Solo vista</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr class="record-row">
+                    <td class="col text-center" colspan="8">No Hay Horarios Fijos Registrados.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
-        {{-- Tabla Horarios Temporales --}}
-        <div id="tabla-horarios-temporales" @if(request('tipo')!='temporal') style="display:none;" @endif>
-            <table class="table">
-                <thead>
-                    <tr class="header-row">
-                        <th class="col-fecha">Fecha</th>
-                        <th class="col-docente">Docente</th>
-                        <th class="col-recinto">Recinto</th>
-                        <th class="col-subarea-seccion">Subárea - Sección</th>
-                        <th class="col-entrada">Entrada</th>
-                        <th class="col-salida">Salida</th>
-                        <th class="col-acciones">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($horarios as $horario)
-                    <tr class="record-row">
-                        <td class="col-fecha"></td>
-                        <td class="col-docente"></td>
-                        <td class="col-recinto"></td>
-                        <td class="col-subarea-seccion"></td>
-                        <td class="col-entrada"></td>
-                        <td class="col-salida"></td>
-                        <td class="col-acciones">
-                            @if(Auth::user() && !Auth::user()->hasRole('director'))
-                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
-                                <i class="bi bi-pencil icon-editar"></i>
-                            </button>
-                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
-                                <i class="bi bi-trash icon-eliminar"></i>
-                            </button>
-                            @else
-                            <span class="text-muted">Solo vista</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr class="record-row">
-                        <td class="col text-center" colspan="7">No Hay Horarios Temporales Registrados.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+{{-- Tabla Horarios Temporales --}}
+<div id="tabla-horarios-temporales" @if(request('tipo')!='temporal') style="display:none;" @endif>
+    <div class="horarios-responsive">
+        <table class="table">
+            <thead>
+                <tr class="header-row">
+                    <th class="col-fecha">Fecha</th>
+                    <th class="col-docente">Docente</th>
+                    <th class="col-recinto">Recinto</th>
+                    <th class="col-subarea-seccion">Subárea - Sección</th>
+                    <th class="col-entrada">Entrada</th>
+                    <th class="col-salida">Salida</th>
+                    <th class="col-acciones">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($horarios as $horario)
+                <tr class="record-row">
+                    <td class="col-fecha"></td>
+                    <td class="col-docente"></td>
+                    <td class="col-recinto"></td>
+                    <td class="col-subarea-seccion"></td>
+                    <td class="col-entrada"></td>
+                    <td class="col-salida"></td>
+                    <td class="col-acciones">
+                        @if(Auth::user() && !Auth::user()->hasRole('director'))
+                        <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
+                            <i class="bi bi-pencil icon-editar"></i>
+                        </button>
+                        <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
+                            <i class="bi bi-trash icon-eliminar"></i>
+                        </button>
+                        @else
+                        <span class="text-muted">Solo vista</span>
+                        @endif
+                    </td>
+                </tr>
+                @empty
+                <tr class="record-row">
+                    <td class="col text-center" colspan="7">No Hay Horarios Temporales Registrados.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+</div>
 
     @if(Auth::user() && !Auth::user()->hasRole('director'))
     {{-- Modal Crear Horario --}}
