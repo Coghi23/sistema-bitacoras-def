@@ -88,6 +88,14 @@ class ProfesorLlaveController extends Controller
     }
     
     /**
+     * Mostrar vista del escáner QR
+     */
+    public function scanner()
+    {
+        return view('profesor-llave.scanner');
+    }
+    
+    /**
      * Generar código QR temporal
      */
     public function generarQr(Request $request)
