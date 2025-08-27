@@ -33,10 +33,10 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div class="input-group w-50">
                 <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="d-flex w-100">
-                    <span         });
+                    <span       });
         
         console.log('DOM loaded and event listeners added safely');
-    });s="input-group-text bg-white border-white">
+});s="input-group-text bg-white border-white">
                         <i class="bi bi-search text-secondary"></i>
 
                     </span>

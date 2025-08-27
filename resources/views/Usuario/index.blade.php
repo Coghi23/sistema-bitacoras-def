@@ -2,36 +2,36 @@
 
 @section('content')
 <div class="wrapper">
-    <div class="main-content p-4" style="margin-left: 90px;">
+    <div class="main-content p-4">
+        {{-- Búsqueda + botón agregar --}}
         <div class="row align-items-end mb-4">
-            {{-- Búsqueda + botón agregar --}}
-        <div class="search-bar-wrapper mb-4">
-            <div class="search-bar">
+            <div class="col-12 col-md-8 mb-3 mb-md-0">
                 <form id="busquedaForm" method="GET" action="{{ route('usuario.index') }}" class="w-100 position-relative">
                     <span class="search-icon">
                         <i class="bi bi-search"></i>
                     </span>
                     <input type="text" class="form-control"
-                        placeholder="Buscar usuario..." name="busquedaUsuario" 
+                        placeholder="Buscar usuario..." name="busquedaUsuario"
                         value="{{ request('busquedaUsuario') }}" id="inputBusqueda" autocomplete="off">
                     @if(request('busquedaUsuario'))
                     <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
                         <i class="bi bi-x-circle"></i>
                     </button>
                     @endif
-                    {{-- Mantener el parámetro inactivos en la búsqueda --}}
                     @if(request('inactivos'))
                         <input type="hidden" name="inactivos" value="1">
                     @endif
                 </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalUsuario"
-                title="Agregar Usuario" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
+            <div class="col-12 col-md-4 d-flex justify-content-start justify-content-md-end">
+                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center btn-agregar w-100 w-md-auto"
+                    data-bs-toggle="modal" data-bs-target="#modalUsuario"
+                    title="Agregar Usuario" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                    Agregar <i class="bi bi-plus-circle ms-2"></i>
+                </button>
+            </div>
         </div>
-        </div>
+
         {{-- Mensajes de éxito/error --}}
         @if(session('success'))
             <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -39,21 +39,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
-
         @if(session('error'))
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
-
         @if(session('eliminado'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 {{ session('eliminado') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
-
         @if($errors->any())
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <ul class="mb-0">
@@ -77,15 +74,16 @@
         @endif
 
         {{-- Botones para mostrar/ocultar usuarios inactivos --}}
-        <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
-            Mostrar inactivos
-        </a>
-        <a href="{{ route('usuario.index') }}" class="btn btn-primary mb-3">
-            Mostrar activos
-        </a>
+        <div class="mb-3 d-flex flex-wrap gap-2">
+            <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning">
+                Mostrar inactivos
+            </a>
+            <a href="{{ route('usuario.index') }}" class="btn btn-primary">
+                Mostrar activos
+            </a>
+        </div>
 
-        <div id="tabla-usuarios">
-
+        <div id="tabla-usuarios" class="table-responsive">
             <table class="table table-striped">
                 <thead>
                     <tr class="header-row">
@@ -155,52 +153,29 @@
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
                     <div class="modal-body px-4 pt-3">
-                        {{-- Nombre Completo --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-user text-primary me-2"></i>Nombre Completo:
-                            </label>
-                            <input type="text" name="name" class="form-control rounded-4 w-50" placeholder="Mauricio Vargas" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-user text-primary me-2"></i>Nombre Completo:</label>
+                            <input type="text" name="name" class="form-control rounded-4" placeholder="Mauricio Vargas" required>
                         </div>
-                        
-                        {{-- Cédula --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-id-card text-info me-2"></i>Cédula:
-                            </label>
-                            <input type="text" name="cedula" class="form-control rounded-4 w-50" placeholder="30458065" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-id-card text-info me-2"></i>Cédula:</label>
+                            <input type="text" name="cedula" class="form-control rounded-4" placeholder="30458065" required>
                         </div>
-                        
-                        {{-- Correo Electrónico --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:
-                            </label>
-                            <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="MauriVargas17@gmail.com" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:</label>
+                            <input type="email" name="email" class="form-control rounded-4" placeholder="MauriVargas17@gmail.com" required>
                         </div>
-                        
-                        {{-- Contraseña --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-lock text-danger me-2"></i>Contraseña:
-                            </label>
-                            <input type="password" name="password" class="form-control rounded-4 w-50" placeholder="••••••••" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-lock text-danger me-2"></i>Contraseña:</label>
+                            <input type="password" name="password" class="form-control rounded-4" placeholder="••••••••" required>
                         </div>
-                        
-                        {{-- Confirmar Contraseña --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-lock text-danger me-2"></i>Confirmar:
-                            </label>
-                            <input type="password" name="password_confirmation" class="form-control rounded-4 w-50" placeholder="••••••••" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-lock text-danger me-2"></i>Confirmar:</label>
+                            <input type="password" name="password_confirmation" class="form-control rounded-4" placeholder="••••••••" required>
                         </div>
-                        
-                        {{-- Rol --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-user-tag text-success me-2"></i>Rol:
-                            </label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-user-tag text-success me-2"></i>Rol:</label>
+                            <div class="position-relative">
                                 <select name="role" class="form-control rounded-4" required>
                                     <option value="">Seleccione un rol</option>
                                     @foreach($roles as $rol)
@@ -209,38 +184,6 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        {{-- Institución (temporalmente desactivada)
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-building text-primary me-2"></i>Institución:
-                            </label>
-                            <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="id_institucion" class="form-control selectpicker show-tick" required>
-                                    <option value="">Seleccione una institución</option>
-                                    @foreach ($instituciones as $institucion)
-                                        <option value="{{$institucion->id}}" {{ old('id_institucion') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        --}}
-                        
-                        {{-- Especialidad (temporalmente desactivada)
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-graduation-cap text-success me-2"></i>Especialidad:
-                            </label>
-                            <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione una especialidad" data-live-search="true" name="id_especialidad" id="id_especialidad" class="form-control selectpicker show-tick" required>
-                                        <option value="">Seleccione una institución</option>
-                                        @foreach ($especialidades as $especialidad)
-                                            <option value="{{$especialidad->id}}" {{ old('id_especialidad') == $especialidad->id ? 'selected' : '' }}>{{$especialidad->nombre}}</option>
-                                        @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        --}}
                     </div>
                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary btn-crear">Registrar</button>
@@ -270,75 +213,43 @@
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
                     <div class="modal-body px-4 pt-3">
-                        {{-- Nombre Completo --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-user text-primary me-2"></i>Nombre Completo:
-                            </label>
-                            <input type="text" name="name" class="form-control rounded-4 w-50" 
-                                value="{{ $usuario->name }}" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-user text-primary me-2"></i>Nombre Completo:</label>
+                            <input type="text" name="name" class="form-control rounded-4" value="{{ $usuario->name }}" required>
                         </div>
-                        
-                        {{-- Cédula --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-id-card text-info me-2"></i>Cédula:
-                            </label>
-                            <input type="text" name="cedula" class="form-control rounded-4 w-50" 
-                                value="{{ $usuario->cedula }}" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-id-card text-info me-2"></i>Cédula:</label>
+                            <input type="text" name="cedula" class="form-control rounded-4" value="{{ $usuario->cedula }}" required>
                         </div>
-                        
-                        {{-- Correo Electrónico --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:
-                            </label>
-                            <input type="email" name="email" class="form-control rounded-4 w-50" 
-                                value="{{ $usuario->email }}" required>
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:</label>
+                            <input type="email" name="email" class="form-control rounded-4" value="{{ $usuario->email }}" required>
                         </div>
-                        
-                        {{-- Rol --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-user-tag text-success me-2"></i>Rol:
-                            </label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-user-tag text-success me-2"></i>Rol:</label>
+                            <div class="position-relative">
                                 <select name="role" class="form-control rounded-4" required>
                                     <option value="">Seleccione un rol</option>
                                     @if(isset($roles) && $roles)
                                         @foreach ($roles as $rol)
-                                            <option value="{{ $rol->name }}">{{ ucfirst($rol->name) }}</option>
+                                            <option value="{{ $rol->name }}" {{ $usuario->getRoleNames()->contains($rol->name) ? 'selected' : '' }}>{{ ucfirst($rol->name) }}</option>
                                         @endforeach
-                                    @else
-                                        <option value="profesor">Profesor</option>
-                                        <option value="administrador">Administrador</option>
-                                        <option value="soporte">Soporte</option>
-                                        <option value="director">Director</option>
                                     @endif
                                 </select>
                             </div>
                         </div>
-                        
-                        {{-- Estado/Condición --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-toggle-on text-primary me-2"></i>Estado:
-                            </label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-toggle-on text-primary me-2"></i>Estado:</label>
+                            <div class="position-relative">
                                 <select name="condicion" class="form-control rounded-4" required>
                                     <option value="1" {{ $usuario->condicion == 1 ? 'selected' : '' }}>Activo</option>
                                     <option value="0" {{ $usuario->condicion == 0 ? 'selected' : '' }}>Inactivo</option>
                                 </select>
                             </div>
                         </div>
-                        
-                        {{-- Contraseña (opcional) --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-lock text-danger me-2"></i>Nueva Contraseña:
-                            </label>
-                            <input type="password" name="password" class="form-control rounded-4 w-50" 
-                                placeholder="Dejar vacío para mantener actual">
+                        <div class="mb-3">
+                            <label class="fw-bold mb-2"><i class="fas fa-lock text-danger me-2"></i>Nueva Contraseña:</label>
+                            <input type="password" name="password" class="form-control rounded-4" placeholder="Dejar vacío para mantener actual">
                         </div>
                     </div>
                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
@@ -435,26 +346,22 @@
             if (modal) {
                 modal.style.display = 'none';
                 modal.classList.remove('show');
-                // Remover el backdrop si existe
                 const backdrop = document.querySelector('.modal-backdrop');
                 if (backdrop) {
                     backdrop.remove();
                 }
-                // Restaurar el scroll del body
                 document.body.classList.remove('modal-open');
                 document.body.style.overflow = '';
                 document.body.style.paddingRight = '';
             }
         }
 
-        // Auto-cerrar el modal después de 3 segundos
         @if(session('eliminado'))
         setTimeout(function() {
             cerrarModalExito();
         }, 3000);
         @endif
 
-        // Cerrar modal al hacer clic fuera de él
         @if(session('eliminado'))
         document.addEventListener('DOMContentLoaded', function() {
             const modal = document.getElementById('modalExitoEliminar');
@@ -468,7 +375,5 @@
         });
         @endif
     </script>
-
 </div>
 @endsection
-

@@ -42,7 +42,10 @@
 
         <div class="sidebar" id="sidebar">
             <div class="sidebar-logo">
-                <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
+              
+            </div>
+            <div class="sidebar-logo">
+              
             </div>
 
             <a href="{{ route('dashboard') }}" class="sidebar-item">
