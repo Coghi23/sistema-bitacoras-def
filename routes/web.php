@@ -85,6 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // NUEVAS RUTAS PARA PROFESOR-LLAVE (estructura separada)
         Route::middleware('role:profesor')->group(function () {
             Route::get('/profesor-llave', [App\Http\Controllers\ProfesorLlaveController::class, 'index'])->name('profesor-llave.index');
+            Route::get('/profesor-llave/scanner', [App\Http\Controllers\ProfesorLlaveController::class, 'scanner'])->name('profesor-llave.scanner');
             Route::post('/profesor-llave/generar-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'generarQr'])->name('profesor-llave.generar-qr');
             Route::post('/profesor-llave/escanear-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'escanearQr'])->name('profesor-llave.escanear-qr');
         });

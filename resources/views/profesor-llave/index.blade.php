@@ -7,11 +7,17 @@
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">Gestión de Llaves</h2>
-            @if(isset($profesor) && $profesor)
-                <div class="badge bg-info fs-6">
-                    <i class="bi bi-person"></i> {{ $profesor->usuario->name }}
-                </div>
-            @endif
+            <div class="d-flex align-items-center gap-3">
+                @if(isset($profesor) && $profesor)
+                    <div class="badge bg-info fs-6">
+                        <i class="bi bi-person"></i> {{ $profesor->usuario->name }}
+                    </div>
+                @endif
+                <!-- Botón para escanear QR -->
+                <a href="{{ route('profesor-llave.scanner') }}" class="btn btn-primary">
+                    <i class="bi bi-camera"></i> Escanear QR
+                </a>
+            </div>
         </div>
 
         @if(isset($error))
