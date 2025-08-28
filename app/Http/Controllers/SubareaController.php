@@ -33,7 +33,7 @@ class SubareaController extends Controller
         
         $subareas = $query->get();
         $especialidades = Especialidade::all();
-        return view('subarea.index', compact('subareas', 'especialidades'));
+        return view('Subarea.index', compact('subareas', 'especialidades'));
     }
 
     /**
@@ -41,7 +41,7 @@ class SubareaController extends Controller
      */
     public function create()
     {
-        return view('subarea.create');
+        return view('Subarea.create');
     }
 
     /**
@@ -74,7 +74,7 @@ class SubareaController extends Controller
     public function edit(Subarea $subarea)
     {
         $subarea->load('especialidad');
-         return view('subarea.edit', compact('subarea'));
+         return view('Subarea.edit', compact('subarea'));
     }
 
     /**

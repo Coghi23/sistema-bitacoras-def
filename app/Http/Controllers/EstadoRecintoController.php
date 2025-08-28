@@ -5,7 +5,7 @@ use App\Http\Requests\UpdateEstadoRecintoRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use App\Http\Requests\StoreEstadoRecintoRequest;
-use App\Models\estadoRecinto;
+use App\Models\EstadoRecinto;
 use Exception;
 use PgSql\Lob;
 use Illuminate\Http\Request;
@@ -17,7 +17,7 @@ class EstadoRecintoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = estadoRecinto::query();
+        $query = EstadoRecinto::query();
 
         // Aplicar filtro de búsqueda si existe
         if ($request->filled('busquedaEstadoRecinto')) {
@@ -27,7 +27,7 @@ class EstadoRecintoController extends Controller
 
         $estadoRecintos = $query->get();
         
-        return view('estadoRecinto.index', compact('estadoRecintos'));
+        return view('EstadoRecinto.index', compact('estadoRecintos'));
     }
 
     /**
@@ -35,7 +35,7 @@ class EstadoRecintoController extends Controller
      */
     public function create()
     {
-        return view('estadoRecinto.create');
+        return view('EstadoRecinto.create');
     }
 
     /**
@@ -46,19 +46,18 @@ class EstadoRecintoController extends Controller
         try{
             
             DB::beginTransaction();
-            $estadoRecinto = estadoRecinto::create($request->validated()); // color removed from validated
+            $estadoRecinto = EstadoRecinto::create($request->validated()); // color removed from validated
 
             DB::commit();
 
-            
-
-            }catch (Exception $e) {
-                DB::rollBack();
-                return back()->withErrors(['error' => 'Hubo un problema al guardar el estado de recinto.']);
-            }
-
             return redirect()->route('estadoRecinto.index')
             ->with('success', 'Estado de recinto creado correctamente.');
+        } catch (Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => 'Hubo un problema al guardar el estado de recinto.']);
+        }
+
+
 
 
     }
@@ -77,7 +76,7 @@ class EstadoRecintoController extends Controller
     public function edit(estadoRecinto $estadoRecinto)
     {
         $estadoRecintos = estadoRecinto::with('recinto')->get();
-        return view('estadoRecinto.index', compact('estadoRecintos', 'estadoRecinto'));
+        return view('EstadoRecinto.index', compact('estadoRecintos', 'estadoRecinto'));
     }
 
     /**

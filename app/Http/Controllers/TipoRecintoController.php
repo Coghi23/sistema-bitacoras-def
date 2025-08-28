@@ -29,7 +29,7 @@ class TipoRecintoController extends Controller
 
         $tipoRecintos = $query->get();
         
-        return view('tipoRecinto.index', compact('tipoRecintos'));
+        return view('TipoRecinto.index', compact('tipoRecintos'));
     }
 
     /**
@@ -37,7 +37,7 @@ class TipoRecintoController extends Controller
      */
     public function create()
     {
-        return view('tipoRecinto.create');
+        return view('TipoRecinto.create');
     }
 
     /**
@@ -79,7 +79,7 @@ class TipoRecintoController extends Controller
     public function edit(TipoRecinto $tipoRecinto)
     {
     $tipoRecintos = TipoRecinto::with('recintos')->get();
-        return view('tipoRecinto.index', compact('tipoRecintos', 'tipoRecinto'));
+        return view('TipoRecinto.index', compact('tipoRecintos', 'tipoRecinto'));
     }
 
     /**

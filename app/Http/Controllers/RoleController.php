@@ -17,7 +17,7 @@ class RoleController extends Controller
     {
         $roles = Role::with('permissions')->get();
         $permisos = Permission::all();
-        return view('role.index', compact('roles', 'permisos'));
+        return view('Role.index', compact('roles', 'permisos'));
     }
 
     /**
@@ -26,7 +26,7 @@ class RoleController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('role.create', compact('roles'));
+        return view('Role.create', compact('roles'));
     }
 
     /**
@@ -67,7 +67,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
         $permisos = Permission::all();
-        return view('role.edit', compact('role', 'permisos'));
+        return view('Role.edit', compact('role', 'permisos'));
     }
 
     /**

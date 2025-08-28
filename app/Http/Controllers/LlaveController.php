@@ -28,7 +28,7 @@ class LlaveController extends Controller
 
         $llaves = $query->get();
         
-        return view('llave.index', compact('llaves'));
+        return view('Llave.index', compact('llaves'));
     }
 
     /**
@@ -133,7 +133,7 @@ class LlaveController extends Controller
      */
     public function create()
     {
-        return view('llave.create');
+        return view('Llave.create');
     }
 
     /**
@@ -175,7 +175,7 @@ class LlaveController extends Controller
     public function edit(Llave $llave)
     {
         $llaves = Llave::with('recinto')->get();
-        return view('llave.index', compact('llaves', 'llave'));
+        return view('Llave.index', compact('llaves', 'llave'));
     }
 
     /**

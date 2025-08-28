@@ -29,7 +29,7 @@ class HorarioController extends Controller
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
-        return view('horario.index', compact('horarios', 'recintos', 'subareas', 'secciones', 'profesores', 'lecciones'));
+        return view('Horario.index', compact('horarios', 'recintos', 'subareas', 'secciones', 'profesores', 'lecciones'));
     }
 
     //metodo crear para ir a la vista
@@ -41,7 +41,7 @@ class HorarioController extends Controller
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
-        return view('horario.create', compact('recintos', 'subareas', 'secciones', 'profesores'));
+        return view('Horario.create', compact('recintos', 'subareas', 'secciones', 'profesores'));
     }
 
 
@@ -94,7 +94,7 @@ class HorarioController extends Controller
         })->get();
         $horario->load('recinto', 'subarea', 'seccion', 'profesor', 'leccion');
 
-        return view('horario.edit', compact('horario', 'recintos', 'subareas', 'secciones', 'profesores', 'lecciones'));
+        return view('Horario.edit', compact('horario', 'recintos', 'subareas', 'secciones', 'profesores', 'lecciones'));
     }
 
 
