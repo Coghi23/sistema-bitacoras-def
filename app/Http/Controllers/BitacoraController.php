@@ -73,11 +73,12 @@ class BitacoraController extends Controller
      */
     public function store(Request $request)
     {
+        
         $bitacora = new Bitacora();
-        // ...asigna otros campos...
+        
         $bitacora->hora_envio = $request->input('hora_envio');
         $bitacora->fecha = $request->input('fecha');
-        // ...asigna otros campos...
+        
         $bitacora->save();
         // ...existing code...
     }
