@@ -22,7 +22,12 @@ class UpdateBitacoraRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'id_recinto' => 'sometimes|required|exists:recinto,id',
+            'id_seccion' => 'sometimes|required|exists:seccione,id',
+            'id_subarea' => 'sometimes|required|exists:subarea,id',
+            'id_horario' => 'sometimes|required|exists:horarios,id',
+            'user_id' => 'sometimes|required|exists:users,id',
+            'hora_envio' => 'sometimes|required|date_format:H:i',
         ];
     }
 }
