@@ -23,6 +23,8 @@ class StoreSeccionRequest extends FormRequest
     {
         return [
             'nombre' => 'required|string|max:55|unique:seccione,nombre',
+            'especialidades' => 'required|array|min:1',
+            'especialidades.*' => 'required|exists:especialidad,id',
         ];
     }
 

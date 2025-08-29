@@ -108,49 +108,59 @@
                         </button>
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
+                    
                     <div class="modal-body px-4 pt-3">
                         {{-- Tipo de Horario --}}
                         <div class="mb-4 d-flex align-items-center justify-content-between fw-bold">
                             <label class="w-50 text-start">Tipo de horario:</label>
                             <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ request('tipoHorario') == '1' ? 'active' : '' }}" type="radio" name="tipoHorario" id="fijoRadio" value="fijo" required>
+                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }} {{ request('tipoHorario') == '1' ? 'active' : '' }}" type="radio" name="tipoHorario" id="fijoRadio" value="fijo" {{ old('tipoHorario') == 'fijo' ? 'checked' : '' }} >
                                     <label class="form-check-label ms-2" for="fijoRadio">Fijo</label>
                                 </div>
                                 <div style="width:1px; height:24px; background-color:#0d6efd; opacity:0.7;"></div>
                                 <div class="form-check ms-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ request('tipoHorario') == '0' ? 'active' : '' }}" type="radio" name="tipoHorario" id="temporalRadio" value="temporal" required>
+                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }} {{ request('tipoHorario') == '0' ? 'active' : '' }}" type="radio" name="tipoHorario" id="temporalRadio" value="temporal" {{ old('tipoHorario') == 'temporal' ? 'checked' : '' }} >
                                     <label class="form-check-label ms-2" for="temporalRadio">Temporal</label>
                                 </div>
                             </div>
                         </div>
+                        @error('tipoHorario')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         {{-- Fecha --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-50" @if(old('tipoHorario')=='1') disabled @endif>
+                            <input type="date" name="fecha" class="form-control rounded-4 w-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha') }}" @if(old('tipoHorario')=='fijo') disabled @endif>
                         </div>
+                        @error('fecha')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         {{-- Día --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Día:</label>
                             <div class="position-relative w-50">
-                                <select name="dia" class="form-select rounded-4 pe-5" @if(old('tipoHorario')=='0') disabled @endif>
+                                <select name="dia" class="form-select rounded-4 pe-5 {{ $errors->has('dia') ? 'is-invalid' : '' }}" @if(old('tipoHorario')=='temporal') disabled @endif>
                                     <option value="" hidden selected>Seleccione...</option>
-                                    <option value="Lunes">Lunes</option>
-                                    <option value="Martes">Martes</option>
-                                    <option value="Miércoles">Miércoles</option>
-                                    <option value="Jueves">Jueves</option>
-                                    <option value="Viernes">Viernes</option>
-                                    <option value="Sábado">Sábado</option>
-                                    <option value="Domingo">Domingo</option>
+                                    <option value="Lunes" {{ old('dia') == 'Lunes' ? 'selected' : '' }}>Lunes</option>
+                                    <option value="Martes" {{ old('dia') == 'Martes' ? 'selected' : '' }}>Martes</option>
+                                    <option value="Miércoles" {{ old('dia') == 'Miércoles' ? 'selected' : '' }}>Miércoles</option>
+                                    <option value="Jueves" {{ old('dia') == 'Jueves' ? 'selected' : '' }}>Jueves</option>
+                                    <option value="Viernes" {{ old('dia') == 'Viernes' ? 'selected' : '' }}>Viernes</option>
+                                    <option value="Sábado" {{ old('dia') == 'Sábado' ? 'selected' : '' }}>Sábado</option>
+                                    <option value="Domingo" {{ old('dia') == 'Domingo' ? 'selected' : '' }}>Domingo</option>
                                 </select>
                             </div>
                         </div>
+                        @error('dia')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
 
                         {{-- Docente --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idDocente" class="fw-bold me-3 w-50 text-start">Docente:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5" required>
+                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5 {{ $errors->has('user_id') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un docente</option>
                                     @foreach ($profesores as $profesor)
                                         <option value="{{$profesor->id}}" {{ old('user_id') == $profesor->id ? 'selected' : '' }}>{{$profesor->name}}</option>
@@ -158,12 +168,15 @@
                                 </select>
                             </div>
                         </div>
+                        @error('user_id')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         
                         {{-- Recinto --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="recintoSelect" class="fw-bold me-3 w-50 text-start">Recinto:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5" required>
+                                <select data-size="4" title="Seleccione un recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un recinto</option>
                                     @foreach ($recintos as $recinto)
                                         <option value="{{$recinto->id}}" {{ old('idRecinto') == $recinto->id ? 'selected' : '' }}>{{$recinto->nombre}}</option>
@@ -171,37 +184,46 @@
                                 </select>
                             </div>
                         </div>
+                        @error('idRecinto')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         
                             {{-- Subárea --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idSubarea" class="fw-bold me-3 w-50 text-start">Subárea:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un docente</option>
+                                <select data-size="4" title="Seleccione una subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}" >
+                                    <option value="">Seleccione una subárea</option>
                                     @foreach ($subareas as $subarea)
                                         <option value="{{$subarea->id}}" {{ old('idSubarea') == $subarea->id ? 'selected' : '' }}>{{$subarea->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+                        @error('idSubarea')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
 
                             {{-- Sección --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Sección:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un sección</option>
+                                <select data-size="4" title="Seleccione una sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}" >
+                                    <option value="">Seleccione una sección</option>
                                     @foreach ($secciones as $seccion)
                                         <option value="{{$seccion->id}}" {{ old('idSeccion') == $seccion->id ? 'selected' : '' }}>{{$seccion->nombre}}</option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+                        @error('idSeccion')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
 
                         {{-- Lecciones --}}
                         <div class="mb-3">
                             <label class="fw-bold mb-3">Lecciones:</label>
-                            <div class="border rounded-4 p-3" style="max-height: 300px; overflow-y: auto;">
+                            <div class="border rounded-4 p-3 {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
                                 {{-- Lecciones Académicas --}}
                                 <div class="mb-3">
                                     <h6 class="text-primary mb-2">Lecciones Académicas</h6>
@@ -211,7 +233,8 @@
                                                 <div class="col-12 col-md-6 mb-2">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                            value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}">
+                                                            value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}"
+                                                            {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) ? 'checked' : '' }}>
                                                         <label class="form-check-label small" for="leccion_create_{{ $leccion->id }}">
                                                             {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                         </label>
@@ -231,7 +254,8 @@
                                                 <div class="col-12 col-md-6 mb-2">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                            value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}">
+                                                            value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}"
+                                                            {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) ? 'checked' : '' }}>
                                                         <label class="form-check-label small" for="leccion_create_{{ $leccion->id }}">
                                                             {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                         </label>
@@ -252,6 +276,9 @@
                                     </button>
                                 </div>
                             </div>
+                            @error('lecciones')
+                                <div class="text-danger small mt-2">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
@@ -280,35 +307,42 @@
                         <h5 class="modal-title m-0" id="modalEditarHorarioLabel">Modificar horario</h5>
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
-                    <input type="hidden" name="id" id="editarIdHorario">
+                    
+                    <input type="hidden" name="id" value="{{ $horario->id }}">
                     <div class="modal-body px-4 pt-3">
                         {{-- Tipo de Horario --}}
                         <div class="mb-4 d-flex align-items-center justify-content-between fw-bold">
                             <label class="w-50 text-start">Tipo de horario:</label>
                             <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
-                                    <input class="form-check-input" type="radio" name="tipoHorario" id="fijoRadio{{ $horario->id }}" value="fijo" 
-                                    {{ $horario->tipoHorario == 1 ? 'checked' : ''}} required>
+                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" type="radio" name="tipoHorario" id="fijoRadio{{ $horario->id }}" value="fijo" 
+                                    {{ old('tipoHorario', $horario->tipoHorario == 1 ? 'fijo' : 'temporal') == 'fijo' ? 'checked' : ''}} >
                                     <label class="form-check-label ms-2" for="fijoRadio{{ $horario->id }}">Fijo</label>
                                 </div>
                                 <div style="width:1px; height:24px; background-color:#0d6efd; opacity:0.7;"></div>
                                 <div class="form-check ms-3 d-flex align-items-center">
-                                    <input class="form-check-input" type="radio" name="tipoHorario" id="temporalRadio{{ $horario->id }}" value="temporal"
-                                    {{ $horario->tipoHorario == 0 ? 'checked' : ''}} required>
+                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" type="radio" name="tipoHorario" id="temporalRadio{{ $horario->id }}" value="temporal"
+                                    {{ old('tipoHorario', $horario->tipoHorario == 1 ? 'fijo' : 'temporal') == 'temporal' ? 'checked' : ''}} >
                                     <label class="form-check-label ms-2" for="temporalRadio{{ $horario->id }}">Temporal</label>
                                 </div>
                             </div>
                         </div>
+                        @error('tipoHorario')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         {{-- Fecha --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-50" value="{{ old('fecha', $horario->fecha ? $horario->fecha->format('Y-m-d') : '') }}">
+                            <input type="date" name="fecha" class="form-control rounded-4 w-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha', $horario->fecha ? $horario->fecha->format('Y-m-d') : '') }}">
                         </div>
+                        @error('fecha')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         {{-- Día --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label class="fw-bold me-3 w-50 text-start">Día:</label>
                             <div class="position-relative w-50">
-                                <select name="dia" class="form-select rounded-4 pe-5">
+                                <select name="dia" class="form-select rounded-4 pe-5 {{ $errors->has('dia') ? 'is-invalid' : '' }}">
                                     <option value="" hidden>Seleccione...</option>
                                     <option value="Lunes" {{ old('dia', $horario->dia) == 'Lunes' ? 'selected' : '' }}>Lunes</option>
                                     <option value="Martes" {{ old('dia', $horario->dia) == 'Martes' ? 'selected' : '' }}>Martes</option>
@@ -320,75 +354,90 @@
                                 </select>
                             </div>
                         </div>
+                        @error('dia')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         
                         {{-- Docente --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idDocente" class="fw-bold me-3 w-50 text-start">Docente:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5" required>
+                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5 {{ $errors->has('user_id') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un docente</option>
                                     @foreach ($profesores as $profesor)
                                         <option value="{{$profesor->id}}"
-                                         {{ $horario->user_id == $profesor->id ? 'selected' : '' }}>
+                                         {{ old('user_id', $horario->user_id) == $profesor->id ? 'selected' : '' }}>
                                             {{ $profesor->name }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+                        @error('user_id')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         
                         {{-- Recinto --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="recintoSelect" class="fw-bold me-3 w-50 text-start">Recinto:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5" required>
+                                <select data-size="4" title="Seleccione un recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un recinto</option>
                                     @foreach ($recintos as $recinto)
                                         <option value="{{$recinto->id}}"
-                                        {{ $horario->idRecinto == $recinto->id ? 'selected' : '' }}>
+                                        {{ old('idRecinto', $horario->idRecinto) == $recinto->id ? 'selected' : '' }}>
                                             {{ $recinto->nombre }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+                        @error('idRecinto')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
                         
                             {{-- Subárea --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idSubarea" class="fw-bold me-3 w-50 text-start">Subárea:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un docente</option>
+                                <select data-size="4" title="Seleccione una subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}" >
+                                    <option value="">Seleccione una subárea</option>
                                     @foreach ($subareas as $subarea)
                                         <option value="{{$subarea->id}}" 
-                                            {{ $horario->idSubarea == $subarea->id ? 'selected' : '' }}>
+                                            {{ old('idSubarea', $horario->idSubarea) == $subarea->id ? 'selected' : '' }}>
                                             {{ $subarea->nombre }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+                        @error('idSubarea')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
 
                             {{-- Sección --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
                             <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Sección:</label>
                             <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5" required>
-                                    <option value="">Seleccione un sección</option>
+                                <select data-size="4" title="Seleccione una sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}" >
+                                    <option value="">Seleccione una sección</option>
                                     @foreach ($secciones as $seccion)
                                         <option value="{{$seccion->id}}" 
-                                        {{ $horario->idSeccion == $seccion->id ? 'selected' : '' }}>
+                                        {{ old('idSeccion', $horario->idSeccion) == $seccion->id ? 'selected' : '' }}>
                                             {{ $seccion->nombre }}
                                         </option>
                                     @endforeach
                                 </select>
                             </div>
                         </div>
+                        @error('idSeccion')
+                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                        @enderror
 
                                             {{-- Lecciones --}}
                                             <div class="mb-3">
                                                 <label class="fw-bold mb-3">Lecciones:</label>
-                                                <div class="border rounded-4 p-3" style="max-height: 300px; overflow-y: auto;">
+                                                <div class="border rounded-4 p-3 {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
                                                     {{-- Lecciones Académicas --}}
                                                     <div class="mb-3">
                                                         <h6 class="text-primary mb-2">Lecciones Académicas</h6>
@@ -399,7 +448,7 @@
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
                                                                                 value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
-                                                                                {{ $horario->leccion->contains($leccion->id) ? 'checked' : '' }}>
+                                                                                {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) || (!old('lecciones') && $horario->leccion->contains($leccion->id)) ? 'checked' : '' }}>
                                                                             <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
                                                                                 {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                                             </label>
@@ -420,7 +469,7 @@
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
                                                                                 value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
-                                                                                {{ $horario->leccion->contains($leccion->id) ? 'checked' : '' }}>
+                                                                                {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) || (!old('lecciones') && $horario->leccion->contains($leccion->id)) ? 'checked' : '' }}>
                                                                             <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
                                                                                 {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
                                                                             </label>
@@ -441,6 +490,9 @@
                                                         </button>
                                                     </div>
                                                 </div>
+                                                @error('lecciones')
+                                                    <div class="text-danger small mt-2">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                     </div>
                                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
@@ -504,6 +556,19 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Abrir modal automáticamente si hay errores de validación
+    @if ($errors->any() && (old('_method') === null))
+        // Si hay errores y no es una actualización (método PUT), abrir modal de creación
+        const modalCrear = new bootstrap.Modal(document.getElementById('modalHorario'));
+        modalCrear.show();
+    @elseif ($errors->any() && old('_method') === 'PUT')
+        // Si hay errores y es una actualización, abrir modal de edición correspondiente
+        @if(old('id'))
+            const modalEditar = new bootstrap.Modal(document.getElementById('modalEditarHorario{{ old('id') }}'));
+            modalEditar.show();
+        @endif
+    @endif
+
     // Obtener elementos
     const fijoRadio = document.getElementById('fijoRadio');
     const temporalRadio = document.getElementById('temporalRadio');
@@ -567,10 +632,10 @@ document.addEventListener('DOMContentLoaded', function() {
             toggleFields();
         });
 
-        // Estado inicial - por defecto deshabilitar fecha y habilitar día
-        
+        // Estado inicial basado en los valores old() o por defecto
+        toggleFields();
 
-        console.log('Estado inicial configurado - Fecha deshabilitada por defecto');
+        console.log('Estado inicial configurado');
         
     } else {
         console.error('Algunos elementos no se encontraron:', {

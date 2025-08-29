@@ -70,12 +70,15 @@ class SeccionController extends Controller
             }
             
             DB::commit();
+            return redirect()->route('seccion.index')->with('success', 'Sección creada correctamente.');
         }
         catch(Exception $e){
             DB::rollBack();
-            return back()->withErrors(['error' => 'Hubo un problema al guardar la sección: ' . $e->getMessage()]);
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Hubo un problema al guardar la sección: ' . $e->getMessage()])
+                ->with('modal_crear', true);
         }
-        return redirect()->route('seccion.index')->with('success', 'Sección creada correctamente.');
     }
 
     /**
@@ -130,12 +133,14 @@ class SeccionController extends Controller
             }
             
             DB::commit();
+            return redirect()->route('seccion.index')->with('success', 'Sección actualizada correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Hubo un problema al actualizar la sección: ' . $e->getMessage()]);
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Hubo un problema al actualizar la sección: ' . $e->getMessage()])
+                ->with('modal_editar_id', $seccion->id);
         }
-        
-        return redirect()->route('seccion.index')->with('success', 'Sección actualizada correctamente.');
     }
 
     /**
