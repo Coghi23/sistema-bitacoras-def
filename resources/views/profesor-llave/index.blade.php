@@ -3,6 +3,17 @@
 @section('title', 'Gestión de Llaves - Profesor')
 
 @section('content')
+<style>
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+
 <div class="wrapper">
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -13,6 +24,10 @@
                         <i class="bi bi-person"></i> {{ $profesor->usuario->name }}
                     </div>
                 @endif
+                <!-- Botón manual para debug -->
+                <button id="btn-actualizar-qrs" class="btn btn-outline-secondary btn-sm" title="Actualizar QRs manualmente">
+                    <i class="bi bi-arrow-clockwise"></i> Debug QRs
+                </button>
                 <!-- Botón para escanear QR -->
                 <a href="{{ route('profesor-llave.scanner') }}" class="btn btn-primary">
                     <i class="bi bi-camera"></i> Escanear QR
@@ -213,19 +228,34 @@ $(document).ready(function() {
         console.log('🔄 Actualizando QRs del profesor...');
         
         $.ajax({
-            url: '{{ route("profesor-llave.qrs-realtime") }}',
+            url: '{{ route("profesor-llave.qrs-realtime") }}' + '?t=' + Date.now(),
             method: 'GET',
             timeout: 5000,
             cache: false,
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            },
             success: function(response) {
                 if (response.status === 'success') {
                     console.log('✅ QRs actualizados:', response.total);
+                    console.log('📋 Debug info:', response.debug);
+                    console.log('📊 QRs data:', response.qrs);
                     
                     // Si no hay QRs activos, ocultar la sección
                     if (response.total === 0) {
                         $('#qrs-container').parent().hide();
                         console.log('ℹ️ No hay QRs activos, sección oculta');
+                        
+                        // Detener polling si no hay QRs
+                        if (pollingInterval) {
+                            clearInterval(pollingInterval);
+                            console.log('⏹️ Polling detenido - no hay QRs activos');
+                        }
                     } else {
+                        // Mostrar la sección si estaba oculta
+                        $('#qrs-container').parent().show();
                         // Actualizar la sección de QRs
                         updateQRsDisplay(response.qrs);
                     }
@@ -292,6 +322,17 @@ $(document).ready(function() {
     if (hasActiveQRs) {
         initRealTimeSystem();
     }
+    
+    // Botón manual para debug
+    $('#btn-actualizar-qrs').on('click', function() {
+        console.log('🔧 Actualización manual de QRs...');
+        $(this).find('i').addClass('spin');
+        updateQRsRealTime();
+        
+        setTimeout(() => {
+            $(this).find('i').removeClass('spin');
+        }, 1000);
+    });
 });
 </script>
 @endpush
