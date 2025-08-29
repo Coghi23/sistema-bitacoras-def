@@ -65,6 +65,7 @@ class ProfesorLlaveController extends Controller
                 ->join('llave', 'qr_temporales.llave_id', '=', 'llave.id')
                 ->where('profesor.usuario_id', $user->id)
                 ->where('qr_temporales.expira_en', '>', now())
+                ->where('qr_temporales.usado', false) // Excluir QRs ya escaneados
                 ->select(
                     'qr_temporales.*',
                     'users.name as profesor_nombre',
