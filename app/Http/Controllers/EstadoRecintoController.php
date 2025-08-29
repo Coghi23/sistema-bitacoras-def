@@ -109,15 +109,15 @@ class EstadoRecintoController extends Controller
     public function destroy(string $id)
     {
         $message = '';
-        $estadoRecinto = estadoRecinto::find($id);
+        $estadoRecinto = EstadoRecinto::find($id);
         if ($estadoRecinto->condicion == 1)
         {
-            estadoRecinto::where('id',$estadoRecinto->id)
+            EstadoRecinto::where('id',$estadoRecinto->id)
             ->update(['condicion' => 0
             ]);
             $message = 'Estado de recinto eliminado';
         } else {
-            estadoRecinto::where('id',$estadoRecinto->id)
+            EstadoRecinto::where('id',$estadoRecinto->id)
             ->update(['condicion' => 1
             ]);
             $message = 'Estado de recinto restaurado';

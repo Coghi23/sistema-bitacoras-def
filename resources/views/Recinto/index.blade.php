@@ -41,9 +41,8 @@
                                 {{ ucfirst($recinto->tipo) }}
                                 </span>
                                 <span class="badge px-2 py-1 rounded-pill text-dark"
-                                    style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto->color }};">
-                                {{ $recinto->estadoRecinto->nombre }}
-                                </span>
+                                        style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
+                                        {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
                                 </div>
                                 <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
@@ -53,7 +52,7 @@
                                 <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
                                 </div>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                                <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto->nombre }}
+                                <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto ? $recinto->tipoRecinto->nombre : 'Sin tipo' }}                                
                                 </div>
 
 
