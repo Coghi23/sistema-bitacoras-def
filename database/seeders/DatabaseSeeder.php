@@ -18,7 +18,9 @@ class DatabaseSeeder extends Seeder
             RolePermissions::class,          // Primero crear roles y permisos
             AdminUserSeeder::class,
             LeccioneSeeder::class, // Crear lecciones
-            
+            //BitacoraSeeder::class,
+            //
+            // EventoSeeder::class, // Luego crear eventos que dependen de bitácoras
         ]);
 
         // User::factory(10)->create();
