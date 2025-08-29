@@ -18,6 +18,6 @@ class TipoRecinto extends Model
     return $this->hasMany(Recinto::class, 'tipoRecinto_id');
 }
 
-    protected $table = 'tipoRecinto';
+    protected $table = 'tiporecinto';
 
 }

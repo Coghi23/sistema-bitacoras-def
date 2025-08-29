@@ -34,7 +34,7 @@ class SeccionController extends Controller
         // Obtener todas las especialidades activas para el dropdown
         $especialidades = Especialidade::where('condicion', 1)->get();
         
-        return view('seccion.index', compact('secciones', 'especialidades'));
+        return view('Seccion.index', compact('secciones', 'especialidades'));
     }
 
     /**
@@ -43,7 +43,7 @@ class SeccionController extends Controller
     public function create()
     {
         $especialidades = Especialidade::all();
-        return view('seccion.create', compact('especialidades'));
+        return view('Seccion.create', compact('especialidades'));
     }
 
     /**
@@ -95,7 +95,7 @@ class SeccionController extends Controller
     public function edit(Seccione $seccion)
     {
         $especialidades = Especialidade::all();
-        return view('seccion.edit', compact('seccion', 'especialidades'));
+        return view('Seccion.edit', compact('seccion', 'especialidades'));
     }
 
     /**

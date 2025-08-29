@@ -19,6 +19,6 @@ class EstadoRecinto extends Model
         return $this->hasOne(Recinto::class, 'estadoRecinto_id');
     }
 
-    protected $table = 'estadoRecinto';
+    protected $table = 'estadorecinto';
 
 }

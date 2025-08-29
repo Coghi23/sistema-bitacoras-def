@@ -53,7 +53,7 @@ class BitacoraController extends Controller
         $subarea = $horarioSeleccionado && $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
         $recinto = $horarioSeleccionado && $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
 
-        return view('bitacora.index', compact(
+        return view('Bitacora.index', compact(
         'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 
         'horarios', 'eventos', 'fecha', 'seccion', 'subarea', 'recinto', 
         'horarioSeleccionado', 'lecciones'

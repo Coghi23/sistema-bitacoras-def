@@ -16,8 +16,8 @@ return new class extends Migration
             $table->foreignId('institucion_id')->constrained('institucione');
             $table->foreignId('llave_id')->constrained('llave');
             $table->string('nombre');
-            $table->foreignId('tipoRecinto_id')->constrained('tipoRecinto');
-            $table->foreignId('estadoRecinto_id')->constrained('estadoRecinto');
+            $table->foreignId('tiporecinto_id')->constrained('tiporecinto');
+            $table->foreignId('estadorecinto_id')->constrained('estadorecinto');
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps();
         });

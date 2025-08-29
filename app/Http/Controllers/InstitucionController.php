@@ -25,7 +25,7 @@ class InstitucionController extends Controller
         }
         
         $instituciones = $query->get();
-        return view('institucion.index', compact('instituciones'));
+        return view('Institucion.index', compact('instituciones'));
     }
 
     /**
@@ -33,7 +33,7 @@ class InstitucionController extends Controller
      */
     public function create()
     {
-        return view('institucion.create');
+        return view('Institucion.create');
     }
 
     /**
@@ -75,7 +75,7 @@ class InstitucionController extends Controller
     public function edit(Institucione $institucion)
     {
         $instituciones = Institucione::with('especialidad')->get();
-        return view('institucion.index', compact('instituciones', 'institucion'));
+        return view('Institucion.index', compact('instituciones', 'institucion'));
     }
 
     /**
