@@ -163,6 +163,28 @@ $(document).ready(function() {
                     $('#modal-codigo').text(response.codigo_qr);
                     $('#qr-image').attr('src', response.qr_url);
                     
+                    // Mostrar mensaje informativo si existe
+                    if (response.mensaje) {
+                        // Crear o actualizar mensaje informativo en el modal
+                        let messageHtml = '';
+                        if (response.mensaje.includes('Ya existe')) {
+                            messageHtml = `<div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+                                <i class="bi bi-info-circle"></i> ${response.mensaje}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>`;
+                        } else {
+                            messageHtml = `<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                <i class="bi bi-check-circle"></i> ${response.mensaje}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>`;
+                        }
+                        
+                        // Remover mensaje anterior si existe
+                        $('#qrModal .modal-body .alert').remove();
+                        // Agregar nuevo mensaje
+                        $('#qrModal .modal-body').append(messageHtml);
+                    }
+                    
                     // Mostrar modal
                     $('#qrModal').modal('show');
                     

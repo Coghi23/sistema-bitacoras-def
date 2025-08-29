@@ -112,6 +112,29 @@ class ProfesorLlaveController extends Controller
             return response()->json(['success' => false, 'message' => 'No tienes perfil de profesor']);
         }
 
+        // Limpiar QRs expirados antes de verificar (opcional, para mantener la tabla limpia)
+        DB::table('qr_temporales')
+            ->where('expira_en', '<', Carbon::now())
+            ->delete();
+
+        // Verificar si ya existe un QR activo para esta llave
+        $qrExistente = DB::table('qr_temporales')
+            ->where('llave_id', $request->llave_id)
+            ->where('usado', false)
+            ->where('expira_en', '>', Carbon::now())
+            ->first();
+
+        if ($qrExistente) {
+            // Si ya existe un QR activo, devolver el existente en lugar de crear uno nuevo
+            return response()->json([
+                'success' => true,
+                'codigo_qr' => $qrExistente->codigo_qr,
+                'expira_en' => $qrExistente->expira_en,
+                'qr_url' => "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={$qrExistente->codigo_qr}",
+                'mensaje' => 'Ya existe un código QR activo para esta llave. Se está mostrando el código existente.'
+            ]);
+        }
+
         // Generar código único
         $codigoQr = 'QR-' . strtoupper(uniqid());
         $expiraEn = Carbon::now()->addMinutes(30);
@@ -132,7 +155,8 @@ class ProfesorLlaveController extends Controller
             'success' => true,
             'codigo_qr' => $codigoQr,
             'expira_en' => $expiraEn->format('Y-m-d H:i:s'),
-            'qr_url' => "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={$codigoQr}"
+            'qr_url' => "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={$codigoQr}",
+            'mensaje' => 'Código QR generado exitosamente.'
         ]);
     }
 
