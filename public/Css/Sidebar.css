@@ -45,7 +45,7 @@ body {
 .sidebar {
     width: 90px;
     background: #134496;
-    min-height: 100vh;
+    height: 100vh;
     color: #fff;
     position: fixed;
     top: 0;
@@ -57,6 +57,29 @@ body {
     z-index: 99;
     transform: translateX(0);
     transition: transform 0.3s ease;
+    overflow-y: auto;
+    overflow-x: hidden;
+    /* Estilos para Firefox */
+    scrollbar-width: thin;
+    scrollbar-color: #f5c002 #134496;
+}
+
+/* Estilos para el scrollbar en Chrome, Safari, etc. */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #134496;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background-color: #f5c002;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: #ffd700;
 }
 
 .sidebar.show {
