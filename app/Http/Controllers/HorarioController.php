@@ -50,9 +50,7 @@ class HorarioController extends Controller
     {
         try {
             DB::beginTransaction();
-            
             $tipoHorario = $request->tipoHorario === 'fijo' ? 1 : 0;
-            
             // Crear UN SOLO horario
             $horario = Horario::create([
                 'idRecinto' => $request->idRecinto,
@@ -64,7 +62,6 @@ class HorarioController extends Controller
                 'dia' => $request->tipoHorario === 'fijo' ? $request->dia : null,
                 'condicion' => 1
             ]);
-            
             // Asociar las lecciones usando la tabla pivot
             if ($request->has('lecciones') && is_array($request->lecciones)) {
                 $leccionesData = [];
@@ -73,11 +70,12 @@ class HorarioController extends Controller
                 }
                 $horario->leccion()->attach($leccionesData);
             }
-            
             DB::commit();
+            return redirect()->route('horario.index')->with('success', 'Horario creado correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al crear el horario: ' . $e->getMessage()]);
+            // Guardar el mensaje de error en la sesión para mostrarlo en la vista
+            return redirect()->back()->with('error', 'Error al crear el horario: ' . $e->getMessage());
         }
         return redirect()->route('horario.index')->with('success', 'Horario creado correctamente.');
     }
