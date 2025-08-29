@@ -76,7 +76,7 @@
         @if(!isset($error) && $qrsTemporales->count() > 0)
             <div class="mt-5">
                 <h4><i class="bi bi-clock-history"></i> QRs Temporales Activos</h4>
-                <div class="row">
+                <div class="row" id="qrs-container">
                     @foreach($qrsTemporales as $qr)
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card border-success">
@@ -220,6 +220,100 @@ $(document).ready(function() {
         // Mostrar modal
         $('#qrModal').modal('show');
     });
+    
+    // ===== SISTEMA DE TIEMPO REAL =====
+    let pollingInterval;
+    
+    function initRealTimeSystem() {
+        console.log('🚀 Iniciando sistema de tiempo real - QRs cada 5 segundos');
+        pollingInterval = setInterval(function() {
+            updateQRsRealTime();
+        }, 5000);
+    }
+    
+    function updateQRsRealTime() {
+        console.log('🔄 Actualizando QRs del profesor...');
+        
+        $.ajax({
+            url: '{{ route("profesor-llave.qrs-realtime") }}',
+            method: 'GET',
+            timeout: 5000,
+            cache: false,
+            success: function(response) {
+                if (response.status === 'success') {
+                    console.log('✅ QRs actualizados:', response.total);
+                    
+                    // Si no hay QRs activos, ocultar la sección
+                    if (response.total === 0) {
+                        $('#qrs-container').parent().hide();
+                        console.log('ℹ️ No hay QRs activos, sección oculta');
+                    } else {
+                        // Actualizar la sección de QRs
+                        updateQRsDisplay(response.qrs);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.warn('⚠️ Error actualizando QRs:', error);
+                // En caso de error, continuar pero con intervalo más largo
+                clearInterval(pollingInterval);
+                pollingInterval = setInterval(updateQRsRealTime, 10000); // 10 segundos
+            }
+        });
+    }
+    
+    function updateQRsDisplay(qrs) {
+        let html = '';
+        
+        qrs.forEach(function(qr) {
+            html += `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h6 class="card-title">${qr.codigo_qr}</h6>
+                            <p class="card-text">
+                                <strong>Recinto:</strong> ${qr.recinto_nombre}<br>
+                                <strong>Llave:</strong> ${qr.llave_nombre}<br>
+                                <small class="text-muted">Expira: ${qr.expira_en_humano}</small>
+                            </p>
+                            <button class="btn btn-primary btn-sm btn-ver-qr" 
+                                    data-qr-code="${qr.codigo_qr}"
+                                    data-recinto-nombre="${qr.recinto_nombre}"
+                                    data-llave-nombre="${qr.llave_nombre}">
+                                <i class="bi bi-eye"></i> Ver QR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        $('#qrs-container').html(html);
+        
+        // Reactivar eventos para los botones ver QR
+        bindVerQREvents();
+    }
+    
+    function bindVerQREvents() {
+        $('.btn-ver-qr').off('click').on('click', function() {
+            const qrCode = $(this).data('qr-code');
+            const recintoNombre = $(this).data('recinto-nombre');
+            const llaveNombre = $(this).data('llave-nombre');
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrCode}`;
+            
+            $('#modal-recinto').text(recintoNombre);
+            $('#modal-llave').text(llaveNombre);
+            $('#modal-codigo').text(qrCode);
+            $('#qr-image').attr('src', qrUrl);
+            $('#qrModal').modal('show');
+        });
+    }
+    
+    // Inicializar sistema de tiempo real solo si hay QRs activos
+    const hasActiveQRs = $('#qrs-container').length > 0;
+    if (hasActiveQRs) {
+        initRealTimeSystem();
+    }
 });
 </script>
 @endpush

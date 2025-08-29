@@ -210,4 +210,66 @@ class ProfesorLlaveController extends Controller
             'nuevo_estado' => $nuevoEstado
         ]);
     }
+    
+    /**
+     * Obtener QRs temporales del profesor en tiempo real (AJAX)
+     */
+    public function getQRsRealTime()
+    {
+        try {
+            $user = Auth::user();
+            $profesor = Profesor::where('usuario_id', $user->id)->first();
+
+            if (!$profesor) {
+                return response()->json(['success' => false, 'message' => 'No tienes perfil de profesor']);
+            }
+
+            // Obtener QRs temporales activos (no usados y no expirados)
+            $qrsTemporales = DB::table('qr_temporales')
+                ->join('profesor', 'qr_temporales.profesor_id', '=', 'profesor.id')
+                ->join('users', 'profesor.usuario_id', '=', 'users.id')
+                ->join('recinto', 'qr_temporales.recinto_id', '=', 'recinto.id')
+                ->join('llave', 'qr_temporales.llave_id', '=', 'llave.id')
+                ->where('profesor.usuario_id', $user->id)
+                ->where('qr_temporales.expira_en', '>', Carbon::now())
+                ->where('qr_temporales.usado', false)
+                ->select(
+                    'qr_temporales.*',
+                    'users.name as profesor_nombre',
+                    'recinto.nombre as recinto_nombre',
+                    'llave.nombre as llave_nombre',
+                    'llave.estado as llave_estado'
+                )
+                ->orderBy('qr_temporales.created_at', 'desc')
+                ->get()
+                ->map(function($qr) {
+                    $expiraEn = Carbon::parse($qr->expira_en);
+                    $ahora = Carbon::now();
+                    
+                    return [
+                        'id' => $qr->id,
+                        'codigo_qr' => $qr->codigo_qr,
+                        'recinto_nombre' => $qr->recinto_nombre,
+                        'llave_nombre' => $qr->llave_nombre,
+                        'llave_estado' => $qr->llave_estado,
+                        'expira_en' => $expiraEn->format('Y-m-d H:i:s'),
+                        'expira_en_humano' => $expiraEn->diffForHumans($ahora),
+                        'tiempo_restante_minutos' => max(0, $ahora->diffInMinutes($expiraEn, false))
+                    ];
+                });
+
+            return response()->json([
+                'status' => 'success',
+                'qrs' => $qrsTemporales,
+                'total' => $qrsTemporales->count(),
+                'timestamp' => now()->format('Y-m-d H:i:s')
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener QRs: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
