@@ -78,6 +78,7 @@ class LlaveController extends Controller
                 ->join('recinto', 'qr_temporales.recinto_id', '=', 'recinto.id')
                 ->join('llave', 'qr_temporales.llave_id', '=', 'llave.id')
                 ->where('qr_temporales.expira_en', '>', Carbon::now())
+                ->where('qr_temporales.usado', false) // Excluir QRs ya escaneados
                 ->select(
                     'qr_temporales.*',
                     'users.name as profesor_nombre',
