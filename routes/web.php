@@ -151,5 +151,18 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+// Ruta temporal para limpiar caché desde el navegador (eliminar después de usar por seguridad)
+Route::get('/clear-cache', function () {
+    \Artisan::call('cache:clear');
+    \Artisan::call('config:clear');
+    \Artisan::call('view:clear');
+    \Artisan::call('route:clear');
+    if (\Artisan::output()) {
+        return 'Cache cleared!';
+    }else {
+        return 'No cache to clear.';
+    }
+});
+
 require __DIR__.'/auth.php';
 
