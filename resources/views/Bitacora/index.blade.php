@@ -11,6 +11,32 @@
       <link rel="stylesheet" href="{{ asset('Css/Bitacoras.css') }}">
 </head>
 
+<!-- Mostrar mensajes de éxito o error -->
+@if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <ul class="mb-0">
+            @foreach($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 <!------------------------------------------------------------------------------------------------------------------------->
 <div class="wrapper">
     <div class="main-content">
@@ -60,30 +86,57 @@
                   <select name="leccion" id="leccionSelect" class="form-control ps-5">
                       <option value="">Seleccione un horario</option>
                       @foreach($horarios as $horario)
-                          @php
-                              $primeraLeccion = $horario->leccion->first();
-                          @endphp
-                          <option value="{{ $horario->id }}" 
-                                  data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
-                                  data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
-                                  data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
-                                  @if(request('leccion') == $horario->id) selected @endif>
-                              @if($primeraLeccion)
-                                  {{ $primeraLeccion->leccion }} 
-                                  @if($primeraLeccion->tipoLeccion)
-                                      ({{ $primeraLeccion->tipoLeccion }})
-                                  @endif
-                                  @if($primeraLeccion->hora_inicio && $primeraLeccion->hora_final)
-                                      - {{ $primeraLeccion->hora_inicio }} a {{ $primeraLeccion->hora_final }}
-                                  @endif
-                              @else
+                          @if($horario->leccion && $horario->leccion->count() > 0)
+                              @foreach($horario->leccion as $leccion)
+                                  <option value="{{ $horario->id }}" 
+                                          data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
+                                          data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
+                                          data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                                          data-recinto-id="{{ optional($horario->recinto)->id ?? '' }}"
+                                          data-seccion-id="{{ optional($horario->seccion)->id ?? '' }}"
+                                          data-subarea-id="{{ optional($horario->subarea)->id ?? '' }}"
+                                          data-leccion-id="{{ $leccion->id }}"
+                                          @if(request('leccion') == $horario->id) selected @endif>
+                                      {{ $leccion->leccion ?? 'Sin nombre' }} 
+                                      @if($leccion->tipoLeccion)
+                                          ({{ $leccion->tipoLeccion }})
+                                      @endif
+                                      @if($leccion->hora_inicio && $leccion->hora_final)
+                                          - {{ $leccion->hora_inicio }} a {{ $leccion->hora_final }}
+                                      @endif
+                                      - {{ optional($horario->recinto)->nombre ?? 'Sin recinto' }}
+                                  </option>
+                              @endforeach
+                          @else
+                              <option value="{{ $horario->id }}" 
+                                      data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
+                                      data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
+                                      data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                                      data-recinto-id="{{ optional($horario->recinto)->id ?? '' }}"
+                                      data-seccion-id="{{ optional($horario->seccion)->id ?? '' }}"
+                                      data-subarea-id="{{ optional($horario->subarea)->id ?? '' }}"
+                                      @if(request('leccion') == $horario->id) selected @endif>
                                   Horario {{ $horario->id }} (Sin lecciones asignadas)
-                              @endif
-                          </option>
+                              </option>
+                          @endif
                       @endforeach
                   </select>
                 </form>
               </div>
+
+          </div>
+        </div>
+
+    <!-- Formulario simplificado para bitácoras -->
+    <form id="formBitacora" method="POST" action="{{ route('bitacora.store') }}" style="display: none;">
+        @csrf
+        <input type="hidden" name="id_recinto" id="hiddenRecinto">
+        <input type="hidden" name="id_seccion" id="hiddenSeccion">
+        <input type="hidden" name="id_subarea" id="hiddenSubarea">
+        <input type="hidden" name="id_horario" id="hiddenHorario">
+        <input type="hidden" name="user_id" value="{{ Auth::id() }}">
+        <input type="hidden" name="hora_envio" id="horaEnvio">
+    </form>
 
           </div>
         </div>
@@ -118,19 +171,19 @@
                       <h5>Prioridad</h5>
                       <div class="row d-flex" id="prioridad">
                           <div class="col">
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Alta</div>
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Media</div>
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" value="alta" /> Alta</div>
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" value="media" /> Media</div>
                           </div>
                           <div class="col">
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Regular</div>
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Baja</div>
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" value="regular" /> Regular</div>
+                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" value="baja" /> Baja</div>
                           </div>
                       </div>
                   </div>
                   <div class="col-md-6">
                       <h5>Observaciones</h5>
                       <div class="row"  id="observaciones">
-                          <textarea class="form-control" rows="4"></textarea>
+                          <textarea class="form-control" rows="4" id="observacionesTextarea"></textarea>
                       </div>
                   </div>
 
@@ -205,7 +258,7 @@
     <script src="{{ asset('JS/alertas.js') }}"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Mostrar la fecha del dispositivo en el campo correspondiente
+        // Mostrar la fecha del dispositivo
         var fechaInput = document.getElementById('fechaDispositivo');
         if (fechaInput) {
             var now = new Date();
@@ -213,21 +266,10 @@
             fechaInput.value = "Fecha: " + fechaLocal;
         }
 
-        // Mostrar campos si hay una lección seleccionada al cargar la página
+        // Mostrar campos si hay una lección seleccionada
         var leccionSelect = document.getElementById('leccionSelect');
         if (leccionSelect && leccionSelect.value) {
             mostrarCamposLeccion();
-        }
-
-        var form = document.getElementById('formBitacora');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                var now = new Date();
-                var hora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                var fecha = now.toISOString().slice(0, 10);
-                document.getElementById('hora_envio').value = hora;
-                document.getElementById('fecha_envio').value = fecha;
-            });
         }
     });
 
@@ -235,12 +277,10 @@
         var selected = document.getElementById('leccionSelect').selectedOptions[0];
         
         if (selected && selected.value) {
-            // Mostrar los campos
             document.getElementById('recintoGroup').classList.remove('d-none');
             document.getElementById('seccionGroup').classList.remove('d-none');
             document.getElementById('subareaGroup').classList.remove('d-none');
             
-            // Actualizar los valores usando los data attributes
             var recinto = selected.getAttribute('data-recinto') || '';
             var seccion = selected.getAttribute('data-seccion') || '';
             var subarea = selected.getAttribute('data-subarea') || '';
@@ -249,76 +289,57 @@
             document.getElementById('seccionInput').value = 'Sección: ' + seccion;
             document.getElementById('subareaInput').value = 'SubÁrea: ' + subarea;
         } else {
-            // Ocultar los campos
             document.getElementById('recintoGroup').classList.add('d-none');
             document.getElementById('seccionGroup').classList.add('d-none');
             document.getElementById('subareaGroup').classList.add('d-none');
         }
     }
 
-    // Funciones para manejar los botones de estado del recinto
+    // Funciones para botones de estado
     window.leftClick = function() {
-        // Mover el fondo al botón izquierdo (Todo en orden)
         var btn = document.getElementById('btn');
-        if (btn) {
-            btn.style.left = '2px';
-        }
-        // Ocultar el contenido de reportar problema
+        if (btn) btn.style.left = '2px';
+        
         var contenidoProblema = document.getElementById('contenido-problema');
-        if (contenidoProblema) {
-            contenidoProblema.classList.remove('active');
-        }
+        if (contenidoProblema) contenidoProblema.classList.remove('active');
+        
+        var btnEnviarOrden = document.getElementById('btnEnviarOrden');
+        if (btnEnviarOrden) btnEnviarOrden.style.display = 'block';
     };
 
     window.rightClick = function() {
-        // Mover el fondo al botón derecho (Reportar problema)
         var btn = document.getElementById('btn');
-        if (btn) {
-            btn.style.left = 'calc(50% - 2px)';
-        }
-        // Mostrar el contenido de reportar problema
+        if (btn) btn.style.left = 'calc(50% - 2px)';
+        
         var contenidoProblema = document.getElementById('contenido-problema');
-        if (contenidoProblema) {
-            contenidoProblema.classList.add('active');
-        }
+        if (contenidoProblema) contenidoProblema.classList.add('active');
+        
+        var btnEnviarOrden = document.getElementById('btnEnviarOrden');
+        if (btnEnviarOrden) btnEnviarOrden.style.display = 'none';
     };
 
     window.limpiarFormularioProblema = function() {
-        // Limpiar los radio buttons de prioridad
-        var radiosPrioridad = document.querySelectorAll('input[name="prioridad"]');
-        radiosPrioridad.forEach(function(radio) {
-            radio.checked = false;
-        });
+        document.querySelectorAll('input[name="prioridad"]').forEach(radio => radio.checked = false);
         
-        // Limpiar el textarea de observaciones
-        var textarea = document.querySelector('#observaciones textarea');
-        if (textarea) {
-            textarea.value = '';
-        }
+        var textarea = document.getElementById('observacionesTextarea');
+        if (textarea) textarea.value = '';
         
-        // Ocultar mensaje de error
         var mensajeError = document.getElementById('mensajeError');
-        if (mensajeError) {
-            mensajeError.classList.add('d-none');
-        }
+        if (mensajeError) mensajeError.classList.add('d-none');
         
-        // Cambiar a "Todo en orden"
         leftClick();
     };
 
     window.validarDatos = function() {
         var prioridadSeleccionada = document.querySelector('input[name="prioridad"]:checked');
-        var observaciones = document.querySelector('#observaciones textarea').value.trim();
+        var observaciones = document.getElementById('observacionesTextarea').value.trim();
         var mensajeError = document.getElementById('mensajeError');
         
         if (!prioridadSeleccionada || !observaciones) {
-            // Mostrar mensaje de error
             mensajeError.classList.remove('d-none');
             return false;
         } else {
-            // Ocultar mensaje de error y proceder
             mensajeError.classList.add('d-none');
-            // Abrir el modal de confirmación
             var modalProblema = new bootstrap.Modal(document.getElementById('modalProblema'));
             modalProblema.show();
             return true;
@@ -326,34 +347,60 @@
     };
 
     window.confirmarEnvioComentario = function() {
-        // Aquí puedes procesar el envío del formulario
-        console.log('Enviando bitácora...');
-        // Mostrar mensaje de éxito con SweetAlert
-        Swal.fire({
-            title: '¡Éxito!',
-            text: 'Bitácora enviada correctamente',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
+        var leccionSelect = document.getElementById('leccionSelect');
+        
+        if (!leccionSelect.value) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor seleccione un horario antes de enviar la bitácora',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+
+        var selectedOption = leccionSelect.selectedOptions[0];
+        var now = new Date();
+        var hora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+        
+        var recintoId = selectedOption.getAttribute('data-recinto-id');
+        var seccionId = selectedOption.getAttribute('data-seccion-id');
+        var subareaId = selectedOption.getAttribute('data-subarea-id');
+        
+        if (!recintoId || !seccionId || !subareaId) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Faltan datos del horario seleccionado.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        // Llenar formulario único
+        document.getElementById('hiddenRecinto').value = recintoId;
+        document.getElementById('hiddenSeccion').value = seccionId;
+        document.getElementById('hiddenSubarea').value = subareaId;
+        document.getElementById('hiddenHorario').value = leccionSelect.value;
+        document.getElementById('horaEnvio').value = hora;
+        
+        // Enviar formulario
+        document.getElementById('formBitacora').submit();
     };
-    </script>
-    <script>
+
+    // Event listener para cambio de lección
     document.addEventListener('DOMContentLoaded', function() {
         var leccionSelect = document.getElementById('leccionSelect');
         
-        // Mostrar campos inmediatamente si hay una selección previa
-        if (leccionSelect.value) {
+        if (leccionSelect && leccionSelect.value) {
             mostrarCamposLeccion();
         }
         
         leccionSelect.addEventListener('change', function() {
             if (this.value) {
-                // Mostrar campos inmediatamente con datos de los atributos
                 mostrarCamposLeccion();
-                // Luego enviar el formulario para obtener datos actualizados del servidor
                 document.getElementById('leccionForm').submit();
             } else {
-                // Si no hay selección, ocultar campos inmediatamente
                 document.getElementById('recintoGroup').classList.add('d-none');
                 document.getElementById('seccionGroup').classList.add('d-none');
                 document.getElementById('subareaGroup').classList.add('d-none');

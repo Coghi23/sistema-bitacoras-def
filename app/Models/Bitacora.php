@@ -65,9 +65,12 @@ class Bitacora extends Model
         });
     }
 
-    public function evento(){
+    public function evento()
+    {
+
 
         return $this->hasMany(Evento::class, 'id_bitacora');
 
     }
+
 }
