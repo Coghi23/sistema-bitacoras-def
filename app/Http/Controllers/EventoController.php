@@ -56,10 +56,13 @@ class EventoController extends Controller
         $subarea = $horarioSeleccionado && $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
         $recinto = $horarioSeleccionado && $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
 
+        // Obtener la bitácora asociada al recinto seleccionado
+        $bitacoraId = $horarioSeleccionado && $horarioSeleccionado->recinto ? 
+                      Bitacora::where('recinto_id', $horarioSeleccionado->recinto->id)->value('id') : null;
 
         return view('Evento.index', compact('eventos', 'bitacoras', 'profesores', 'seccione', 'subareas', 
         'horarios', 'fecha', 'seccion', 'subarea', 'recinto', 
-        'horarioSeleccionado', 'lecciones'));
+        'horarioSeleccionado', 'lecciones', 'bitacoraId'));
     }
 
     //funcion de crear

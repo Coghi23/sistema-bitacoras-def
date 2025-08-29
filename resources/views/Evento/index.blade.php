@@ -56,33 +56,36 @@
               <!-- Lección -->
               <div class="col-md-6 position-relative">
                 <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <form method="GET" action="{{ route('evento.index') }}" id="leccionForm">
-                  <select name="leccion" id="leccionSelect" class="form-control ps-5">
-                      <option value="">Seleccione un horario</option>
-                      @foreach($horarios as $horario)
-                          @php
-                              $primeraLeccion = $horario->leccion->first();
-                          @endphp
-                          <option value="{{ $horario->id }}" 
-                                  data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
-                                  data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
-                                  data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
-                                  @if(request('leccion') == $horario->id) selected @endif>
-                              @if($primeraLeccion)
-                                  {{ $primeraLeccion->leccion }} 
-                                  @if($primeraLeccion->tipoLeccion)
-                                      ({{ $primeraLeccion->tipoLeccion }})
-                                  @endif
-                                  @if($primeraLeccion->hora_inicio && $primeraLeccion->hora_final)
-                                      - {{ $primeraLeccion->hora_inicio }} a {{ $primeraLeccion->hora_final }}
-                                  @endif
-                              @else
-                                  Horario {{ $horario->id }} (Sin lecciones asignadas)
-                              @endif
-                          </option>
-                      @endforeach
-                  </select>
-                </form>
+                <form method="POST" action="{{ route('evento.store') }}" id="leccionForm">
+    @csrf
+    <input type="hidden" name="id_bitacora" value="1">
+    <select name="leccion" id="leccionSelect" class="form-control ps-5">
+        <option value="">Seleccione un horario</option>
+        @foreach($horarios as $horario)
+            @php
+                $primeraLeccion = $horario->leccion->first();
+            @endphp
+            <option value="{{ $horario->id }}" 
+                    data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
+                    data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
+                    data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                    @if(request('leccion') == $horario->id) selected @endif>
+                @if($primeraLeccion)
+                    {{ $primeraLeccion->leccion }} 
+                    @if($primeraLeccion->tipoLeccion)
+                        ({{ $primeraLeccion->tipoLeccion }})
+                    @endif
+                    @if($primeraLeccion->hora_inicio && $primeraLeccion->hora_final)
+                        - {{ $primeraLeccion->hora_inicio }} a {{ $primeraLeccion->hora_final }}
+                    @endif
+                @else
+                    Horario {{ $horario->id }} (Sin lecciones asignadas)
+                @endif
+            </option>
+        @endforeach
+    </select>
+</form>
+
               </div>
 
           </div>
@@ -93,60 +96,73 @@
         <div class="container-fluid" id="estadoRec">
           <div class="container-fluid button-box">
             <div class="container-fluid" id="btn"></div>
-            <button type="button" class="toggle-btn" id="btn-orden" onclick="leftClick()">
-                <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en Orden</h5>
-              </button>
-              
-              <button type="button" class="toggle-btn" id="btn-problema" onclick="rightClick()">
-                <h5><i class="bi bi-exclamation-circle icono-estado"></i>Reportar Problema</h5>
-              </button>
+            <button type="button" class="toggle-btn" id="btn-orden" data-bs-toggle="modal" data-bs-target="#modalOrden">
+    <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en Orden</h5>
+</button>
+
+<button type="button" class="toggle-btn" id="btn-problema" data-bs-toggle="modal" data-bs-target="#modalProblema">
+    <h5><i class="bi bi-exclamation-circle icono-estado"></i>Reportar Problema</h5>
+</button>
+
               
           </div>
         </div>
       </div>
+        
+            <!-- Formulario Reporte -->
+<form method="POST" action="{{ route('evento.store') }}">
+    @csrf
 
-      <div class="container-fluid justify-content-center d-flex" >
-        <button class="btn" id="btnEnviarOrden" data-bs-toggle="modal"
-        data-bs-target="#modalOrden">Enviar</button>
-      </div>
-          
-          
-            <!-- Contenido que se muestra/oculta -->
-            <div id="contenido-problema" class="content-slide">
-              <div class="row position-relative">
-                  <div class="col-md-6" >
-                      <h5>Prioridad</h5>
-                      <div class="row d-flex" id="prioridad">
-                          <div class="col">
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Alta</div>
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Media</div>
-                          </div>
-                          <div class="col">
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Regular</div>
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Baja</div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col-md-6">
-                      <h5>Observaciones</h5>
-                      <div class="row"  id="observaciones">
-                          <textarea class="form-control" rows="4"></textarea>
-                      </div>
-                  </div>
+    <input type="hidden" name="id_bitacora" value="{{ $bitacoraId }}">
+    <input type="hidden" name="hora_envio" id="hora_envio">
+    <input type="hidden" name="fecha_envio" id="fecha_envio">
 
-                <div class="d-flex flex-column align-items-end">
-                    <!-- Mensaje de error -->
-                    <div id="mensajeError" class="alert alert-danger d-none" role="alert">
-                      <i class="bi bi-exclamation-circle-fill"></i>Por favor ingrese todos los datos.
+    <div id="contenido-problema" class="content-slide">
+        <div class="row position-relative">
+            <!-- Prioridad -->
+            <div class="col-md-6">
+                <h5>Prioridad</h5>
+                <div class="row d-flex" id="prioridad">
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="prioridad" value="Alta" /> Alta
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="prioridad" value="Media" /> Media
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="prioridad" value="Regular" /> Regular
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="prioridad" value="Baja" /> Baja
+                        </div>
                     </div>
                 </div>
+            </div>
+            <!-- Observaciones -->
+            <div class="col-md-6">
+                <h5>Observaciones</h5>
+                <div class="row">
+                    <textarea class="form-control" id="observaciones" rows="4" name="observacion"></textarea>
+                </div>
+            </div>
 
-                  <!-- Botones -->
-              <div class="d-flex justify-content-end gap-2 mt-3">
-                  <button class="btn" id="btnCancelar" onclick="limpiarFormularioProblema()">Cancelar</button>
-                  <button class="btn" id="btnEnviar" onclick="validarDatos()">Enviar Bitácora</button>
-              </div>
-          </div>
+            <!-- Mensaje de error -->
+            <div id="mensajeError" class="alert alert-danger d-none" role="alert">
+                <i class="bi bi-exclamation-circle-fill"></i>Por favor ingrese todos los datos.
+            </div>
+
+            <!-- Botones -->
+            <div class="d-flex justify-content-end gap-2 mt-3">
+                <button type="button" class="btn" id="btnCancelar" onclick="limpiarFormularioProblema()">Cancelar</button>
+                <button type="submit" class="btn" id="btnEnviar" onclick="validarDatos()">Enviar Evento</button>
+            </div>
+        </div>
+    </div>
+</form>
+
 
 
           </div>
@@ -232,29 +248,30 @@
     });
 
     function mostrarCamposLeccion() {
-        var selected = document.getElementById('leccionSelect').selectedOptions[0];
+    var selected = document.getElementById('leccionSelect').selectedOptions[0];
+    
+    if (selected && selected.value) {
+        // Mostrar los campos
+        document.getElementById('recintoGroup').classList.remove('d-none');
+        document.getElementById('seccionGroup').classList.remove('d-none');
+        document.getElementById('subareaGroup').classList.remove('d-none');
         
-        if (selected && selected.value) {
-            // Mostrar los campos
-            document.getElementById('recintoGroup').classList.remove('d-none');
-            document.getElementById('seccionGroup').classList.remove('d-none');
-            document.getElementById('subareaGroup').classList.remove('d-none');
-            
-            // Actualizar los valores usando los data attributes
-            var recinto = selected.getAttribute('data-recinto') || '';
-            var seccion = selected.getAttribute('data-seccion') || '';
-            var subarea = selected.getAttribute('data-subarea') || '';
-            
-            document.getElementById('recintoInput').value = 'Recinto: ' + recinto;
-            document.getElementById('seccionInput').value = 'Sección: ' + seccion;
-            document.getElementById('subareaInput').value = 'SubÁrea: ' + subarea;
-        } else {
-            // Ocultar los campos
-            document.getElementById('recintoGroup').classList.add('d-none');
-            document.getElementById('seccionGroup').classList.add('d-none');
-            document.getElementById('subareaGroup').classList.add('d-none');
-        }
+        // Actualizar los valores usando los data attributes
+        var recinto = selected.getAttribute('data-recinto') || '';
+        var seccion = selected.getAttribute('data-seccion') || '';
+        var subarea = selected.getAttribute('data-subarea') || '';
+        
+        document.getElementById('recintoInput').value = 'Recinto: ' + recinto;
+        document.getElementById('seccionInput').value = 'Sección: ' + seccion;
+        document.getElementById('subareaInput').value = 'SubÁrea: ' + subarea;
+    } else {
+        // Ocultar los campos
+        document.getElementById('recintoGroup').classList.add('d-none');
+        document.getElementById('seccionGroup').classList.add('d-none');
+        document.getElementById('subareaGroup').classList.add('d-none');
     }
+}
+
 
     // Funciones para manejar los botones de estado del recinto
     window.leftClick = function() {
@@ -360,6 +377,22 @@
             }
         });
     });
+
+    leccionSelect.addEventListener('change', function() {
+    if (this.value) {
+        // Mostrar campos inmediatamente con datos de los atributos
+        mostrarCamposLeccion();
+        // Luego enviar el formulario para obtener datos actualizados del servidor
+        document.getElementById('leccionForm').submit();
+    } else {
+        // Si no hay selección, ocultar campos inmediatamente
+        document.getElementById('recintoGroup').classList.add('d-none');
+        document.getElementById('seccionGroup').classList.add('d-none');
+        document.getElementById('subareaGroup').classList.add('d-none');
+    }
+});
+
+
     </script>
 @endpush
 

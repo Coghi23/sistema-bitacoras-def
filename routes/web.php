@@ -30,6 +30,9 @@ Route::get('/', function () {
 Route::resource('bitacora', BitacoraController::class);
 
 
+// Route for reporting events
+Route::post('/evento/reportar', [EventoController::class, 'store'])->name('evento.reportar');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de recursos con protección para directores en acciones de escritura
 
