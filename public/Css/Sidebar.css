@@ -59,6 +59,24 @@ body {
     transition: transform 0.3s ease;
 }
 
+/* Estilos del scrollbar para Chrome/Safari */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: #134496;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: #f5c002;
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: #ffd700;
+}
+
 .sidebar.show {
     transform: translateX(0);
 }
@@ -78,6 +96,10 @@ body {
 
 .sidebar-logo img {
     width: 5%;
+}
+
+.sidebar-logo img {
+    width: 60px;
 }
 
 .sidebar-item {
@@ -130,8 +152,7 @@ body {
 }
 
 .submenu-popover {
-    position: absolute;
-    top: 0;
+    position: fixed;
     left: 95px;
     background: #7491C1;
     border-radius: 10px;

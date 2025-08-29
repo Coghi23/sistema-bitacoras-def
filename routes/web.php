@@ -69,6 +69,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::view('evento', EventoController::class);
 
+    // Rutas de reportes
+    Route::get('/reporte/resumen-diario', [App\Http\Controllers\ReporteController::class, 'resumenDiario'])->name('reporte.resumen-diario');
+
     Route::view('/template-administrador', 'template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'template-profesor')->name('template-profesor');
     Route::view('/template-soporte', 'template-soporte')->name('template-soporte');
