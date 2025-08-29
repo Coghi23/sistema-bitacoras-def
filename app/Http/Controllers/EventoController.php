@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\View\View;
 use App\Http\Requests\StoreEventoRequest;
 use App\Models\Evento;
+use App\Models\Seccione;
+use App\Models\Subarea;
+use App\Models\Horario;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
@@ -16,52 +19,81 @@ use Exception;
 class EventoController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
 
-        $eventos = Evento::with('bitacora', 'profesor')->get();
+        $eventos = Evento::with('bitacora', 'usuario', 'seccion', 'subarea', 'horario')->get();
         $bitacoras = Bitacora::all();
-        $profesores = User::whereHas('roles', function ($query) {
+
+        $seccione = Seccione::all();
+        $subareas = Subarea::all();
+        
+        // Filtrar solo los horarios del profesor logueado con relaciones
+        $horarios = Horario::with('recinto','subarea','seccion','leccion','profesor')
+                           ->where('user_id', auth()->id())
+                           ->get();
+
+        // Todas las lecciones asociadas a esos horarios (sin duplicados)
+        $lecciones = $horarios->flatMap->leccion->unique('id')->values();
+
+        
+        // Obtener todos los usuarios con rol profesor
+        $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
 
-        return view('Evento.index', compact('eventos', 'bitacoras', 'profesores'));
+        // Obtener datos del horario seleccionado si existe
+        $horarioSeleccionado = null;
+        if ($request->filled('leccion')) {
+            $horarioSeleccionado = $horarios->where('id', $request->get('leccion'))->first();
+        }
+
+        // Obtener la fecha del primer horario o horario seleccionado
+        $fecha = $horarioSeleccionado ? $horarioSeleccionado->fecha : ($horarios->first() ? $horarios->first()->fecha : null);
+        
+        // Obtener datos dinámicos basados en la selección
+        $seccion = $horarioSeleccionado && $horarioSeleccionado->seccion ? $horarioSeleccionado->seccion->nombre : '';
+        $subarea = $horarioSeleccionado && $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
+        $recinto = $horarioSeleccionado && $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
+
+
+        return view('Evento.index', compact('eventos', 'bitacoras', 'profesores', 'seccione', 'subareas', 
+        'horarios', 'fecha', 'seccion', 'subarea', 'recinto', 
+        'horarioSeleccionado', 'lecciones'));
     }
 
     //funcion de crear
     public function create()
     {
-        $bitacoras = Bitacora::all();
-        $profesores = User::whereHas('roles', function ($query) {
-            $query->where('name', 'profesor');
-        })->get();
-        return view('Evento.create', compact('bitacoras', 'profesores'));
+
     }
 
     public function store(StoreEventoRequest $request)
     {
         try {
 
-            DB::beginTransaction();
+            $evento = new Evento();
 
-            Evento::create([
-                'idBitacora' => $request->input('idBitacora'),
-                'user_id' => $request->input('user_id'),
-                'fecha' => $request->input('fecha'),
-                'observacion' => $request->input('observacion'),
-                'prioridad' => $request->input('prioridad'),
-                'confirmacion' => $request->input('confirmacion'),
-                'condicion' => $request->input('condicion')
-            ]);
+            $evento->id_bitacora = $request->input('id_bitacora');
+            $evento->id_seccion = $request->input('id_seccion');
+            $evento->id_subarea = $request->input('id_subarea');
+            $evento->id_horario = $request->input('id_horario');
+            $evento->id_horario_leccion = $request->input('id_horario');
+            $evento->user_id = auth()->id();
+            $evento->hora_envio = $request->input('hora_envio');
+            $evento->fecha = now()->format('Y-m-d');
+            $evento->observacion = $request->input('observacion');
+            $evento->prioridad = $request->input('prioridad');
 
-            DB::commit();
+            $evento->save();
+
+            return redirect()->route('evento.index')
+                ->with('success', 'Evento guardado correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => 'Hubo un problema al guardar el evento. ' . $e->getMessage()]);
         }
 
-        return redirect()->route('evento.index')
-            ->with('success', 'Evento guardado correctamente.');
     }
 
     //metodo editar
@@ -91,24 +123,9 @@ class EventoController extends Controller
         return redirect()->route('evento.index')->with('success', 'Evento actualizado correctamente.');
     }
 
-    //metodo destroy
+    //metodo destroy, no se utiliza porque no hay razon para eliminar eventos
     public function destroy(string $id)
     {
-        $message = "";
-        $evento = Evento::find($id);
-        if (!$evento) {
-            return redirect()->route('evento.index')->withErrors(['error' => 'Evento no encontrado.']);
-        }
-        if ($evento->condicion == 1) {
-            Evento::where('id', $evento->id)
-                ->update(['condicion' => 0]);
-            $message = 'Evento eliminado correctamente.';
-        } else {
-            Evento::where('id', $evento->id)
-                ->update(['condicion' => 1]);
-            $message = 'Evento restaurado correctamente.';
-        }
-        return redirect()->route('evento.index')->with('success', $message);
     }
 
 }

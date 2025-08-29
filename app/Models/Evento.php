@@ -11,8 +11,12 @@ class Evento extends Model
     use HasFactory;
     protected $table = 'evento';
     protected $fillable = [
-        'idBitacora',
-        'user_id',
+        'id_bitacora',
+        'id_seccion',
+        'id_subarea',
+        'id_horario',
+        'id_horario_leccion',
+        'usuario_id',
         'fecha',
         'observacion',
         'prioridad',
@@ -25,8 +29,43 @@ class Evento extends Model
         return $this->belongsTo(Bitacora::class);
     }
 
+     public function seccion()
+    {
+    
+        return $this->belongsTo(Seccione::class, 'id_seccion');
+    
+    }
+
+    public function subarea()
+    {
+    
+        return $this->belongsTo(Subarea::class, 'id_subarea');
+    
+    }
+
+    public function horario()
+    {
+    
+        return $this->belongsTo(Horario::class, 'id_horario');
+    
+    }
+
+    public function leccion()
+    {
+        return $this->belongsToMany(Leccion::class, 'horario_leccion', 'idHorario', 'idLeccion');
+    }
+
+    public function usuario()
+    {
+        return $this->belongsTo(User::class, 'id_usuario');
+    }
+
+    // Método para obtener solo profesores
     public function profesor()
     {
-        return $this->belongsTo(Profesor::class);
+        return $this->belongsTo(User::class, 'id_usuario')->whereHas('roles', function($query) {
+            $query->where('name', 'profesor');
+        });
     }
+
 }

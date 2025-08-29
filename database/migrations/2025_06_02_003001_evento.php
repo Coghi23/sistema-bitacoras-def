@@ -15,7 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('id_bitacora')->constrained('bitacora')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->timestamp('fecha');
+            $table->foreignId('id_seccion')->constrained('seccione');
+            $table->foreignId('id_subarea')->constrained('subarea');
+            $table->foreignId('id_horario')->constrained('horarios');
+            $table->foreignId('id_horario_leccion')->constrained('horario_leccion');
+            $table->timestamp('fecha')->useCurrent();
+            $table->time('hora_envio');
             $table->string('observacion',255);
             $table->string('prioridad',255);
             $table->boolean('confirmacion');
