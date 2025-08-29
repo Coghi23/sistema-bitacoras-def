@@ -29,7 +29,7 @@ Route::get('/', function () {
 
 Route::resource('bitacora', BitacoraController::class);
 
-// Rutas que requieren autenticación
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de recursos con protección para directores en acciones de escritura
 
@@ -37,6 +37,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::resource('usuario', UsuarioController::class)->except(['store', 'update', 'destroy']);
     Route::resource('usuario', UsuarioController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
+    
+    // Ruta para reenviar email de configuración de contraseña
+    Route::post('/usuario/{usuario}/resend-password-setup', [UsuarioController::class, 'resendPasswordSetup'])
+        ->name('usuario.resend-password-setup')
+        ->middleware('director.readonly');
 
     Route::resource('institucion', InstitucionController::class)->except(['store', 'update', 'destroy']);
     Route::resource('institucion', InstitucionController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
@@ -64,9 +69,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::view('evento', EventoController::class);
 
-    Route::view('/template-administrador', 'template-administrador')->name('template-administrador');
-    Route::view('/template-profesor', 'template-profesor')->name('template-profesor');
-    Route::view('/template-soporte', 'template-soporte')->name('template-soporte');
+    Route::view('/template-administrador', 'Template-administrador')->name('template-administrador');
+    Route::view('/template-profesor', 'Template-profesor')->name('template-profesor');
+    Route::view('/template-soporte', 'Template-soporte')->name('template-soporte');
     
 
 });
@@ -85,8 +90,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // NUEVAS RUTAS PARA PROFESOR-LLAVE (estructura separada)
         Route::middleware('role:profesor')->group(function () {
             Route::get('/profesor-llave', [App\Http\Controllers\ProfesorLlaveController::class, 'index'])->name('profesor-llave.index');
+            Route::get('/profesor-llave/scanner', [App\Http\Controllers\ProfesorLlaveController::class, 'scanner'])->name('profesor-llave.scanner');
             Route::post('/profesor-llave/generar-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'generarQr'])->name('profesor-llave.generar-qr');
             Route::post('/profesor-llave/escanear-qr', [App\Http\Controllers\ProfesorLlaveController::class, 'escanearQr'])->name('profesor-llave.escanear-qr');
+            Route::get('/profesor-llave/qrs-realtime', [App\Http\Controllers\ProfesorLlaveController::class, 'getQRsRealTime'])->name('profesor-llave.qrs-realtime');
         });
         
         // Para administradores
@@ -105,21 +112,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
         Route::middleware(['role:administrador|director'])->group(function () {
             Route::get('/template-administrador', function () {
-                return view('template-administrador');
+                return view('Template-administrador');
             })->name('template-administrador');
         });
         
         // Rutas para profesor
         Route::middleware('role:profesor')->group(function () {
             Route::get('/template-profesor', function () {
-                return view('template-profesor');
+                return view('Template-profesor');
             })->name('template-profesor');
         });
         
         // Rutas para soporte
         Route::middleware('role:soporte')->group(function () {
             Route::get('/template-soporte', function () {
-                return view('template-soporte');
+                return view('Template-soporte');
             })->name('template-soporte');
         });
     
@@ -143,6 +150,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+// Ruta temporal para limpiar caché desde el navegador (eliminar después de usar por seguridad)
+Route::get('/clear-cache', function () {
+    \Artisan::call('cache:clear');
+    \Artisan::call('config:clear');
+    \Artisan::call('view:clear');
+    \Artisan::call('route:clear');
+    if (\Artisan::output()) {
+        return 'Cache cleared!';
+    }else {
+        return 'No cache to clear.';
+    }
 });
 
 require __DIR__.'/auth.php';

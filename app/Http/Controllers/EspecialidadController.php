@@ -34,7 +34,7 @@ class EspecialidadController extends Controller
         $especialidades = $query->get();
         $instituciones = Institucione::where('condicion', 1)->get();
 
-        return view('especialidad.index', compact('especialidades', 'instituciones'));
+        return view('Especialidad.index', compact('especialidades', 'instituciones'));
     }
 
     /**
@@ -89,7 +89,7 @@ class EspecialidadController extends Controller
         $especialidades = Especialidade::with('institucion')->get();
         $instituciones = Institucione::where('condicion', 1)->get();
 
-        return view('especialidad.index', compact('especialidades', 'instituciones', 'especialidad'));
+        return view('Especialidad.index', compact('especialidades', 'instituciones', 'especialidad'));
     }
 
     /**

@@ -14,6 +14,7 @@ class Bitacora extends Model
         'id_seccion',
         'id_subarea',
         'id_horario',
+        'id_horario_leccion',
         'usuario_id',
         'condicion',
     ];
@@ -44,6 +45,11 @@ class Bitacora extends Model
     
         return $this->belongsTo(Horario::class, 'id_horario');
     
+    }
+
+    public function leccion()
+    {
+        return $this->belongsToMany(Leccion::class, 'horario_leccion', 'idHorario', 'idLeccion');
     }
 
     public function usuario()

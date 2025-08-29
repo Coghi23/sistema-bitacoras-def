@@ -19,7 +19,7 @@ class Leccion extends Model
 
     public function horarios()
     {
-        return $this->hasMany(Horario::class);
+        return $this->belongsToMany(Horario::class, 'horario_leccion', 'idLeccion', 'idHorario');
     }
 
     public function bitacoras()

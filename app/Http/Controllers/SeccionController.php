@@ -34,7 +34,7 @@ class SeccionController extends Controller
         // Obtener todas las especialidades activas para el dropdown
         $especialidades = Especialidade::where('condicion', 1)->get();
         
-        return view('seccion.index', compact('secciones', 'especialidades'));
+        return view('Seccion.index', compact('secciones', 'especialidades'));
     }
 
     /**
@@ -43,7 +43,7 @@ class SeccionController extends Controller
     public function create()
     {
         $especialidades = Especialidade::all();
-        return view('seccion.create', compact('especialidades'));
+        return view('Seccion.create', compact('especialidades'));
     }
 
     /**
@@ -70,12 +70,15 @@ class SeccionController extends Controller
             }
             
             DB::commit();
+            return redirect()->route('seccion.index')->with('success', 'Sección creada correctamente.');
         }
         catch(Exception $e){
             DB::rollBack();
-            return back()->withErrors(['error' => 'Hubo un problema al guardar la sección: ' . $e->getMessage()]);
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Hubo un problema al guardar la sección: ' . $e->getMessage()])
+                ->with('modal_crear', true);
         }
-        return redirect()->route('seccion.index')->with('success', 'Sección creada correctamente.');
     }
 
     /**
@@ -92,7 +95,7 @@ class SeccionController extends Controller
     public function edit(Seccione $seccion)
     {
         $especialidades = Especialidade::all();
-        return view('seccion.edit', compact('seccion', 'especialidades'));
+        return view('Seccion.edit', compact('seccion', 'especialidades'));
     }
 
     /**
@@ -130,12 +133,14 @@ class SeccionController extends Controller
             }
             
             DB::commit();
+            return redirect()->route('seccion.index')->with('success', 'Sección actualizada correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Hubo un problema al actualizar la sección: ' . $e->getMessage()]);
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Hubo un problema al actualizar la sección: ' . $e->getMessage()])
+                ->with('modal_editar_id', $seccion->id);
         }
-        
-        return redirect()->route('seccion.index')->with('success', 'Sección actualizada correctamente.');
     }
 
     /**

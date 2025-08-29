@@ -3,15 +3,36 @@
 @section('title', 'Gestión de Llaves - Profesor')
 
 @section('content')
+<style>
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+</style>
+
 <div class="wrapper">
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 class="mb-0">Gestión de Llaves</h2>
-            @if(isset($profesor) && $profesor)
-                <div class="badge bg-info fs-6">
-                    <i class="bi bi-person"></i> {{ $profesor->usuario->name }}
-                </div>
-            @endif
+            <div class="d-flex align-items-center gap-3">
+                @if(isset($profesor) && $profesor)
+                    <div class="badge bg-info fs-6">
+                        <i class="bi bi-person"></i> {{ $profesor->usuario->name }}
+                    </div>
+                @endif
+                <!-- Botón manual para debug -->
+                <button id="btn-actualizar-qrs" class="btn btn-outline-secondary btn-sm" title="Actualizar QRs manualmente">
+                    <i class="bi bi-arrow-clockwise"></i> Debug QRs
+                </button>
+                <!-- Botón para escanear QR -->
+                <a href="{{ route('profesor-llave.scanner') }}" class="btn btn-primary">
+                    <i class="bi bi-camera"></i> Escanear QR
+                </a>
+            </div>
         </div>
 
         @if(isset($error))
@@ -70,7 +91,7 @@
         @if(!isset($error) && $qrsTemporales->count() > 0)
             <div class="mt-5">
                 <h4><i class="bi bi-clock-history"></i> QRs Temporales Activos</h4>
-                <div class="row">
+                <div class="row" id="qrs-container">
                     @foreach($qrsTemporales as $qr)
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card border-success">
@@ -157,6 +178,28 @@ $(document).ready(function() {
                     $('#modal-codigo').text(response.codigo_qr);
                     $('#qr-image').attr('src', response.qr_url);
                     
+                    // Mostrar mensaje informativo si existe
+                    if (response.mensaje) {
+                        // Crear o actualizar mensaje informativo en el modal
+                        let messageHtml = '';
+                        if (response.mensaje.includes('Ya existe')) {
+                            messageHtml = `<div class="alert alert-info alert-dismissible fade show mt-3" role="alert">
+                                <i class="bi bi-info-circle"></i> ${response.mensaje}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>`;
+                        } else {
+                            messageHtml = `<div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+                                <i class="bi bi-check-circle"></i> ${response.mensaje}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>`;
+                        }
+                        
+                        // Remover mensaje anterior si existe
+                        $('#qrModal .modal-body .alert').remove();
+                        // Agregar nuevo mensaje
+                        $('#qrModal .modal-body').append(messageHtml);
+                    }
+                    
                     // Mostrar modal
                     $('#qrModal').modal('show');
                     
@@ -191,6 +234,126 @@ $(document).ready(function() {
         
         // Mostrar modal
         $('#qrModal').modal('show');
+    });
+    
+    // ===== SISTEMA DE TIEMPO REAL =====
+    let pollingInterval;
+    
+    function initRealTimeSystem() {
+        console.log('🚀 Iniciando sistema de tiempo real - QRs cada 5 segundos');
+        pollingInterval = setInterval(function() {
+            updateQRsRealTime();
+        }, 5000);
+    }
+    
+    function updateQRsRealTime() {
+        console.log('🔄 Actualizando QRs del profesor...');
+        
+        $.ajax({
+            url: '{{ route("profesor-llave.qrs-realtime") }}' + '?t=' + Date.now(),
+            method: 'GET',
+            timeout: 5000,
+            cache: false,
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    console.log('✅ QRs actualizados:', response.total);
+                    console.log('📋 Debug info:', response.debug);
+                    console.log('📊 QRs data:', response.qrs);
+                    
+                    // Si no hay QRs activos, ocultar la sección
+                    if (response.total === 0) {
+                        $('#qrs-container').parent().hide();
+                        console.log('ℹ️ No hay QRs activos, sección oculta');
+                        
+                        // Detener polling si no hay QRs
+                        if (pollingInterval) {
+                            clearInterval(pollingInterval);
+                            console.log('⏹️ Polling detenido - no hay QRs activos');
+                        }
+                    } else {
+                        // Mostrar la sección si estaba oculta
+                        $('#qrs-container').parent().show();
+                        // Actualizar la sección de QRs
+                        updateQRsDisplay(response.qrs);
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                console.warn('⚠️ Error actualizando QRs:', error);
+                // En caso de error, continuar pero con intervalo más largo
+                clearInterval(pollingInterval);
+                pollingInterval = setInterval(updateQRsRealTime, 10000); // 10 segundos
+            }
+        });
+    }
+    
+    function updateQRsDisplay(qrs) {
+        let html = '';
+        
+        qrs.forEach(function(qr) {
+            html += `
+                <div class="col-md-6 col-lg-4 mb-3">
+                    <div class="card border-success">
+                        <div class="card-body">
+                            <h6 class="card-title">${qr.codigo_qr}</h6>
+                            <p class="card-text">
+                                <strong>Recinto:</strong> ${qr.recinto_nombre}<br>
+                                <strong>Llave:</strong> ${qr.llave_nombre}<br>
+                                <small class="text-muted">Expira: ${qr.expira_en_humano}</small>
+                            </p>
+                            <button class="btn btn-primary btn-sm btn-ver-qr" 
+                                    data-qr-code="${qr.codigo_qr}"
+                                    data-recinto-nombre="${qr.recinto_nombre}"
+                                    data-llave-nombre="${qr.llave_nombre}">
+                                <i class="bi bi-eye"></i> Ver QR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        $('#qrs-container').html(html);
+        
+        // Reactivar eventos para los botones ver QR
+        bindVerQREvents();
+    }
+    
+    function bindVerQREvents() {
+        $('.btn-ver-qr').off('click').on('click', function() {
+            const qrCode = $(this).data('qr-code');
+            const recintoNombre = $(this).data('recinto-nombre');
+            const llaveNombre = $(this).data('llave-nombre');
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrCode}`;
+            
+            $('#modal-recinto').text(recintoNombre);
+            $('#modal-llave').text(llaveNombre);
+            $('#modal-codigo').text(qrCode);
+            $('#qr-image').attr('src', qrUrl);
+            $('#qrModal').modal('show');
+        });
+    }
+    
+    // Inicializar sistema de tiempo real solo si hay QRs activos
+    const hasActiveQRs = $('#qrs-container').length > 0;
+    if (hasActiveQRs) {
+        initRealTimeSystem();
+    }
+    
+    // Botón manual para debug
+    $('#btn-actualizar-qrs').on('click', function() {
+        console.log('🔧 Actualización manual de QRs...');
+        $(this).find('i').addClass('spin');
+        updateQRsRealTime();
+        
+        setTimeout(() => {
+            $(this).find('i').removeClass('spin');
+        }, 1000);
     });
 });
 </script>

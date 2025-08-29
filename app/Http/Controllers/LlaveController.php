@@ -28,7 +28,7 @@ class LlaveController extends Controller
 
         $llaves = $query->get();
         
-        return view('llave.index', compact('llaves'));
+        return view('Llave.index', compact('llaves'));
     }
 
     /**
@@ -78,6 +78,7 @@ class LlaveController extends Controller
                 ->join('recinto', 'qr_temporales.recinto_id', '=', 'recinto.id')
                 ->join('llave', 'qr_temporales.llave_id', '=', 'llave.id')
                 ->where('qr_temporales.expira_en', '>', Carbon::now())
+                ->where('qr_temporales.usado', false) // Excluir QRs ya escaneados
                 ->select(
                     'qr_temporales.*',
                     'users.name as profesor_nombre',
@@ -133,7 +134,7 @@ class LlaveController extends Controller
      */
     public function create()
     {
-        return view('llave.create');
+        return view('Llave.create');
     }
 
     /**
@@ -175,7 +176,7 @@ class LlaveController extends Controller
     public function edit(Llave $llave)
     {
         $llaves = Llave::with('recinto')->get();
-        return view('llave.index', compact('llaves', 'llave'));
+        return view('Llave.index', compact('llaves', 'llave'));
     }
 
     /**

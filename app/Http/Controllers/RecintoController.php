@@ -42,7 +42,7 @@ class RecintoController extends Controller
         $estadosRecinto = EstadoRecinto::all();
         $llaves = Llave::all();
 
-        return view('recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto', 'llaves'));
+        return view('Recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto', 'llaves'));
     }
 
     /**
@@ -50,7 +50,7 @@ class RecintoController extends Controller
      */
     public function create()
     {
-      return view('recinto.create');
+      return view('Recinto.create');
 
     }
 
@@ -84,7 +84,7 @@ class RecintoController extends Controller
     public function edit(Recinto $recinto)
     {
          $recinto->load('institucion');
-         return view('recinto.edit', compact('recinto'));
+         return view('Recinto.edit', compact('recinto'));
     }
 
     /**

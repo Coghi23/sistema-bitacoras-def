@@ -25,7 +25,7 @@ class EventoController extends Controller
             $query->where('name', 'profesor');
         })->get();
 
-        return view('evento.index', compact('eventos', 'bitacoras', 'profesores'));
+        return view('Evento.index', compact('eventos', 'bitacoras', 'profesores'));
     }
 
     //funcion de crear
@@ -35,7 +35,7 @@ class EventoController extends Controller
         $profesores = User::whereHas('roles', function ($query) {
             $query->where('name', 'profesor');
         })->get();
-        return view('evento.create', compact('bitacoras', 'profesores'));
+        return view('Evento.create', compact('bitacoras', 'profesores'));
     }
 
     public function store(StoreEventoRequest $request)
@@ -74,7 +74,7 @@ class EventoController extends Controller
 
         $evento->load('bitacora', 'profesor');
 
-        return view('evento.edit', compact('evento', 'bitacoras', 'profesores'));
+        return view('Evento.edit', compact('evento', 'bitacoras', 'profesores'));
     }
 
     //metodo update

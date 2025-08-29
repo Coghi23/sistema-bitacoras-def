@@ -11,9 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tiporecinto', function (Blueprint $table) {
+        Schema::create('horario_leccion', function (Blueprint $table) {
             $table->id();
-            $table->string('nombre', 60);
+            $table->foreignId('idHorario')->constrained('horarios')->onDelete('cascade');
+            $table->foreignId('idLeccion')->nullable()->constrained('leccion')->onDelete('cascade');
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps(); 
         });
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-         Schema::dropIfExists('tiporecinto');
+        Schema::dropIfExists('horario_leccion');
     }
 };

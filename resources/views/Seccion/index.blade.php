@@ -121,40 +121,27 @@
                                     </button>
                                     <h5 class="modal-title">Registro de sección</h5>
                                 </div>
-                                <div class="modal-body px-4 py-4">
-                                    {{-- Mostrar errores de validación para editar --}}
-                                    @if (session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->any())
-                                        <div class="alert alert-danger">
-                                            <ul class="mb-0">
-                                                @foreach ($errors->all() as $error)
-                                                    <li>{{ $error }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-                                    
-                                    <form action="{{ route('seccion.update', $seccion->id) }}" method="POST">
-                                        @csrf
-                                        @method('PATCH')
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">Sección</label>
-                                            <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror"
-                                                value="{{ old('nombre', $seccion->nombre) }}" required>
-                                            @error('nombre')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
+                <div class="modal-body px-4 py-4">
+                    <form action="{{ route('seccion.update', $seccion->id) }}" method="POST">
+                        @csrf
+                        @method('PATCH')
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Sección</label>
+                            <input type="text" name="nombre" class="form-control @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('nombre')) is-invalid @endif"
+                                value="{{ old('nombre', $seccion->nombre) }}" required>
+                            @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('nombre'))
+                                <div class="invalid-feedback">{{ $errors->first('nombre') }}</div>
+                            @endif
+                        </div>
 
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">Especialidad</label>
-                                            @error('especialidades')
-                                                <div class="text-danger small mb-2">
-                                                    {{ $message }}
-                                                    <br><small><i class="bi bi-info-circle"></i> Una sección debe tener al menos una especialidad asignada.</small>
-                                                </div>
-                                            @enderror
-                                            
-                                            <!-- Especialidades actualmente asignadas como checkboxes ocultos -->
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Especialidad</label>
+                            @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('especialidades'))
+                                <div class="text-danger small mb-2">
+                                    {{ $errors->first('especialidades') }}
+                                    <br><small><i class="bi bi-info-circle"></i> Una sección debe tener al menos una especialidad asignada.</small>
+                                </div>
+                            @endif                                            <!-- Especialidades actualmente asignadas como checkboxes ocultos -->
                                             <div style="display: none;">
                                                 @foreach($especialidades as $especialidad)
                                                     <input type="checkbox" 
@@ -248,36 +235,25 @@
                 <h5 class="modal-title">Registro de sección</h5>
             </div>
             <div class="modal-body px-4 py-4">
-                {{-- Mostrar errores de validación para crear --}}
-                @if (session('modal_crear') && $errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                
                 <form id="formCrearSeccion" action="{{ route('seccion.store') }}" method="POST">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label fw-bold">Sección</label>
-                        <input type="text" name="nombre" class="form-control @error('nombre') is-invalid @enderror" 
+                        <input type="text" name="nombre" class="form-control @if(session('modal_crear') && $errors->has('nombre')) is-invalid @endif" 
                                value="{{ old('nombre') }}">
-                        @error('nombre')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                        @if(session('modal_crear') && $errors->has('nombre'))
+                            <div class="invalid-feedback">{{ $errors->first('nombre') }}</div>
+                        @endif
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Especialidad</label>
-                        @error('especialidades')
+                        @if(session('modal_crear') && $errors->has('especialidades'))
                             <div class="text-danger small mb-2">
-                                {{ $message }}
+                                {{ $errors->first('especialidades') }}
                                 <br><small><i class="bi bi-info-circle"></i> Una sección debe tener al menos una especialidad asignada.</small>
                             </div>
-                        @enderror
+                        @endif
                         <div id="especialidades">
                             <div class="input-group dynamic-group">
                                 <select id="selectEspecialidad" class="form-select">

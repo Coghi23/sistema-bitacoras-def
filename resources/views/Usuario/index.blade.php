@@ -117,12 +117,21 @@
                         </td>
                         <td class="col-acciones">
                             @if(Auth::user() && !Auth::user()->hasRole('director'))
-                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario{{ $usuario->id }}">
+                            <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario{{ $usuario->id }}" title="Editar usuario">
                                 <i class="bi bi-pencil icon-editar"></i>
                             </button>
-                            <button class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarUsuario{{ $usuario->id }}">
+                            <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEliminarUsuario{{ $usuario->id }}" title="Activar/Desactivar usuario">
                                 <i class="bi bi-trash icon-eliminar"></i>
                             </button>
+                            @if($usuario->condicion)
+                            <form method="POST" action="{{ route('usuario.resend-password-setup', $usuario->id) }}" style="display: inline;" 
+                                  onsubmit="return confirm('¿Enviar correo de configuración de contraseña a {{ $usuario->email }}?')">
+                                @csrf
+                                <button type="submit" class="btn p-0" title="Reenviar correo de configuración de contraseña">
+                                    <i class="bi bi-envelope-arrow-up text-info" style="font-size: 1.1em;"></i>
+                                </button>
+                            </form>
+                            @endif
                             @else
                             <span class="text-muted">Solo vista</span>
                             @endif
@@ -179,20 +188,14 @@
                             <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="MauriVargas17@gmail.com" required>
                         </div>
                         
-                        {{-- Contraseña --}}
+                        {{-- Información sobre configuración de contraseña --}}
                         <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-lock text-danger me-2"></i>Contraseña:
-                            </label>
-                            <input type="password" name="password" class="form-control rounded-4 w-50" placeholder="••••••••" required>
-                        </div>
-                        
-                        {{-- Confirmar Contraseña --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-lock text-danger me-2"></i>Confirmar:
-                            </label>
-                            <input type="password" name="password_confirmation" class="form-control rounded-4 w-50" placeholder="••••••••" required>
+                            <div class="w-100 text-center">
+                                <div class="alert alert-info d-flex align-items-center" role="alert">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <span>Se enviará un correo automáticamente para que el usuario configure su contraseña.</span>
+                                </div>
+                            </div>
                         </div>
                         
                         {{-- Rol --}}

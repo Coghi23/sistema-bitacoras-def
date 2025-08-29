@@ -41,9 +41,8 @@
                                 {{ ucfirst($recinto->tipo) }}
                                 </span>
                                 <span class="badge px-2 py-1 rounded-pill text-dark"
-                                    style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto->color }};">
-                                {{ $recinto->estadoRecinto->nombre }}
-                                </span>
+                                        style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
+                                        {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
                                 </div>
                                 <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
@@ -53,7 +52,7 @@
                                 <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
                                 </div>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                                <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto->nombre }}
+                                <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto ? $recinto->tipoRecinto->nombre : 'Sin tipo' }}                                
                                 </div>
 
 
@@ -67,10 +66,10 @@
                                 data-bs-toggle="modal" data-bs-target="#modalEditarRecinto-{{ $recinto->id }}">
                                 <i class="bi bi-pencil"></i>
                                 </button>
-                                <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" onsubmit="return confirm('¿Está seguro de que desea eliminar este recinto?');">
+                                <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" >
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-outline-danger btn-sm rounded-5 ms-2">
+                                    <button type="button" class="btn btn-outline-danger btn-sm rounded-5 ms-2" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $recinto->id }}">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>
@@ -81,6 +80,30 @@
             @endif
 
      
+
+            <div class="modal fade" id="modalConfirmacionEliminar-{{ $recinto->id }}" tabindex="-1" aria-labelledby="modalRecintoEliminarLabel-{{ $recinto->id }}" 
+                        aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Desea Eliminar el Recinto?</p>
+                                        <div class="btn-group-custom">
+                                            <form action="{{ route('recinto.destroy', ['recinto' => $recinto->id]) }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="submit" class="btn btn-custom {{ $recinto->condicion == 1 }}">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                 
 

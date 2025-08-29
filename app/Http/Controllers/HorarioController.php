@@ -21,7 +21,7 @@ class HorarioController extends Controller
     public function index()
     {
 
-        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'profesor')->get();
+        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'profesor', 'leccion')->get();
         $recintos = Recinto::all();
         $subareas = Subarea::all();
         $secciones = Seccione::all();
@@ -29,7 +29,7 @@ class HorarioController extends Controller
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
-        return view('horario.index', compact('horarios', 'recintos', 'subareas', 'secciones', 'profesores', 'lecciones'));
+        return view('Horario.index', compact('horarios', 'recintos', 'subareas', 'secciones', 'profesores', 'lecciones'));
     }
 
     //metodo crear para ir a la vista
@@ -41,7 +41,7 @@ class HorarioController extends Controller
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
-        return view('horario.create', compact('recintos', 'subareas', 'secciones', 'profesores'));
+        return view('Horario.create', compact('recintos', 'subareas', 'secciones', 'profesores'));
     }
 
 
@@ -50,29 +50,32 @@ class HorarioController extends Controller
     {
         try {
             DB::beginTransaction();
-            
             $tipoHorario = $request->tipoHorario === 'fijo' ? 1 : 0;
-            
+            // Crear UN SOLO horario
+            $horario = Horario::create([
+                'idRecinto' => $request->idRecinto,
+                'idSubarea' => $request->idSubarea,
+                'idSeccion' => $request->idSeccion,
+                'user_id' => $request->user_id,
+                'tipoHorario' => $tipoHorario,
+                'fecha' => $request->tipoHorario === 'temporal' ? $request->fecha : null,
+                'dia' => $request->tipoHorario === 'fijo' ? $request->dia : null,
+                'condicion' => 1
+            ]);
+            // Asociar las lecciones usando la tabla pivot
             if ($request->has('lecciones') && is_array($request->lecciones)) {
+                $leccionesData = [];
                 foreach ($request->lecciones as $leccionId) {
-                    Horario::create([
-                        'idRecinto' => $request->idRecinto,
-                        'idSubarea' => $request->idSubarea,
-                        'idSeccion' => $request->idSeccion,
-                        'user_id' => $request->user_id,
-                        'tipoHorario' => $tipoHorario,
-                        'fecha' => $request->tipoHorario === 'temporal' ? $request->fecha : null,
-                        'dia' => $request->tipoHorario === 'fijo' ? $request->dia : null,
-                        'idLeccion' => $leccionId,
-                        'condicion' => 1
-                    ]);
+                    $leccionesData[$leccionId] = ['condicion' => 1];
                 }
+                $horario->leccion()->attach($leccionesData);
             }
-            
             DB::commit();
+            return redirect()->route('horario.index')->with('success', 'Horario creado correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al crear el horario: ' . $e->getMessage()]);
+            // Guardar el mensaje de error en la sesión para mostrarlo en la vista
+            return redirect()->back()->with('error', 'Error al crear el horario: ' . $e->getMessage());
         }
         return redirect()->route('horario.index')->with('success', 'Horario creado correctamente.');
     }
@@ -83,25 +86,51 @@ class HorarioController extends Controller
         $recintos = Recinto::all();
         $subareas = Subarea::all();
         $secciones = Seccione::all();
+        $lecciones = Leccion::all();
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
-        $horario->load('recinto', 'subAreaSeccion', 'profesor');
+        $horario->load('recinto', 'subarea', 'seccion', 'profesor', 'leccion');
 
-        return view('horario.edit', compact('horario', 'recintos', 'subareas', 'secciones', 'profesores'));
+        return view('Horario.edit', compact('horario', 'recintos', 'subareas', 'secciones', 'profesores', 'lecciones'));
     }
 
 
-    //metodo updAate
+    //metodo update
     public function update(UpdateHorarioRequest $request, Horario $horario)
     {
         try {
             DB::beginTransaction();
-            $horario->update($request->validated());
+            
+            $tipoHorario = $request->tipoHorario === 'fijo' ? 1 : 0;
+            
+            // Actualizar los datos del horario
+            $horario->update([
+                'idRecinto' => $request->idRecinto,
+                'idSubarea' => $request->idSubarea,
+                'idSeccion' => $request->idSeccion,
+                'user_id' => $request->user_id,
+                'tipoHorario' => $tipoHorario,
+                'fecha' => $request->tipoHorario === 'temporal' ? $request->fecha : null,
+                'dia' => $request->tipoHorario === 'fijo' ? $request->dia : null,
+            ]);
+            
+            // Sincronizar las lecciones (esto eliminará las anteriores y agregará las nuevas)
+            if ($request->has('lecciones') && is_array($request->lecciones)) {
+                $leccionesData = [];
+                foreach ($request->lecciones as $leccionId) {
+                    $leccionesData[$leccionId] = ['condicion' => 1];
+                }
+                $horario->leccion()->sync($leccionesData);
+            } else {
+                // Si no se seleccionaron lecciones, eliminar todas las asociaciones
+                $horario->leccion()->detach();
+            }
+            
             DB::commit();
         } catch (Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al actualizar el horario.']);
+            return redirect()->back()->withErrors(['error' => 'Error al actualizar el horario: ' . $e->getMessage()]);
         }
         return redirect()->route('horario.index')->with('success', 'Horario actualizado correctamente.');
     }

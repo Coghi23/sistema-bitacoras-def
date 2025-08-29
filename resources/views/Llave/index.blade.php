@@ -121,38 +121,46 @@
 
                         @if(Auth::user() && !Auth::user()->hasRole('director'))
                         <!-- Modal Editar Llave -->
-                        <div class="modal fade" id="modalEditarLlave-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalEditarLlaveLabel-{{ $llave->id }}" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content">
-                                    <div class="modal-header modal-header-custom">
-                                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                                            <i class="bi bi-arrow-left"></i>
-                                        </button>
-                                        <h5 class="modal-title">Editar Llave</h5>
-                                    </div>
-                                    <div class="modal-body px-4 py-4">
-                                        <div class="card text-bg-light">
-                                            <form action="{{ route('llave.update',['llave'=>$llave]) }}" method="post">
-                                                @csrf
-                                                @method('PATCH')
-                                                <input type="hidden" name="id" id="editarIdLlave">
-                                                <div class="card-body">
-                                                    <div class="mb-3">
-                                                        <label for="editarNombreLlave" class="form-label fw-bold">Nombre de la Llave</label>
-                                                        <input type="text" name="nombre" id="nombre" class="form-control"
-                                                        value="{{old('nombre',$llave->nombre)}}">
-                                                    </div>
-                                                </div>
-                                                <div class="card-footer text-center">
-                                                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
+                        
+<div class="modal fade" id="modalEditarLlave-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalEditarLlaveLabel-{{ $llave->id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-custom">
+                <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <h5 class="modal-title">Editar Llave</h5>
+            </div>
+            <div class="modal-body px-4 py-4">
+                {{-- Muestra errores de validación si existen --}}
+                @if (session('modal_editar_id') && session('modal_editar_id') == $llave->id && $errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                <form action="{{ route('llave.update',['llave'=>$llave]) }}" method="post">
+                    @csrf
+                    @method('PATCH')
+                    <input type="hidden" name="id" id="editarIdLlave">
+                    <div class="mb-3">
+                        <label for="editarNombreLlave" class="form-label fw-bold">Nombre de la Llave</label>
+                        <input type="text" name="nombre" id="nombre" class="form-control @error('nombre') is-invalid @enderror" value="{{old('nombre',$llave->nombre)}}" required>
+                        @error('nombre')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
                         <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalLlaveEliminarLabel-{{ $llave->id }}" 
                         aria-hidden="true">
@@ -398,6 +406,7 @@ $(document).ready(function() {
     transition: opacity 0.3s ease;
 }
 </style>
+
 <script>
 
 
@@ -432,3 +441,4 @@ if (btnLimpiar && inputBusqueda && llavesList) {
 }
 </script>
 @endpush
+

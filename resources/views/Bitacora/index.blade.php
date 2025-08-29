@@ -57,25 +57,30 @@
               <div class="col-md-6 position-relative">
                 <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
                 <form method="GET" action="{{ route('bitacora.index') }}" id="leccionForm">
-                  <select class="form-control ps-5" name="leccion" id="leccionSelect">
-                    <option value="">Seleccione la lección</option>
-                    @foreach($horarios as $horario)
-                      <option value="{{ $horario->id }}" 
-                              data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
-                              data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
-                              data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
-                              data-hora="{{ optional($horario->leccion)->hora_inicio ?? '' }} - {{ optional($horario->leccion)->hora_final ?? '' }}"
-                              data-tipo="{{ optional($horario->leccion)->tipoLeccion ?? '' }}"
-                              @if(request('leccion') == $horario->id) selected @endif>
-                        {{ optional($horario->leccion)->leccion ?? 'Lección ' . $horario->id }}
-                        @if(optional($horario->leccion)->tipoLeccion)
-                          - {{ optional($horario->leccion)->tipoLeccion }}
-                        @endif
-                        @if(optional($horario->leccion)->hora_inicio)
-                          - {{ optional($horario->leccion)->hora_inicio }} a {{ optional($horario->leccion)->hora_final }}
-                        @endif
-                      </option>
-                    @endforeach
+                  <select name="leccion" id="leccionSelect" class="form-control ps-5">
+                      <option value="">Seleccione un horario</option>
+                      @foreach($horarios as $horario)
+                          @php
+                              $primeraLeccion = $horario->leccion->first();
+                          @endphp
+                          <option value="{{ $horario->id }}" 
+                                  data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
+                                  data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
+                                  data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                                  @if(request('leccion') == $horario->id) selected @endif>
+                              @if($primeraLeccion)
+                                  {{ $primeraLeccion->leccion }} 
+                                  @if($primeraLeccion->tipoLeccion)
+                                      ({{ $primeraLeccion->tipoLeccion }})
+                                  @endif
+                                  @if($primeraLeccion->hora_inicio && $primeraLeccion->hora_final)
+                                      - {{ $primeraLeccion->hora_inicio }} a {{ $primeraLeccion->hora_final }}
+                                  @endif
+                              @else
+                                  Horario {{ $horario->id }} (Sin lecciones asignadas)
+                              @endif
+                          </option>
+                      @endforeach
                   </select>
                 </form>
               </div>
@@ -235,10 +240,10 @@
             document.getElementById('seccionGroup').classList.remove('d-none');
             document.getElementById('subareaGroup').classList.remove('d-none');
             
-            // Actualizar los valores (usando los datos del servidor si están disponibles)
-            var recinto = selected.getAttribute('data-recinto') || '{{ $recinto }}';
-            var seccion = selected.getAttribute('data-seccion') || '{{ $seccion }}';
-            var subarea = selected.getAttribute('data-subarea') || '{{ $subarea }}';
+            // Actualizar los valores usando los data attributes
+            var recinto = selected.getAttribute('data-recinto') || '';
+            var seccion = selected.getAttribute('data-seccion') || '';
+            var subarea = selected.getAttribute('data-subarea') || '';
             
             document.getElementById('recintoInput').value = 'Recinto: ' + recinto;
             document.getElementById('seccionInput').value = 'Sección: ' + seccion;
@@ -336,9 +341,16 @@
     document.addEventListener('DOMContentLoaded', function() {
         var leccionSelect = document.getElementById('leccionSelect');
         
+        // Mostrar campos inmediatamente si hay una selección previa
+        if (leccionSelect.value) {
+            mostrarCamposLeccion();
+        }
+        
         leccionSelect.addEventListener('change', function() {
             if (this.value) {
-                // Enviar el formulario para obtener los datos del servidor
+                // Mostrar campos inmediatamente con datos de los atributos
+                mostrarCamposLeccion();
+                // Luego enviar el formulario para obtener datos actualizados del servidor
                 document.getElementById('leccionForm').submit();
             } else {
                 // Si no hay selección, ocultar campos inmediatamente

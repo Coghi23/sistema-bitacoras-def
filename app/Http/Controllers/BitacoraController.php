@@ -7,6 +7,7 @@ use App\Models\Seccione;
 use App\Models\Subarea;
 use App\Models\Horario;
 use App\Models\Evento;
+use App\Models\Leccion;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -17,15 +18,19 @@ class BitacoraController extends Controller
      */
     public function index(Request $request)
     {
+        
         $bitacoras = Bitacora::with('recinto','usuario','seccione','subarea','horario','evento')->get();
         $recintos = Recinto::all();
         $seccione = Seccione::all();
         $subareas = Subarea::all();
-        
+        //dd($request->all());
         // Filtrar solo los horarios del profesor logueado con relaciones
-        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'leccion', 'profesor')
+        $horarios = Horario::with('recinto','subarea','seccion','leccion','profesor')
                            ->where('user_id', auth()->id())
                            ->get();
+
+        // Todas las lecciones asociadas a esos horarios (sin duplicados)
+        $lecciones = $horarios->flatMap->leccion->unique('id')->values();
         
         $eventos = Evento::all();
         
@@ -48,9 +53,10 @@ class BitacoraController extends Controller
         $subarea = $horarioSeleccionado && $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
         $recinto = $horarioSeleccionado && $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
 
-        return view('bitacora.index', compact(
-            'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 'horarios', 'eventos', 
-            'fecha', 'seccion', 'subarea', 'recinto', 'horarioSeleccionado'
+        return view('Bitacora.index', compact(
+        'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 
+        'horarios', 'eventos', 'fecha', 'seccion', 'subarea', 'recinto', 
+        'horarioSeleccionado', 'lecciones'
         ));
     }
 

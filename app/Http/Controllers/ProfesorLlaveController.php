@@ -65,6 +65,7 @@ class ProfesorLlaveController extends Controller
                 ->join('llave', 'qr_temporales.llave_id', '=', 'llave.id')
                 ->where('profesor.usuario_id', $user->id)
                 ->where('qr_temporales.expira_en', '>', now())
+                ->where('qr_temporales.usado', false) // Excluir QRs ya escaneados
                 ->select(
                     'qr_temporales.*',
                     'users.name as profesor_nombre',
@@ -88,6 +89,14 @@ class ProfesorLlaveController extends Controller
     }
     
     /**
+     * Mostrar vista del escáner QR
+     */
+    public function scanner()
+    {
+        return view('profesor-llave.scanner');
+    }
+    
+    /**
      * Generar código QR temporal
      */
     public function generarQr(Request $request)
@@ -102,6 +111,29 @@ class ProfesorLlaveController extends Controller
 
         if (!$profesor) {
             return response()->json(['success' => false, 'message' => 'No tienes perfil de profesor']);
+        }
+
+        // Limpiar QRs expirados antes de verificar (opcional, para mantener la tabla limpia)
+        DB::table('qr_temporales')
+            ->where('expira_en', '<', Carbon::now())
+            ->delete();
+
+        // Verificar si ya existe un QR activo para esta llave
+        $qrExistente = DB::table('qr_temporales')
+            ->where('llave_id', $request->llave_id)
+            ->where('usado', false)
+            ->where('expira_en', '>', Carbon::now())
+            ->first();
+
+        if ($qrExistente) {
+            // Si ya existe un QR activo, devolver el existente en lugar de crear uno nuevo
+            return response()->json([
+                'success' => true,
+                'codigo_qr' => $qrExistente->codigo_qr,
+                'expira_en' => $qrExistente->expira_en,
+                'qr_url' => "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={$qrExistente->codigo_qr}",
+                'mensaje' => 'Ya existe un código QR activo para esta llave. Se está mostrando el código existente.'
+            ]);
         }
 
         // Generar código único
@@ -124,7 +156,8 @@ class ProfesorLlaveController extends Controller
             'success' => true,
             'codigo_qr' => $codigoQr,
             'expira_en' => $expiraEn->format('Y-m-d H:i:s'),
-            'qr_url' => "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={$codigoQr}"
+            'qr_url' => "https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={$codigoQr}",
+            'mensaje' => 'Código QR generado exitosamente.'
         ]);
     }
 
@@ -137,6 +170,8 @@ class ProfesorLlaveController extends Controller
             'qr_code' => 'required|string'
         ]);
 
+        \Log::info("🔍 Escaneando QR: " . $request->qr_code);
+
         // Buscar QR usando SQL directo
         $qr = DB::table('qr_temporales')
             ->where('codigo_qr', $request->qr_code)
@@ -145,27 +180,33 @@ class ProfesorLlaveController extends Controller
             ->first();
 
         if (!$qr) {
+            \Log::warning("❌ QR no encontrado o ya usado: " . $request->qr_code);
             return response()->json(['success' => false, 'error' => 'Código QR inválido o expirado']);
         }
+
+        \Log::info("✅ QR encontrado, ID: " . $qr->id);
 
         // Obtener estado actual de la llave
         $llave = DB::table('llave')->where('id', $qr->llave_id)->first();
         
         if (!$llave) {
+            \Log::error("❌ Llave no encontrada, ID: " . $qr->llave_id);
             return response()->json(['success' => false, 'error' => 'Llave no encontrada']);
         }
 
         // Cambiar estado de la llave
         $nuevoEstado = $llave->estado == 0 ? 1 : 0;
         
-        DB::table('llave')
+        $llaveUpdated = DB::table('llave')
             ->where('id', $qr->llave_id)
             ->update(['estado' => $nuevoEstado]);
 
         // Marcar QR como usado
-        DB::table('qr_temporales')
+        $qrUpdated = DB::table('qr_temporales')
             ->where('id', $qr->id)
             ->update(['usado' => true, 'updated_at' => now()]);
+
+        \Log::info("🔄 QR marcado como usado - Llave updated: $llaveUpdated, QR updated: $qrUpdated");
 
         $mensaje = $nuevoEstado == 1 ? 
             "Llave {$llave->nombre} entregada correctamente" : 
@@ -174,7 +215,84 @@ class ProfesorLlaveController extends Controller
         return response()->json([
             'success' => true,
             'mensaje' => $mensaje,
-            'nuevo_estado' => $nuevoEstado
+            'nuevo_estado' => $nuevoEstado,
+            'qr_id' => $qr->id,
+            'debug' => [
+                'qr_updated' => $qrUpdated,
+                'llave_updated' => $llaveUpdated
+            ]
         ]);
+    }
+    
+    /**
+     * Obtener QRs temporales del profesor en tiempo real (AJAX)
+     */
+    public function getQRsRealTime()
+    {
+        try {
+            $user = Auth::user();
+            $profesor = Profesor::where('usuario_id', $user->id)->first();
+
+            if (!$profesor) {
+                return response()->json(['success' => false, 'message' => 'No tienes perfil de profesor']);
+            }
+
+            \Log::info("🔄 Consultando QRs tiempo real para profesor ID: " . $profesor->id);
+
+            // Obtener QRs temporales activos (no usados y no expirados)
+            $qrsTemporales = DB::table('qr_temporales')
+                ->join('profesor', 'qr_temporales.profesor_id', '=', 'profesor.id')
+                ->join('users', 'profesor.usuario_id', '=', 'users.id')
+                ->join('recinto', 'qr_temporales.recinto_id', '=', 'recinto.id')
+                ->join('llave', 'qr_temporales.llave_id', '=', 'llave.id')
+                ->where('profesor.usuario_id', $user->id)
+                ->where('qr_temporales.expira_en', '>', Carbon::now())
+                ->where('qr_temporales.usado', false)
+                ->select(
+                    'qr_temporales.*',
+                    'users.name as profesor_nombre',
+                    'recinto.nombre as recinto_nombre',
+                    'llave.nombre as llave_nombre',
+                    'llave.estado as llave_estado'
+                )
+                ->orderBy('qr_temporales.created_at', 'desc')
+                ->get()
+                ->map(function($qr) {
+                    $expiraEn = Carbon::parse($qr->expira_en);
+                    $ahora = Carbon::now();
+                    
+                    return [
+                        'id' => $qr->id,
+                        'codigo_qr' => $qr->codigo_qr,
+                        'usado' => $qr->usado, // Debug
+                        'recinto_nombre' => $qr->recinto_nombre,
+                        'llave_nombre' => $qr->llave_nombre,
+                        'llave_estado' => $qr->llave_estado,
+                        'expira_en' => $expiraEn->format('Y-m-d H:i:s'),
+                        'expira_en_humano' => $expiraEn->diffForHumans($ahora),
+                        'tiempo_restante_minutos' => max(0, $ahora->diffInMinutes($expiraEn, false))
+                    ];
+                });
+
+            \Log::info("📊 QRs encontrados: " . $qrsTemporales->count());
+
+            return response()->json([
+                'status' => 'success',
+                'qrs' => $qrsTemporales,
+                'total' => $qrsTemporales->count(),
+                'timestamp' => now()->format('Y-m-d H:i:s'),
+                'debug' => [
+                    'usuario_id' => $user->id,
+                    'profesor_id' => $profesor->id
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            \Log::error("❌ Error en getQRsRealTime: " . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener QRs: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
