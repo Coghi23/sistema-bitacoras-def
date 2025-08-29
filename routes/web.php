@@ -73,6 +73,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('/template-profesor', 'Template-profesor')->name('template-profesor');
     Route::view('/template-soporte', 'Template-soporte')->name('template-soporte');
     
+    // Rutas de reportes
+    Route::get('/reporte/bitacoras', [App\Http\Controllers\ReporteController::class, 'index'])->name('reporte.bitacoras');
+    Route::get('/reporte/resumen-diario', [App\Http\Controllers\ReporteController::class, 'resumenDiario'])->name('reporte.resumen-diario');
 
 });
 

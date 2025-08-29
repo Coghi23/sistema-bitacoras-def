@@ -10,7 +10,6 @@ class Recinto extends Model
     use HasFactory;
 
     protected $table = 'recinto';   
-    //public $timestamps = false;     
 
     protected $fillable = [
         'institucion_id',
@@ -26,6 +25,7 @@ class Recinto extends Model
     {
         return $this->belongsTo(Institucione::class);
     }
+    
     public function llave()
     {
         return $this->belongsTo(Llave::class);
@@ -39,5 +39,37 @@ class Recinto extends Model
     public function estadoRecinto()
     {
         return $this->belongsTo(EstadoRecinto::class, 'estadorecinto_id');
+    }
+
+    public function bitacoras()
+    {
+        return $this->hasMany(Bitacora::class, 'id_recinto');
+    }
+
+    public function bitacoraActiva()
+    {
+        return $this->hasOne(Bitacora::class, 'id_recinto')
+                   ->where('condicion', 1);
+    }
+
+    /**
+     * Boot method para eventos del modelo
+     */
+    protected static function boot()
+    {
+        parent::boot();
+        
+        // Crear bitácora automáticamente cuando se crea un recinto
+        static::created(function ($recinto) {
+            \Log::info('Creando bitácora para recinto: ' . $recinto->id);
+            
+            Bitacora::create([
+                'id_recinto' => $recinto->id,
+                'id_llave' => $recinto->llave_id,
+                'condicion' => 1,
+            ]);
+            
+            \Log::info('Bitácora creada exitosamente para recinto: ' . $recinto->id);
+        });
     }
 }
