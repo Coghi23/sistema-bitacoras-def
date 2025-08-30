@@ -29,14 +29,19 @@ class EventoController extends Controller
         $subareas = Subarea::all();
         
         // Filtrar solo los horarios del profesor logueado con relaciones
-        $horarios = Horario::with('recinto','subarea','seccion','leccion','profesor')
+        $horarios = Horario::with(['recinto', 'subarea', 'seccion', 'leccion'])
                            ->where('user_id', auth()->id())
                            ->get();
 
-        // Todas las lecciones asociadas a esos horarios (sin duplicados)
-        $lecciones = $horarios->flatMap->leccion->unique('id')->values();
+        // Obtener todas las lecciones disponibles
+        $lecciones = $horarios->flatMap(function($horario) {
+            return $horario->leccion->map(function($leccion) use ($horario) {
+                $leccion->horario_data = $horario;
+                return $leccion;
+            });
+        })->unique('id');
 
-        
+
         // Obtener todos los usuarios con rol profesor
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
@@ -73,23 +78,34 @@ class EventoController extends Controller
 
     public function store(StoreEventoRequest $request)
     {
+        DB::beginTransaction();
         try {
-
             $evento = new Evento();
-
-            $evento->id_bitacora = $request->input('id_bitacora');
-            $evento->id_seccion = $request->input('id_seccion');
-            $evento->id_subarea = $request->input('id_subarea');
-            $evento->id_horario = $request->input('id_horario');
-            $evento->id_horario_leccion = $request->input('id_horario');
+            
+            // Obtener la bitácora basada en el recinto
+            $horario = Horario::with('recinto')->findOrFail($request->id_horario);
+            $bitacora = Bitacora::where('recinto_id', $horario->recinto->id)->first();
+            
+            if (!$bitacora) {
+                throw new Exception('No se encontró una bitácora para el recinto seleccionado.');
+            }
+            
+            $evento->id_bitacora = $bitacora->id;
+            $evento->id_seccion = $request->id_seccion;
+            $evento->id_subarea = $request->id_subarea;
+            $evento->id_horario = $request->id_horario;
+            $evento->id_horario_leccion = $request->id_horario;
             $evento->user_id = auth()->id();
-            $evento->hora_envio = $request->input('hora_envio');
-            $evento->fecha = now()->format('Y-m-d');
-            $evento->observacion = $request->input('observacion');
-            $evento->prioridad = $request->input('prioridad');
+            $evento->hora_envio = now()->format('H:i:s'); // Asignar hora actual del sistema
+            $evento->fecha = now();
+            $evento->observacion = $request->observacion;
+            $evento->prioridad = $request->prioridad;
+            $evento->confirmacion = false;
+            $evento->condicion = 1;
 
             $evento->save();
-
+            
+            DB::commit();
             return redirect()->route('evento.index')
                 ->with('success', 'Evento guardado correctamente.');
         } catch (Exception $e) {

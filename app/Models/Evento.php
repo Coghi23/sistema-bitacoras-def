@@ -57,13 +57,13 @@ class Evento extends Model
 
     public function usuario()
     {
-        return $this->belongsTo(User::class, 'id_usuario');
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // Método para obtener solo profesores
     public function profesor()
     {
-        return $this->belongsTo(User::class, 'id_usuario')->whereHas('roles', function($query) {
+        return $this->belongsTo(User::class, 'user_id')->whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         });
     }

@@ -1,399 +1,134 @@
 @extends('Template-profesor')
 
-@section('title', 'Eventos')
+@section('title', 'Registrar Evento')
 
 @section('content')
-<head>
-    <link rel="stylesheet" href="{{ asset('CSS/Bitacora.css') }}">
-</head>
+<div class="container my-5">
+    <h2 class="mb-4 text-primary">Registrar Evento</h2>
 
-<head> 
-      <link rel="stylesheet" href="{{ asset('Css/Bitacoras.css') }}">
-</head>
+    {{-- Mostrar errores de validación --}}
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul class="mb-0">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-<!------------------------------------------------------------------------------------------------------------------------->
-<div class="wrapper">
-    <div class="main-content">
-      <div class="container my-4">
-          <div class="row">
-            <div class="col-14">
+    <form method="POST" action="{{ route('evento.store') }}" id="eventoForm">
+        @csrf
 
-              <h5><strong>Información</strong></h5>
-                      <!-- Tarjeta Información -->
-              <div class="card p-3 mb-3" id="cuadInfo">
-                <div class="row g-3">
+        {{-- Campos ocultos --}}
+        <input type="hidden" name="id_bitacora" id="id_bitacora">
+        <input type="hidden" name="id_seccion" id="id_seccion">
+        <input type="hidden" name="id_subarea" id="id_subarea">
+        <input type="hidden" name="id_horario" id="id_horario">
 
-              <!-- Docente -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="docenteInput" value="Docente: {{ Auth::user()->name }}" />
-              </div>
-
-              <!-- Recinto -->
-              <div class="col-md-6 position-relative d-none" id="recintoGroup">
-                <i class="bi bi-pc-display position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="recintoInput" value="Recinto: {{ $recinto }}" />
-              </div>
-
-              <!-- Fecha -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-calendar-week position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" id="fechaDispositivo" readonly />
-              </div>
-
-              <!-- Sección -->
-              <div class="col-md-6 position-relative d-none" id="seccionGroup">
-                <i class="bi bi-easel position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="seccionInput" value="Sección: {{ $seccion }}" />
-              </div>
-
-              <!-- SubÁrea -->
-              <div class="col-md-6 position-relative d-none" id="subareaGroup">
-                <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="subareaInput" value="Subárea: {{ $subarea }}" />
-              </div>
-
-              <!-- Lección -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <form method="POST" action="{{ route('evento.store') }}" id="leccionForm">
-    @csrf
-    <input type="hidden" name="id_bitacora" value="1">
-    <select name="leccion" id="leccionSelect" class="form-control ps-5">
-        <option value="">Seleccione un horario</option>
-        @foreach($horarios as $horario)
-            @php
-                $primeraLeccion = $horario->leccion->first();
-            @endphp
-            <option value="{{ $horario->id }}" 
-                    data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
-                    data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
-                    data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
-                    @if(request('leccion') == $horario->id) selected @endif>
-                @if($primeraLeccion)
-                    {{ $primeraLeccion->leccion }} 
-                    @if($primeraLeccion->tipoLeccion)
-                        ({{ $primeraLeccion->tipoLeccion }})
-                    @endif
-                    @if($primeraLeccion->hora_inicio && $primeraLeccion->hora_final)
-                        - {{ $primeraLeccion->hora_inicio }} a {{ $primeraLeccion->hora_final }}
-                    @endif
-                @else
-                    Horario {{ $horario->id }} (Sin lecciones asignadas)
-                @endif
-            </option>
-        @endforeach
-    </select>
-</form>
-
-              </div>
-
-          </div>
+        {{-- Docente --}}
+        <div class="mb-3">
+            <label class="form-label">Docente:</label>
+            <input class="form-control" disabled value="{{ Auth::user()->name }}">
         </div>
 
-
-    <div class="container-fluid d-flex justify-content-center mb-3">
-        <div class="container-fluid" id="estadoRec">
-          <div class="container-fluid button-box">
-            <div class="container-fluid" id="btn"></div>
-            <button type="button" class="toggle-btn" id="btn-orden" data-bs-toggle="modal" data-bs-target="#modalOrden">
-    <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en Orden</h5>
-</button>
-
-<button type="button" class="toggle-btn" id="btn-problema" data-bs-toggle="modal" data-bs-target="#modalProblema">
-    <h5><i class="bi bi-exclamation-circle icono-estado"></i>Reportar Problema</h5>
-</button>
-
-              
-          </div>
+        {{-- Selección de Horario / Lección --}}
+        <div class="mb-3">
+            <label class="form-label">Lección / Horario:</label>
+            <select name="leccion" id="leccionSelect" class="form-select" required>
+                <option value="">Seleccione un horario</option>
+                @foreach($horarios as $horario)
+                    <option value="{{ $horario->id }}"
+                        data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
+                        data-recinto-id="{{ optional($horario->recinto)->id ?? '' }}"
+                        data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
+                        data-seccion-id="{{ optional($horario->seccion)->id ?? '' }}"
+                        data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
+                        data-subarea-id="{{ optional($horario->subarea)->id ?? '' }}">
+                        {{ $horario->fecha }} - {{ optional($horario->recinto)->nombre }}
+                    </option>
+                @endforeach
+            </select>
         </div>
-      </div>
-        
-            <!-- Formulario Reporte -->
-<form method="POST" action="{{ route('evento.store') }}">
-    @csrf
 
-    <input type="hidden" name="id_bitacora" value="{{ $bitacoraId }}">
-    <input type="hidden" name="hora_envio" id="hora_envio">
-    <input type="hidden" name="fecha_envio" id="fecha_envio">
-
-    <div id="contenido-problema" class="content-slide">
-        <div class="row position-relative">
-            <!-- Prioridad -->
-            <div class="col-md-6">
-                <h5>Prioridad</h5>
-                <div class="row d-flex" id="prioridad">
-                    <div class="col">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="prioridad" value="Alta" /> Alta
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="prioridad" value="Media" /> Media
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="prioridad" value="Regular" /> Regular
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="prioridad" value="Baja" /> Baja
-                        </div>
-                    </div>
-                </div>
+        {{-- Campos dinámicos --}}
+        <div class="row mb-3 d-none" id="camposDinamicos">
+            <div class="col-md-4">
+                <label class="form-label">Recinto:</label>
+                <input type="text" class="form-control" id="recintoInput" readonly>
             </div>
-            <!-- Observaciones -->
-            <div class="col-md-6">
-                <h5>Observaciones</h5>
-                <div class="row">
-                    <textarea class="form-control" id="observaciones" rows="4" name="observacion"></textarea>
-                </div>
+            <div class="col-md-4">
+                <label class="form-label">Sección:</label>
+                <input type="text" class="form-control" id="seccionInput" readonly>
             </div>
-
-            <!-- Mensaje de error -->
-            <div id="mensajeError" class="alert alert-danger d-none" role="alert">
-                <i class="bi bi-exclamation-circle-fill"></i>Por favor ingrese todos los datos.
-            </div>
-
-            <!-- Botones -->
-            <div class="d-flex justify-content-end gap-2 mt-3">
-                <button type="button" class="btn" id="btnCancelar" onclick="limpiarFormularioProblema()">Cancelar</button>
-                <button type="submit" class="btn" id="btnEnviar" onclick="validarDatos()">Enviar Evento</button>
+            <div class="col-md-4">
+                <label class="form-label">Subárea:</label>
+                <input type="text" class="form-control" id="subareaInput" readonly>
             </div>
         </div>
-    </div>
-</form>
 
+        {{-- Observaciones --}}
+        <div class="mb-3">
+            <label class="form-label">Observaciones:</label>
+            <textarea class="form-control" name="observacion" rows="4" required></textarea>
+        </div>
 
+        {{-- Prioridad --}}
+        <div class="mb-3">
+            <label class="form-label">Prioridad:</label>
+            <select name="prioridad" class="form-select" required>
+                <option value="">Seleccione una prioridad</option>
+                <option value="alta">Alta</option>
+                <option value="media">Media</option>
+                <option value="regular">Regular</option>
+                <option value="baja">Baja</option>
+            </select>
+        </div>
 
-          </div>
-          </div>
-      </div>
-
-  
+        {{-- Botones --}}
+        <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">Cancelar</button>
+            <button type="submit" class="btn btn-primary">Enviar Evento</button>
+        </div>
+    </form>
 </div>
-</div>
+@endsection
 
-<!------------------------------------------------------------------------------------------------------------------------------------------------->
-    
-<!-- Modal -->
-<div class="modal fade" id="modalOrden" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content custom-modal">
-        <div class="icon-container mx-auto">
-          <i class="bi bi-question-circle-fill" id="iconomodal"></i>
-        </div>
-        <p class="modal-text text-center">
-          ¿Está Seguro de que Todo<br>se Encuentra en Orden Dentro del Recinto?
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnAfirmacion" onclick="confirmarEnvioComentario()">Sí</button>
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnNegacion">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Modal -->
-
-  <!-- Modal -->
-<div class="modal fade" id="modalProblema" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content custom-modal">
-        <div class="icon-container mx-auto">
-          <i class="bi bi-question-circle-fill" id="iconomodal"></i>
-        </div>
-        <p class="modal-text text-center">
-          ¿Está Seguro de Reportar<br>un Problema Dentro del Recinto?
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnAfirmacion" onclick="confirmarEnvioComentario()">Sí</button>
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnNegacion">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  @endsection
-<!------------------------------------------------------------------------------------------------------------------------->
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('JS/alertas.js') }}"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mostrar la fecha del dispositivo en el campo correspondiente
-        var fechaInput = document.getElementById('fechaDispositivo');
-        if (fechaInput) {
-            var now = new Date();
-            var fechaLocal = now.toLocaleDateString('es-ES');
-            fechaInput.value = "Fecha: " + fechaLocal;
-        }
+<script>
+const bitacoras = @json($bitacoras);
 
-        // Mostrar campos si hay una lección seleccionada al cargar la página
-        var leccionSelect = document.getElementById('leccionSelect');
-        if (leccionSelect && leccionSelect.value) {
-            mostrarCamposLeccion();
-        }
-
-        var form = document.getElementById('formBitacora');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                var now = new Date();
-                var hora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                var fecha = now.toISOString().slice(0, 10);
-                document.getElementById('hora_envio').value = hora;
-                document.getElementById('fecha_envio').value = fecha;
-            });
-        }
-    });
-
-    function mostrarCamposLeccion() {
-    var selected = document.getElementById('leccionSelect').selectedOptions[0];
-    
-    if (selected && selected.value) {
-        // Mostrar los campos
-        document.getElementById('recintoGroup').classList.remove('d-none');
-        document.getElementById('seccionGroup').classList.remove('d-none');
-        document.getElementById('subareaGroup').classList.remove('d-none');
-        
-        // Actualizar los valores usando los data attributes
-        var recinto = selected.getAttribute('data-recinto') || '';
-        var seccion = selected.getAttribute('data-seccion') || '';
-        var subarea = selected.getAttribute('data-subarea') || '';
-        
-        document.getElementById('recintoInput').value = 'Recinto: ' + recinto;
-        document.getElementById('seccionInput').value = 'Sección: ' + seccion;
-        document.getElementById('subareaInput').value = 'SubÁrea: ' + subarea;
-    } else {
-        // Ocultar los campos
-        document.getElementById('recintoGroup').classList.add('d-none');
-        document.getElementById('seccionGroup').classList.add('d-none');
-        document.getElementById('subareaGroup').classList.add('d-none');
-    }
-}
-
-
-    // Funciones para manejar los botones de estado del recinto
-    window.leftClick = function() {
-        // Mover el fondo al botón izquierdo (Todo en orden)
-        var btn = document.getElementById('btn');
-        if (btn) {
-            btn.style.left = '2px';
-        }
-        // Ocultar el contenido de reportar problema
-        var contenidoProblema = document.getElementById('contenido-problema');
-        if (contenidoProblema) {
-            contenidoProblema.classList.remove('active');
-        }
-    };
-
-    window.rightClick = function() {
-        // Mover el fondo al botón derecho (Reportar problema)
-        var btn = document.getElementById('btn');
-        if (btn) {
-            btn.style.left = 'calc(50% - 2px)';
-        }
-        // Mostrar el contenido de reportar problema
-        var contenidoProblema = document.getElementById('contenido-problema');
-        if (contenidoProblema) {
-            contenidoProblema.classList.add('active');
-        }
-    };
-
-    window.limpiarFormularioProblema = function() {
-        // Limpiar los radio buttons de prioridad
-        var radiosPrioridad = document.querySelectorAll('input[name="prioridad"]');
-        radiosPrioridad.forEach(function(radio) {
-            radio.checked = false;
-        });
-        
-        // Limpiar el textarea de observaciones
-        var textarea = document.querySelector('#observaciones textarea');
-        if (textarea) {
-            textarea.value = '';
-        }
-        
-        // Ocultar mensaje de error
-        var mensajeError = document.getElementById('mensajeError');
-        if (mensajeError) {
-            mensajeError.classList.add('d-none');
-        }
-        
-        // Cambiar a "Todo en orden"
-        leftClick();
-    };
-
-    window.validarDatos = function() {
-        var prioridadSeleccionada = document.querySelector('input[name="prioridad"]:checked');
-        var observaciones = document.querySelector('#observaciones textarea').value.trim();
-        var mensajeError = document.getElementById('mensajeError');
-        
-        if (!prioridadSeleccionada || !observaciones) {
-            // Mostrar mensaje de error
-            mensajeError.classList.remove('d-none');
-            return false;
-        } else {
-            // Ocultar mensaje de error y proceder
-            mensajeError.classList.add('d-none');
-            // Abrir el modal de confirmación
-            var modalProblema = new bootstrap.Modal(document.getElementById('modalProblema'));
-            modalProblema.show();
-            return true;
-        }
-    };
-
-    window.confirmarEnvioComentario = function() {
-        // Aquí puedes procesar el envío del formulario
-        console.log('Enviando bitácora...');
-        // Mostrar mensaje de éxito con SweetAlert
-        Swal.fire({
-            title: '¡Éxito!',
-            text: 'Bitácora enviada correctamente',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    };
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var leccionSelect = document.getElementById('leccionSelect');
-        
-        // Mostrar campos inmediatamente si hay una selección previa
-        if (leccionSelect.value) {
-            mostrarCamposLeccion();
-        }
-        
-        leccionSelect.addEventListener('change', function() {
-            if (this.value) {
-                // Mostrar campos inmediatamente con datos de los atributos
-                mostrarCamposLeccion();
-                // Luego enviar el formulario para obtener datos actualizados del servidor
-                document.getElementById('leccionForm').submit();
-            } else {
-                // Si no hay selección, ocultar campos inmediatamente
-                document.getElementById('recintoGroup').classList.add('d-none');
-                document.getElementById('seccionGroup').classList.add('d-none');
-                document.getElementById('subareaGroup').classList.add('d-none');
-            }
-        });
-    });
-
-    leccionSelect.addEventListener('change', function() {
-    if (this.value) {
-        // Mostrar campos inmediatamente con datos de los atributos
-        mostrarCamposLeccion();
-        // Luego enviar el formulario para obtener datos actualizados del servidor
-        document.getElementById('leccionForm').submit();
-    } else {
-        // Si no hay selección, ocultar campos inmediatamente
-        document.getElementById('recintoGroup').classList.add('d-none');
-        document.getElementById('seccionGroup').classList.add('d-none');
-        document.getElementById('subareaGroup').classList.add('d-none');
-    }
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('leccionSelect').addEventListener('change', mostrarCampos);
 });
 
+function mostrarCampos() {
+    const select = document.getElementById('leccionSelect').selectedOptions[0];
+    if (!select || !select.value) return limpiarCampos();
 
-    </script>
+    document.getElementById('camposDinamicos').classList.remove('d-none');
+    document.getElementById('recintoInput').value = select.getAttribute('data-recinto');
+    document.getElementById('seccionInput').value = select.getAttribute('data-seccion');
+    document.getElementById('subareaInput').value = select.getAttribute('data-subarea');
+
+    // Actualizar campos ocultos
+    document.getElementById('id_horario').value = select.value;
+    document.getElementById('id_bitacora').value = bitacoras.find(b => b.recinto_id == select.getAttribute('data-recinto-id'))?.id || '';
+    document.getElementById('id_seccion').value = select.getAttribute('data-seccion-id') || '';
+    document.getElementById('id_subarea').value = select.getAttribute('data-subarea-id') || '';
+}
+
+function limpiarCampos() {
+    document.getElementById('camposDinamicos').classList.add('d-none');
+    document.getElementById('id_bitacora').value = '';
+    document.getElementById('id_seccion').value = '';
+    document.getElementById('id_subarea').value = '';
+    document.getElementById('id_horario').value = '';
+}
+
+function limpiarFormulario() {
+    document.getElementById('eventoForm').reset();
+    limpiarCampos();
+}
+</script>
 @endpush
-
-<!------------------------------------------------------------------------------------------------------------------------->

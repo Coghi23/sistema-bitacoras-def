@@ -70,7 +70,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('llave', LlaveController::class);
 
-    Route::view('evento', EventoController::class);
+    Route::get('evento', [EventoController::class, 'index'])->name('evento.index');
+    Route::resource('evento', EventoController::class);
+
+
 
     Route::view('/template-administrador', 'Template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'Template-profesor')->name('template-profesor');

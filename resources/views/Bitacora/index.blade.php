@@ -1,366 +1,88 @@
-@extends('Template-profesor')
-
-@section('title', 'Bitácoras')
+{{-- filepath: resources/views/Evento/create.blade.php --}}
+@extends('layouts.app')
 
 @section('content')
-<head>
-    <link rel="stylesheet" href="{{ asset('CSS/Bitacora.css') }}">
-</head>
+<div class="container">
+    <h2>Crear Reporte de Evento</h2>
+    @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
-<head> 
-      <link rel="stylesheet" href="{{ asset('Css/Bitacoras.css') }}">
-</head>
+    <form action="{{ route('evento.store') }}" method="POST">
+        @csrf
 
-<!------------------------------------------------------------------------------------------------------------------------->
-<div class="wrapper">
-    <div class="main-content">
-      <div class="container my-4">
-          <div class="row">
-            <div class="col-14">
-
-              <h5><strong>Información</strong></h5>
-                      <!-- Tarjeta Información -->
-              <div class="card p-3 mb-3" id="cuadInfo">
-                <div class="row g-3">
-
-              <!-- Docente -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-person-circle position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="docenteInput" value="Docente: {{ Auth::user()->name }}" />
-              </div>
-
-              <!-- Recinto -->
-              <div class="col-md-6 position-relative d-none" id="recintoGroup">
-                <i class="bi bi-pc-display position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="recintoInput" value="Recinto: {{ $recinto }}" />
-              </div>
-
-              <!-- Fecha -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-calendar-week position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" id="fechaDispositivo" readonly />
-              </div>
-
-              <!-- Sección -->
-              <div class="col-md-6 position-relative d-none" id="seccionGroup">
-                <i class="bi bi-easel position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="seccionInput" value="Sección: {{ $seccion }}" />
-              </div>
-
-              <!-- SubÁrea -->
-              <div class="col-md-6 position-relative d-none" id="subareaGroup">
-                <i class="bi bi-border-style position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <input class="form-control ps-5" disabled id="subareaInput" value="Subárea: {{ $subarea }}" />
-              </div>
-
-              <!-- Lección -->
-              <div class="col-md-6 position-relative">
-                <i class="bi bi-book position-absolute top-50 start-0 translate-middle-y ms-3" id="iconoInformacion"></i>
-                <form method="GET" action="{{ route('bitacora.index') }}" id="leccionForm">
-                  <select name="leccion" id="leccionSelect" class="form-control ps-5">
-                      <option value="">Seleccione un horario</option>
-                      @foreach($horarios as $horario)
-                          @php
-                              $primeraLeccion = $horario->leccion->first();
-                          @endphp
-                          <option value="{{ $horario->id }}" 
-                                  data-recinto="{{ optional($horario->recinto)->nombre ?? '' }}"
-                                  data-seccion="{{ optional($horario->seccion)->nombre ?? '' }}"
-                                  data-subarea="{{ optional($horario->subarea)->nombre ?? '' }}"
-                                  @if(request('leccion') == $horario->id) selected @endif>
-                              @if($primeraLeccion)
-                                  {{ $primeraLeccion->leccion }} 
-                                  @if($primeraLeccion->tipoLeccion)
-                                      ({{ $primeraLeccion->tipoLeccion }})
-                                  @endif
-                                  @if($primeraLeccion->hora_inicio && $primeraLeccion->hora_final)
-                                      - {{ $primeraLeccion->hora_inicio }} a {{ $primeraLeccion->hora_final }}
-                                  @endif
-                              @else
-                                  Horario {{ $horario->id }} (Sin lecciones asignadas)
-                              @endif
-                          </option>
-                      @endforeach
-                  </select>
-                </form>
-              </div>
-
-          </div>
+        <div class="mb-3">
+            <label for="id_bitacora" class="form-label">Bitácora (Recinto)</label>
+            <select name="id_bitacora" id="id_bitacora" class="form-control" required>
+                <option value="">Seleccione una bitácora</option>
+                @foreach($bitacoras as $bitacora)
+                    <option value="{{ $bitacora->id }}">
+                        {{ $bitacora->recinto->nombre ?? 'Sin recinto' }} - Bitácora #{{ $bitacora->id }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
-
-    <div class="container-fluid d-flex justify-content-center mb-3">
-        <div class="container-fluid" id="estadoRec">
-          <div class="container-fluid button-box">
-            <div class="container-fluid" id="btn"></div>
-            <button type="button" class="toggle-btn" id="btn-orden" onclick="leftClick()">
-                <h5><i class="bi bi-check2-circle icono-estado"></i>Todo en Orden</h5>
-              </button>
-              
-              <button type="button" class="toggle-btn" id="btn-problema" onclick="rightClick()">
-                <h5><i class="bi bi-exclamation-circle icono-estado"></i>Reportar Problema</h5>
-              </button>
-              
-          </div>
+        <div class="mb-3">
+            <label for="id_seccion" class="form-label">Sección</label>
+            <select name="id_seccion" id="id_seccion" class="form-control" required>
+                <option value="">Seleccione una sección</option>
+                @foreach($seccione as $seccion)
+                    <option value="{{ $seccion->id }}">{{ $seccion->nombre }}</option>
+                @endforeach
+            </select>
         </div>
-      </div>
 
-      <div class="container-fluid justify-content-center d-flex" >
-        <button class="btn" id="btnEnviarOrden" data-bs-toggle="modal"
-        data-bs-target="#modalOrden">Enviar Bitácora</button>
-      </div>
-          
-          
-            <!-- Contenido que se muestra/oculta -->
-            <div id="contenido-problema" class="content-slide">
-              <div class="row position-relative">
-                  <div class="col-md-6" >
-                      <h5>Prioridad</h5>
-                      <div class="row d-flex" id="prioridad">
-                          <div class="col">
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Alta</div>
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Media</div>
-                          </div>
-                          <div class="col">
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Regular</div>
-                              <div class="form-check" id="OpcionPrioridad"><input class="form-check-input" type="radio" name="prioridad" /> Baja</div>
-                          </div>
-                      </div>
-                  </div>
-                  <div class="col-md-6">
-                      <h5>Observaciones</h5>
-                      <div class="row"  id="observaciones">
-                          <textarea class="form-control" rows="4"></textarea>
-                      </div>
-                  </div>
+        <div class="mb-3">
+            <label for="id_subarea" class="form-label">Subárea</label>
+            <select name="id_subarea" id="id_subarea" class="form-control" required>
+                <option value="">Seleccione una subárea</option>
+                @foreach($subareas as $subarea)
+                    <option value="{{ $subarea->id }}">{{ $subarea->nombre }}</option>
+                @endforeach
+            </select>
+        </div>
 
-                <div class="d-flex flex-column align-items-end">
-                    <!-- Mensaje de error -->
-                    <div id="mensajeError" class="alert alert-danger d-none" role="alert">
-                      <i class="bi bi-exclamation-circle-fill"></i>Por favor ingrese todos los datos.
-                    </div>
-                </div>
+        <div class="mb-3">
+            <label for="id_horario" class="form-label">Horario</label>
+            <select name="id_horario" id="id_horario" class="form-control" required>
+                <option value="">Seleccione un horario</option>
+                @foreach($horarios as $horario)
+                    <option value="{{ $horario->id }}">
+                        {{ $horario->fecha }} - {{ $horario->recinto->nombre ?? '' }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
-                  <!-- Botones -->
-              <div class="d-flex justify-content-end gap-2 mt-3">
-                  <button class="btn" id="btnCancelar" onclick="limpiarFormularioProblema()">Cancelar</button>
-                  <button class="btn" id="btnEnviar" onclick="validarDatos()">Enviar Bitácora</button>
-              </div>
-          </div>
+        <div class="mb-3">
+            <label for="hora_envio" class="form-label">Hora de Envío</label>
+            <input type="time" name="hora_envio" id="hora_envio" class="form-control" required>
+        </div>
 
+        <div class="mb-3">
+            <label for="observacion" class="form-label">Observación</label>
+            <textarea name="observacion" id="observacion" class="form-control" rows="3"></textarea>
+        </div>
 
-          </div>
-          </div>
-      </div>
+        <div class="mb-3">
+            <label for="prioridad" class="form-label">Prioridad</label>
+            <select name="prioridad" id="prioridad" class="form-control">
+                <option value="">Seleccione prioridad</option>
+                <option value="alta">Alta</option>
+                <option value="media">Media</option>
+                <option value="regular">Regular</option>
+                <option value="baja">Baja</option>
+            </select>
+        </div>
 
-  
+        <button type="submit" class="btn btn-primary">Guardar Evento</button>
+    </form>
 </div>
-</div>
-
-<!------------------------------------------------------------------------------------------------------------------------------------------------->
-    
-<!-- Modal -->
-<div class="modal fade" id="modalOrden" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content custom-modal">
-        <div class="icon-container mx-auto">
-          <i class="bi bi-question-circle-fill" id="iconomodal"></i>
-        </div>
-        <p class="modal-text text-center">
-          ¿Está Seguro de que Todo<br>se Encuentra en Orden Dentro del Recinto?
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnAfirmacion" onclick="confirmarEnvioComentario()">Sí</button>
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnNegacion">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <!-- Modal -->
-
-  <!-- Modal -->
-<div class="modal fade" id="modalProblema" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content custom-modal">
-        <div class="icon-container mx-auto">
-          <i class="bi bi-question-circle-fill" id="iconomodal"></i>
-        </div>
-        <p class="modal-text text-center">
-          ¿Está Seguro de Reportar<br>un Problema Dentro del Recinto?
-        </p>
-        <div class="d-flex justify-content-center gap-3">
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnAfirmacion" onclick="confirmarEnvioComentario()">Sí</button>
-          <button type="button" class="btn" data-bs-dismiss="modal" id="BtnNegacion">No</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  @endsection
-<!------------------------------------------------------------------------------------------------------------------------->
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ asset('JS/alertas.js') }}"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Mostrar la fecha del dispositivo en el campo correspondiente
-        var fechaInput = document.getElementById('fechaDispositivo');
-        if (fechaInput) {
-            var now = new Date();
-            var fechaLocal = now.toLocaleDateString('es-ES');
-            fechaInput.value = "Fecha: " + fechaLocal;
-        }
-
-        // Mostrar campos si hay una lección seleccionada al cargar la página
-        var leccionSelect = document.getElementById('leccionSelect');
-        if (leccionSelect && leccionSelect.value) {
-            mostrarCamposLeccion();
-        }
-
-        var form = document.getElementById('formBitacora');
-        if (form) {
-            form.addEventListener('submit', function(e) {
-                var now = new Date();
-                var hora = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                var fecha = now.toISOString().slice(0, 10);
-                document.getElementById('hora_envio').value = hora;
-                document.getElementById('fecha_envio').value = fecha;
-            });
-        }
-    });
-
-    function mostrarCamposLeccion() {
-        var selected = document.getElementById('leccionSelect').selectedOptions[0];
-        
-        if (selected && selected.value) {
-            // Mostrar los campos
-            document.getElementById('recintoGroup').classList.remove('d-none');
-            document.getElementById('seccionGroup').classList.remove('d-none');
-            document.getElementById('subareaGroup').classList.remove('d-none');
-            
-            // Actualizar los valores usando los data attributes
-            var recinto = selected.getAttribute('data-recinto') || '';
-            var seccion = selected.getAttribute('data-seccion') || '';
-            var subarea = selected.getAttribute('data-subarea') || '';
-            
-            document.getElementById('recintoInput').value = 'Recinto: ' + recinto;
-            document.getElementById('seccionInput').value = 'Sección: ' + seccion;
-            document.getElementById('subareaInput').value = 'SubÁrea: ' + subarea;
-        } else {
-            // Ocultar los campos
-            document.getElementById('recintoGroup').classList.add('d-none');
-            document.getElementById('seccionGroup').classList.add('d-none');
-            document.getElementById('subareaGroup').classList.add('d-none');
-        }
-    }
-
-    // Funciones para manejar los botones de estado del recinto
-    window.leftClick = function() {
-        // Mover el fondo al botón izquierdo (Todo en orden)
-        var btn = document.getElementById('btn');
-        if (btn) {
-            btn.style.left = '2px';
-        }
-        // Ocultar el contenido de reportar problema
-        var contenidoProblema = document.getElementById('contenido-problema');
-        if (contenidoProblema) {
-            contenidoProblema.classList.remove('active');
-        }
-    };
-
-    window.rightClick = function() {
-        // Mover el fondo al botón derecho (Reportar problema)
-        var btn = document.getElementById('btn');
-        if (btn) {
-            btn.style.left = 'calc(50% - 2px)';
-        }
-        // Mostrar el contenido de reportar problema
-        var contenidoProblema = document.getElementById('contenido-problema');
-        if (contenidoProblema) {
-            contenidoProblema.classList.add('active');
-        }
-    };
-
-    window.limpiarFormularioProblema = function() {
-        // Limpiar los radio buttons de prioridad
-        var radiosPrioridad = document.querySelectorAll('input[name="prioridad"]');
-        radiosPrioridad.forEach(function(radio) {
-            radio.checked = false;
-        });
-        
-        // Limpiar el textarea de observaciones
-        var textarea = document.querySelector('#observaciones textarea');
-        if (textarea) {
-            textarea.value = '';
-        }
-        
-        // Ocultar mensaje de error
-        var mensajeError = document.getElementById('mensajeError');
-        if (mensajeError) {
-            mensajeError.classList.add('d-none');
-        }
-        
-        // Cambiar a "Todo en orden"
-        leftClick();
-    };
-
-    window.validarDatos = function() {
-        var prioridadSeleccionada = document.querySelector('input[name="prioridad"]:checked');
-        var observaciones = document.querySelector('#observaciones textarea').value.trim();
-        var mensajeError = document.getElementById('mensajeError');
-        
-        if (!prioridadSeleccionada || !observaciones) {
-            // Mostrar mensaje de error
-            mensajeError.classList.remove('d-none');
-            return false;
-        } else {
-            // Ocultar mensaje de error y proceder
-            mensajeError.classList.add('d-none');
-            // Abrir el modal de confirmación
-            var modalProblema = new bootstrap.Modal(document.getElementById('modalProblema'));
-            modalProblema.show();
-            return true;
-        }
-    };
-
-    window.confirmarEnvioComentario = function() {
-        // Aquí puedes procesar el envío del formulario
-        console.log('Enviando bitácora...');
-        // Mostrar mensaje de éxito con SweetAlert
-        Swal.fire({
-            title: '¡Éxito!',
-            text: 'Bitácora enviada correctamente',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        });
-    };
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var leccionSelect = document.getElementById('leccionSelect');
-        
-        // Mostrar campos inmediatamente si hay una selección previa
-        if (leccionSelect.value) {
-            mostrarCamposLeccion();
-        }
-        
-        leccionSelect.addEventListener('change', function() {
-            if (this.value) {
-                // Mostrar campos inmediatamente con datos de los atributos
-                mostrarCamposLeccion();
-                // Luego enviar el formulario para obtener datos actualizados del servidor
-                document.getElementById('leccionForm').submit();
-            } else {
-                // Si no hay selección, ocultar campos inmediatamente
-                document.getElementById('recintoGroup').classList.add('d-none');
-                document.getElementById('seccionGroup').classList.add('d-none');
-                document.getElementById('subareaGroup').classList.add('d-none');
-            }
-        });
-    });
-    </script>
-@endpush
-
-<!------------------------------------------------------------------------------------------------------------------------->
+@endsection
