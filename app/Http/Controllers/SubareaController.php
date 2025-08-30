@@ -19,7 +19,15 @@ class SubareaController extends Controller
     public function index(Request $request)
     {
         $query = Subarea::with('especialidad');
-        
+
+        if ($request->query('inactivos')) {
+            $query->where('condicion', 0);
+        } elseif ($request->query('activos')) {
+            $query->where('condicion', 1);
+        } else {
+            $query->where('condicion', 1);
+        }
+
         // Búsqueda por nombre de subarea o especialidad
         if ($request->filled('busquedaSubarea')) {
             $busqueda = $request->busquedaSubarea;
@@ -112,4 +120,5 @@ class SubareaController extends Controller
         return redirect()->route('subarea.index')->with('success', $message);
 
     }
+
 }
