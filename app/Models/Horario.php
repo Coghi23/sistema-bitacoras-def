@@ -27,7 +27,7 @@ class Horario extends Model
     
     public function recinto()
     {
-        return $this->belongsTo(Recinto::class, 'idRecinto');
+        return $this->belongsTo(\App\Models\Recinto::class, 'recinto_id');
     }
 
     public function subarea()

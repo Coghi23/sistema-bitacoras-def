@@ -341,8 +341,8 @@ if (btnLimpiar && inputBusqueda && recintosList) {
 }
 
 function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
-    const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
-    const qrDiv = document.getElementById(`qrCode-${recintoId}`);
+    const qrContainer = document.getElementById(qrCodeContainer-${recintoId});
+    const qrDiv = document.getElementById(qrCode-${recintoId});
     
     // Limpiar contenedor previo
     qrContainer.innerHTML = '';
@@ -374,4 +374,3 @@ function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
 }
 </script>
 @endsection
-
