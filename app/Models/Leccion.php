@@ -11,10 +11,17 @@ class Leccion extends Model
     protected $table = 'leccion';
 
     protected $fillable = [
+        'idTipoLeccion',
         'leccion',
         'hora_inicio',
         'hora_final',
     ];
+
+    // Relación: Una lección pertenece a un tipo de lección
+    public function tipoLeccion()
+    {
+        return $this->belongsTo(TipoLeccion::class, 'idTipoLeccion');
+    }
 
 
     public function horarios()

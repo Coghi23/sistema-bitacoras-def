@@ -8,6 +8,8 @@ use App\Http\Controllers\BitacoraController;
 use App\Http\Controllers\RecintoController;
 use App\Http\Controllers\HorarioController;
 use App\Http\Controllers\TipoRecintoController;
+use App\Http\Controllers\TipoLeccionController;
+use App\Http\Controllers\LeccionController;
 use App\Http\Controllers\EstadoRecintoController;
 use App\Http\Controllers\LlaveController;
 use App\Http\Controllers\QrController;
@@ -61,7 +63,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('horario', HorarioController::class);
     Route::resource('tipoRecinto', TipoRecintoController::class);
-
+    Route::resource('tipoLeccion', TipoLeccionController::class);
+    Route::resource('leccion', LeccionController::class);
 
     Route::resource('estadoRecinto', EstadoRecintoController::class);
 

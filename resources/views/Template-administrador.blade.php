@@ -96,7 +96,14 @@
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
             </a>
-            
+            <a href="{{ asset('tipoLeccion') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Tipo de Lección">Tipo de Lección</div>
+            </a>
+                        <a href="{{ asset('leccion') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Lecciones">Lecciones</div>
+            </a>
 
             
             <a href="{{ route('admin.qr.index') }}" class="sidebar-item">

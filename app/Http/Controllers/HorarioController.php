@@ -25,7 +25,7 @@ class HorarioController extends Controller
         $recintos = Recinto::all();
         $subareas = Subarea::all();
         $secciones = Seccione::all();
-        $lecciones = Leccion::all();
+    $lecciones = Leccion::where('condicion', 1)->get();
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
@@ -88,7 +88,7 @@ class HorarioController extends Controller
         $recintos = Recinto::all();
         $subareas = Subarea::all();
         $secciones = Seccione::all();
-        $lecciones = Leccion::all();
+    $lecciones = Leccion::where('condicion', 1)->get();
         $profesores = User::whereHas('roles', function($query) {
             $query->where('name', 'profesor');
         })->get();
