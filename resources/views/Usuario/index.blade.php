@@ -25,11 +25,13 @@
                     @endif
                 </form>
             </div>
+        @can('create_usuarios')
             <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                 data-bs-toggle="modal" data-bs-target="#modalUsuario"
                 title="Agregar Usuario" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
+        @endcan
         </div>
         </div>
         {{-- Mensajes de éxito/error --}}
@@ -75,76 +77,75 @@
                 </span>
             </div>
         @endif
+        @can('view_usuarios')
+            {{-- Botones para mostrar/ocultar usuarios inactivos --}}
+            <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+                Mostrar inactivos
+            </a>
+            <a href="{{ route('usuario.index') }}" class="btn btn-primary mb-3">
+                Mostrar activos
+            </a>
 
-        {{-- Botones para mostrar/ocultar usuarios inactivos --}}
-        <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
-            Mostrar inactivos
-        </a>
-        <a href="{{ route('usuario.index') }}" class="btn btn-primary mb-3">
-            Mostrar activos
-        </a>
+            <div id="tabla-usuarios">
 
-        <div id="tabla-usuarios">
-
-            <table class="table table-striped">
-                <thead>
-                    <tr class="header-row">
-                        <th class="col-dia">Nombre</th>
-                        <th class="col-docente">Cédula</th>
-                        <th class="col-recinto">Correo Electrónico</th>
-                        <th class="col-subarea-seccion">Rol</th>
-                        <th class="col-entrada">Estado</th>
-                        <th class="col-acciones">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($usuarios as $usuario)
-                    <tr class="record-row">
-                        <td class="col-dia">{{ $usuario->name }}</td>
-                        <td class="col-docente">{{ $usuario->cedula }}</td>
-                        <td class="col-recinto">{{ $usuario->email }}</td>
-                        <td class="col-subarea-seccion">
-                            @if($usuario->getRoleNames()->isNotEmpty())
-                                {{ ucfirst($usuario->getRoleNames()->first()) }}
-                            @else
-                                Sin rol
-                            @endif
-                        </td>
-                        <td class="col-entrada">
-                            <span class="badge {{ isset($usuario->condicion) && $usuario->condicion ? 'bg-success' : 'bg-danger' }}">
-                                {{ isset($usuario->condicion) && $usuario->condicion ? 'Activo' : 'Inactivo' }}
-                            </span>
-                        </td>
-                        <td class="col-acciones">
-                            @if(Auth::user() && !Auth::user()->hasRole('director'))
-                            <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario{{ $usuario->id }}" title="Editar usuario">
-                                <i class="bi bi-pencil icon-editar"></i>
-                            </button>
-                            <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEliminarUsuario{{ $usuario->id }}" title="Activar/Desactivar usuario">
-                                <i class="bi bi-trash icon-eliminar"></i>
-                            </button>
-                            @if($usuario->condicion)
-                            <form method="POST" action="{{ route('usuario.resend-password-setup', $usuario->id) }}" style="display: inline;" 
-                                  onsubmit="return confirm('¿Enviar correo de configuración de contraseña a {{ $usuario->email }}?')">
-                                @csrf
-                                <button type="submit" class="btn p-0" title="Reenviar correo de configuración de contraseña">
-                                    <i class="bi bi-envelope-arrow-up text-info" style="font-size: 1.1em;"></i>
+                <table class="table table-striped">
+                    <thead>
+                        <tr class="header-row">
+                            <th class="col-dia">Nombre</th>
+                            <th class="col-docente">Cédula</th>
+                            <th class="col-recinto">Correo Electrónico</th>
+                            <th class="col-subarea-seccion">Rol</th>
+                            <th class="col-entrada">Estado</th>
+                            <th class="col-acciones">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($usuarios as $usuario)
+                        <tr class="record-row">
+                            <td class="col-dia">{{ $usuario->name }}</td>
+                            <td class="col-docente">{{ $usuario->cedula }}</td>
+                            <td class="col-recinto">{{ $usuario->email }}</td>
+                            <td class="col-subarea-seccion">
+                                @if($usuario->getRoleNames()->isNotEmpty())
+                                    {{ ucfirst($usuario->getRoleNames()->first()) }}
+                                @else
+                                    Sin rol
+                                @endif
+                            </td>
+                            <td class="col-entrada">
+                                <span class="badge {{ isset($usuario->condicion) && $usuario->condicion ? 'bg-success' : 'bg-danger' }}">
+                                    {{ isset($usuario->condicion) && $usuario->condicion ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td class="col-acciones">
+                            @can('edit_usuarios')
+                                <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarUsuario{{ $usuario->id }}" title="Editar usuario">
+                                    <i class="bi bi-pencil icon-editar"></i>
                                 </button>
-                            </form>
-                            @endif
-                            @else
-                            <span class="text-muted">Solo vista</span>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr class="record-row">
-                        <td class="text-center" colspan="6">No hay usuarios registrados.</td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                            @endcan
+                            @can('delete_usuarios')
+                                {{-- Mostrar botón de eliminar o reactivar según el estado del usuario --}}
+                                @if($usuario->condicion == 1)
+                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEliminarUsuario{{ $usuario->id }}" title="Desactivar usuario">
+                                        <i class="bi bi-trash icon-eliminar"></i>
+                                    </button>
+                                @else
+                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarUsuario{{ $usuario->id }}" title="Activar usuario">
+                                        <i class="bi bi-recycle icon-eliminar"></i>
+                                    </button>
+                                @endif
+                            @endcan
+                            </td>
+                        </tr>
+                        @empty
+                        <tr class="record-row">
+                            <td class="text-center" colspan="6">No hay usuarios registrados.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        @endcan
     </div>
 
     {{-- Modal Crear Usuario --}}
@@ -364,7 +365,38 @@
                             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247m2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
                         </svg>
                         <p>¿Está usted seguro de eliminar este usuario?</p>
-                        <p class="text-muted small">{{ $usuario->name }} - {{ $usuario->email }}</p>
+                        <p class="text-muted small">{{ $usuario->name }}</p>
+                        <p class="text-muted small">{{ $usuario->email }}</p>
+                        <p class="text-muted small">
+                            {{ ucfirst($usuario->getRoleNames()->first() ?? 'Sin rol') }}
+                        </p>
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center gap-2 pb-3">
+                        <button type="submit" class="btn btn-primary">Sí</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Modal Reactivar Usuario --}}
+    <div class="modal fade" id="modalReactivarUsuario{{ $usuario->id }}" tabindex="-1" aria-labelledby="modalReactivarUsuarioLabel{{ $usuario->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <form method="POST" action="{{ route('usuario.destroy', $usuario->id) }}">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#efc737" class="bi bi-question-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247m2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+                        </svg>
+                        <p>¿Está usted seguro de reactivar este usuario?</p>
+                        <p class="text-muted small">{{ $usuario->name }}</p>
+                        <p class="text-muted small">{{ $usuario->email }}</p>
+                        <p class="text-muted small">
+                            {{ ucfirst($usuario->getRoleNames()->first() ?? 'Sin rol') }}
+                        </p>
                     </div>
                     <div class="modal-footer d-flex justify-content-center gap-2 pb-3">
                         <button type="submit" class="btn btn-primary">Sí</button>

@@ -35,13 +35,14 @@
                     @endif
                 </form>
             </div>
-            @if(Auth::user() && !Auth::user()->hasRole('director'))
+            @can('create_subarea')
                 <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                     data-bs-toggle="modal" data-bs-target="#modalAgregarSubArea"
                     title="Agregar Subárea" style="background-color: #134496; font-size: 1.2rem;">
                     Agregar <i class="bi bi-plus-circle ms-2"></i>
                 </button>
-            @endif
+            @endcan
+
         </div>
 
         {{-- Indicador de resultados de búsqueda --}}

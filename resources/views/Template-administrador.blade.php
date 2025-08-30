@@ -50,10 +50,15 @@
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
 
-            <a href="{{ route('role.index') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Roles">Roles</div>
-            </a>
+                <div class="sidebar-item" id="roles-btn" data-bs-toggle="tooltip" title="Roles y permisos" tabindex="0" style="cursor:pointer;">
+                    <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
+                    <div class="label">Roles y permisos</div>
+                </div>
+                <div class="submenu-popover" id="roles-submenu" style="position:absolute;z-index:999;display:none;">
+                    <div class="submenu-arrow"></div>
+                    <a href="{{ asset('role') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Roles</a>
+                    <a href="{{ asset('permisos') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Permisos</a>
+                </div>
 
             <a href="{{ asset('usuario') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-person"></i></div>

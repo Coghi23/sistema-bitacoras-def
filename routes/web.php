@@ -14,6 +14,7 @@ use App\Http\Controllers\QrController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\EventoController;
+use App\Http\Controllers\PermisosController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,7 +35,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de recursos con protección para directores en acciones de escritura
 
     Route::resource('role', RoleController::class);
-    
+    Route::resource('permisos', PermisosController::class);
+
     Route::resource('usuario', UsuarioController::class)->except(['store', 'update', 'destroy']);
     Route::resource('usuario', UsuarioController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
     

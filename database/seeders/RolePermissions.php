@@ -56,6 +56,7 @@ class RolePermissions extends Seeder
         if ($admin) {
             // Crear permisos completos para administrador
             $adminPermissions = [
+                'create_roles', 'edit_roles', 'delete_roles', 'view_roles',
                 'create_usuarios', 'edit_usuarios', 'delete_usuarios', 'view_usuarios',
                 'create_bitacoras', 'edit_bitacoras', 'delete_bitacoras', 'view_bitacoras',
                 'create_eventos', 'edit_eventos', 'delete_eventos', 'view_eventos',
