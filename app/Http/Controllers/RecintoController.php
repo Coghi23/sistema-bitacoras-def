@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 use App\Models\Recinto;
-use App\Models\Bitacora;
 use App\Http\Requests\StoreRecintoRequest;
 use App\Http\Requests\UpdateRecintoRequest;
 use Illuminate\Support\Facades\DB;
@@ -23,7 +22,7 @@ class RecintoController extends Controller
     public function index()
     {
         
-        $query = Recinto::with(['institucion', 'tipoRecinto', 'estadoRecinto', 'llave', 'bitacoras'])
+        $query = Recinto::with(['institucion', 'tipoRecinto', 'estadoRecinto', 'llave'])
             ->where('condicion', 1)
             ->orderBy('nombre');
 
@@ -60,24 +59,23 @@ class RecintoController extends Controller
      */
     public function store(StoreRecintoRequest $request)
     {
+        //dd($request->validated());
         try {
             DB::beginTransaction();
-            
-            // Crear el recinto (la bitácora se crea automáticamente en el modelo)
-            $recinto = Recinto::create($request->validated());
-            
+            Recinto::create($request->validated());
             DB::commit();
-            
-            return redirect()->route('recinto.index')
-                           ->with('success', 'Recinto creado correctamente. Se ha generado una bitácora automáticamente.');
-                           
         } catch (Exception $e) {
             DB::rollBack();
-            
-            return redirect()->back()
-                           ->with('error', 'Error al crear el recinto: ' . $e->getMessage())
-                           ->withInput();
         }
+        return redirect()->route('recinto.index')->with('success', 'Recinto creado correctamente.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show()
+    {
+        //
     }
 
     /**
@@ -107,22 +105,21 @@ class RecintoController extends Controller
      */
     public function destroy(string $id)
     {
-        $message = '';
-        $recinto = Recinto::find($id);
-        if ($recinto->condicion == 1) {
-            // Eliminar recinto y sus bitácoras (condicion = 0)
+         $message='';
+        $recinto=Recinto::find($id);
+        if($recinto->condicion==1){
             Recinto::where('id', $recinto->id)
-                ->update(['condicion' => 0]);
-            \App\Models\Bitacora::where('id_recinto', $recinto->id)
-                ->update(['condicion' => 0]);
-            $message = 'Recinto y sus bitácoras eliminados correctamente.';
-        } else {
-            // Restaurar recinto y sus bitácoras (condicion = 1)
+            ->update([
+                'condicion' => 0
+            ]);
+            $message = 'Recinto eliminado correctamente.';
+        }
+        else{
             Recinto::where('id', $recinto->id)
-                ->update(['condicion' => 1]);
-            \App\Models\Bitacora::where('id_recinto', $recinto->id)
-                ->update(['condicion' => 1]);
-            $message = 'Recinto y sus bitácoras restaurados correctamente.';
+            ->update([
+                'condicion' => 1
+            ]);
+            $message = 'Recinto restaurado correctamente.';
         }
         return redirect()->route('recinto.index')->with('success', $message);
     }
