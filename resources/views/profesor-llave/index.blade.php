@@ -53,7 +53,7 @@
                                         <i class="bi bi-building"></i> {{ $item->recinto_nombre }}
                                     </h6>
                                     <span class="badge {{ $item->llave_estado == 0 ? 'bg-success' : 'bg-warning text-dark' }}">
-                                        {{ $item->llave_estado == 0 ? 'No Entregada' : 'Entregada' }}
+                                        {{ $item->llave_estado == 0 ? 'Entregada' : 'No Entregada' }}
                                     </span>
                                 </div>
                             </div>

@@ -53,7 +53,7 @@
                                     <strong><i class="bi bi-key"></i> Llave:</strong>
                                     {{ $qr->llave_nombre }}
                                     <span class="badge {{ $qr->llave_estado == 0 ? 'bg-success' : 'bg-warning' }} ms-1 llave-estado-badge" data-llave-estado="{{ $qr->llave_estado }}">
-                                        {{ $qr->llave_estado == 0 ? 'No Entregada' : 'Entregada' }}
+                                        {{ $qr->llave_estado == 0 ? 'Entregada' : 'No Entregada' }}
                                     </span>
                                 </div>
                                 

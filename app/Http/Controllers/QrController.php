@@ -187,7 +187,7 @@ class QrController extends Controller
             'mensaje' => $mensaje,
             'llave' => [
                 'nombre' => $qrTemporal->llave_nombre,
-                'estado' => $nuevoEstado == 0 ? 'No Entregada' : 'Entregada'
+                'estado' => $nuevoEstado == 0 ? 'Entregada' : 'No Entregada'
             ],
             'bitacora' => $bitacoraInfo
         ]);

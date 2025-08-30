@@ -33,10 +33,10 @@ class Llave extends Model
     public function getEstadoEntregaTextAttribute()
     {
         switch ($this->estado) {
-            case self::ESTADO_NO_ENTREGADA:
-                return 'No Entregada';
-            case self::ESTADO_ENTREGADA:
+            case self::ESTADO_NO_ENTREGADA: // 0
                 return 'Entregada';
+            case self::ESTADO_ENTREGADA: // 1
+                return 'No Entregada';
             default:
                 return 'Desconocido';
         }
