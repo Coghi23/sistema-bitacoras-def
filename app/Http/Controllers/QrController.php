@@ -125,6 +125,7 @@ class QrController extends Controller
                 'llave.id as llave_id',
                 'llave.nombre as llave_nombre',
                 'llave.estado as llave_estado',
+                'recinto.id as recinto_id',
                 'recinto.nombre as recinto_nombre',
                 'users.name as profesor_nombre'
             )
@@ -134,14 +135,29 @@ class QrController extends Controller
             return response()->json(['error' => 'Código QR no válido.'], 404);
         }
 
-        if ($qrTemporal->usado || $qrTemporal->expira_en < Carbon::now()) {
+        if ($qrTemporal->usado || $qrTemporal->expira_en < \Carbon\Carbon::now()) {
             return response()->json(['error' => 'Código QR expirado o ya usado.'], 400);
         }
 
         // Cambiar estado de la llave
         $nuevoEstado = $qrTemporal->llave_estado == 0 ? 1 : 0;
         \DB::table('llave')->where('id', $qrTemporal->llave_id)->update(['estado' => $nuevoEstado]);
-        
+
+        // Cambiar estado de la bitácora asociada (busca por id_llave y id_recinto)
+        $bitacora = \DB::table('bitacora')
+            ->where('id_llave', $qrTemporal->llave_id)
+            ->where('id_recinto', $qrTemporal->recinto_id)
+            ->where('condicion', 1)
+            ->orderByDesc('id')
+            ->first();
+
+        if ($bitacora) {
+            // Si la llave se entrega, poner bitácora activa (estado = 1)
+            // Si la llave se devuelve, poner bitácora entregada (estado = 0)
+            $nuevoEstadoBitacora = $nuevoEstado == 1 ? 1 : 0;
+            \DB::table('bitacora')->where('id', $bitacora->id)->update(['estado' => $nuevoEstadoBitacora]);
+        }
+
         // Marcar QR como usado
         \DB::table('qr_temporales')->where('id', $qrTemporal->id)->update(['usado' => true]);
 
@@ -154,7 +170,11 @@ class QrController extends Controller
             'llave' => [
                 'nombre' => $qrTemporal->llave_nombre,
                 'estado' => $nuevoEstado == 0 ? 'No Entregada' : 'Entregada'
-            ]
+            ],
+            'bitacora' => $bitacora ? [
+                'id' => $bitacora->id,
+                'estado' => $nuevoEstadoBitacora == 0 ? 'Entregada' : 'Sin Entregar'
+            ] : null
         ]);
     }
 }

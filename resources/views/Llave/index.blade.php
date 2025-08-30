@@ -4,6 +4,8 @@
 
 @section('content')
 
+
+
 <div class="wrapper">
     <div class="main-content">
         {{-- Búsqueda + botón agregar --}}
@@ -74,6 +76,43 @@
             </div>
         </div>
     
+        {{-- Apartado resumen de llaves --}}
+@php
+    $llavesActivas = $llaves->where('condicion', 1);
+    $totalLlaves = $llavesActivas->count();
+    $disponibles = $llavesActivas->where('estado', 0)->count(); // Ajusta el valor según tu lógica de estado disponible
+    $entregadas = $llavesActivas->where('estado', 1)->count();  // Ajusta el valor según tu lógica de estado entregada
+@endphp
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-key" style="font-size: 2rem; color: #134496;"></i>
+                <h3 class="mt-2">{{ $totalLlaves }}</h3>
+                <p class="mb-0 text-muted">Total Llaves Activas</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-check-circle" style="font-size: 2rem; color: #198754;"></i>
+                <h3 class="mt-2">{{ $disponibles }}</h3>
+                <p class="mb-0 text-muted">Disponibles</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <i class="bi bi-exclamation-circle" style="font-size: 2rem; color: #ffc107;"></i>
+                <h3 class="mt-2">{{ $entregadas }}</h3>
+                <p class="mb-0 text-muted">Entregadas</p>
+            </div>
+        </div>
+    </div>
+</div>
 
         <!-- Tabla -->
         <div class="table-responsive">
