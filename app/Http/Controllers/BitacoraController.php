@@ -19,45 +19,7 @@ class BitacoraController extends Controller
     public function index(Request $request)
     {
         
-        $bitacoras = Bitacora::with('recinto','usuario','seccione','subarea','horario','evento')->get();
-        $recintos = Recinto::all();
-        $seccione = Seccione::all();
-        $subareas = Subarea::all();
-        //dd($request->all());
-        // Filtrar solo los horarios del profesor logueado con relaciones
-        $horarios = Horario::with('recinto','subarea','seccion','leccion','profesor')
-                           ->where('user_id', auth()->id())
-                           ->get();
-
-        // Todas las lecciones asociadas a esos horarios (sin duplicados)
-        $lecciones = $horarios->flatMap->leccion->unique('id')->values();
         
-        $eventos = Evento::all();
-        
-        // Obtener todos los usuarios con rol profesor
-        $profesores = User::whereHas('roles', function($query) {
-            $query->where('name', 'profesor');
-        })->get();
-
-        // Obtener datos del horario seleccionado si existe
-        $horarioSeleccionado = null;
-        if ($request->filled('leccion')) {
-            $horarioSeleccionado = $horarios->where('id', $request->get('leccion'))->first();
-        }
-
-        // Obtener la fecha del primer horario o horario seleccionado
-        $fecha = $horarioSeleccionado ? $horarioSeleccionado->fecha : ($horarios->first() ? $horarios->first()->fecha : null);
-        
-        // Obtener datos dinámicos basados en la selección
-        $seccion = $horarioSeleccionado && $horarioSeleccionado->seccion ? $horarioSeleccionado->seccion->nombre : '';
-        $subarea = $horarioSeleccionado && $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
-        $recinto = $horarioSeleccionado && $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
-
-        return view('Bitacora.index', compact(
-        'bitacoras', 'recintos', 'profesores', 'seccione', 'subareas', 
-        'horarios', 'eventos', 'fecha', 'seccion', 'subarea', 'recinto', 
-        'horarioSeleccionado', 'lecciones'
-        ));
     }
 
     /**
@@ -73,13 +35,7 @@ class BitacoraController extends Controller
      */
     public function store(Request $request)
     {
-        $bitacora = new Bitacora();
-        // ...asigna otros campos...
-        $bitacora->hora_envio = $request->input('hora_envio');
-        $bitacora->fecha = $request->input('fecha');
-        // ...asigna otros campos...
-        $bitacora->save();
-        // ...existing code...
+
     }
 
     /**
