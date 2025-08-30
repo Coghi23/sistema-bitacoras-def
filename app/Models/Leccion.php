@@ -13,7 +13,9 @@ class Leccion extends Model
     protected $fillable = [
         'leccion',
         'hora_inicio',
+        'hora_inicio_periodo',
         'hora_final',
+        'hora_final_periodo',
     ];
 
 
