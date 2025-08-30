@@ -11,12 +11,9 @@ class Bitacora extends Model
     
     protected $fillable = [
         'id_recinto',
-        'id_seccion',
-        'id_subarea',
-        'id_horario',
-        'id_horario_leccion',
-        'usuario_id',
+        'id_llave',
         'condicion',
+        'estado'
     ];
 
     public function recinto()
@@ -26,30 +23,10 @@ class Bitacora extends Model
     
     }
 
-    public function seccion()
-    {
-    
-        return $this->belongsTo(Seccione::class, 'id_seccion');
-    
-    }
 
-    public function subarea()
+    public function llave()
     {
-    
-        return $this->belongsTo(Subarea::class, 'id_subarea');
-    
-    }
-
-    public function horario()
-    {
-    
-        return $this->belongsTo(Horario::class, 'id_horario');
-    
-    }
-
-    public function leccion()
-    {
-        return $this->belongsToMany(Leccion::class, 'horario_leccion', 'idHorario', 'idLeccion');
+        return $this->belongsTo(Llave::class, 'id_llave');
     }
 
     public function usuario()

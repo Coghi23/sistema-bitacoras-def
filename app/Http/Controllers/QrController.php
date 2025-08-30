@@ -143,7 +143,7 @@ class QrController extends Controller
         $nuevoEstado = $qrTemporal->llave_estado == 0 ? 1 : 0;
         \DB::table('llave')->where('id', $qrTemporal->llave_id)->update(['estado' => $nuevoEstado]);
 
-        // Cambiar estado de la bitácora asociada (por llave y recinto)
+        // Buscar bitácora activa para esta llave y recinto
         $bitacora = \DB::table('bitacora')
             ->where('id_llave', $qrTemporal->llave_id)
             ->where('id_recinto', $qrTemporal->recinto_id)
@@ -151,11 +151,29 @@ class QrController extends Controller
             ->orderByDesc('id')
             ->first();
 
+        $bitacoraInfo = null;
         if ($bitacora) {
-            // Si la llave se entrega, poner bitácora activa (estado = 1)
-            // Si la llave se devuelve, poner bitácora entregada (estado = 0)
-            $nuevoEstadoBitacora = $nuevoEstado == 1 ? 1 : 0;
-            \DB::table('bitacora')->where('id', $bitacora->id)->update(['estado' => $nuevoEstadoBitacora]);
+            // El estado de la bitácora debe coincidir con el estado de la llave
+            \DB::table('bitacora')->where('id', $bitacora->id)->update(['estado' => $nuevoEstado]);
+            $bitacoraInfo = [
+                'id' => $bitacora->id,
+                'estado' => $nuevoEstado == 1 ? 'Activo' : 'Inactivo'
+            ];
+        } else {
+            // Crear nueva entrada en bitácora si no existe
+            $bitacoraId = \DB::table('bitacora')->insertGetId([
+                'id_recinto' => $qrTemporal->recinto_id,
+                'id_llave' => $qrTemporal->llave_id,
+                'estado' => $nuevoEstado,
+                'condicion' => 1,
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]);
+            
+            $bitacoraInfo = [
+                'id' => $bitacoraId,
+                'estado' => $nuevoEstado == 1 ? 'Activo' : 'Inactivo'
+            ];
         }
 
         // Marcar QR como usado
@@ -171,10 +189,7 @@ class QrController extends Controller
                 'nombre' => $qrTemporal->llave_nombre,
                 'estado' => $nuevoEstado == 0 ? 'No Entregada' : 'Entregada'
             ],
-            'bitacora' => $bitacora ? [
-                'id' => $bitacora->id,
-                'estado' => $nuevoEstadoBitacora == 0 ? 'Entregada' : 'Sin Entregar'
-            ] : null
+            'bitacora' => $bitacoraInfo
         ]);
     }
 }
