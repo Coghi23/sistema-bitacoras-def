@@ -6,6 +6,7 @@
 <head>
     <link rel="stylesheet" href="{{ asset('Css/reporte.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 </head>
 
 <!-- ================= TABLA PRINCIPAL DE EVENTOS ================= -->
@@ -35,7 +36,6 @@
             <!-- Contenedor para datos asíncronos -->
             <div id="eventos-container">            
                 @foreach ($eventos as $evento)
-                @can('view_eventos')
                     <div class="record-row hover-effect">
                         <div data-label="Docente">{{ $evento->usuario->name ?? 'N/A' }}</div>
                         <div data-label="Recinto">{{ $evento->horario->recinto->nombre ?? '' }}</div>
@@ -68,7 +68,6 @@
                             </button>
                         </div>
                     </div>
-                @endcan
                 @endforeach
             </div>
         </div>
@@ -365,7 +364,7 @@ document.addEventListener('DOMContentLoaded', cargarEventos);
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : '',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
                     'Accept': 'application/json',
                 },
                 body: JSON.stringify({ estado: nuevoEstado })

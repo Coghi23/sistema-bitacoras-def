@@ -26,7 +26,7 @@ return new class extends Migration
             $table->string('prioridad',255);
             $table->boolean('confirmacion');
             $table->tinyInteger('condicion')->default(1);
-            $table->enum('estado', ['en_espera', 'en_proceso', 'completado'])->default('en_espera')->after('prioridad');
+            $table->enum('estado', ['en_espera', 'en_proceso', 'completado'])->default('en_espera');
             $table->timestamps();
         });
     }
