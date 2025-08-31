@@ -329,7 +329,7 @@
 
         async function cargarEventos() {
             try {
-                const response = await fetch(`{{ route('eventos.soporte.load') }}?timestamp=${currentTimestamp}`, {
+                const response = await fetch(`{{ route('eventos.profesor.load') }}?timestamp=${currentTimestamp}`, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest',
                         'Accept': 'application/json'
@@ -468,6 +468,9 @@
                 const formData = new FormData();
                 formData.append('prioridad', data.prioridad);
                 formData.append('observacion', data.observacion);
+                if (data.estado) {
+                    formData.append('estado', data.estado);
+                }
                 formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
 
                 const response = await fetch(`/evento/${id}/update`, {
