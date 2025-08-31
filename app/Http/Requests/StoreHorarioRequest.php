@@ -5,6 +5,8 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use App\Models\Horario;
+use Carbon\Carbon;
+use Illuminate\Validation\Validator;
 
 class StoreHorarioRequest extends FormRequest
 {
@@ -73,7 +75,18 @@ class StoreHorarioRequest extends FormRequest
             $this->validateSameSubareaConflicts($validator);
 
             // PRIORIDAD 6: Validar que las lecciones seleccionadas sean consecutivas
-            $this->validateConsecutiveLecciones($validator);
+              // Ordenar las lecciones por hora de inicio
+        $leccionesSeleccionadas = \App\Models\Leccion::whereIn('id', $this->lecciones)
+            ->get()
+            ->sortBy(function($leccion) {
+                return [
+                    Carbon::parse($leccion->hora_inicio . ' ' . $leccion->hora_inicio_periodo)->timestamp,
+                    Carbon::parse($leccion->hora_final . ' ' . $leccion->hora_final_periodo)->timestamp
+                ];
+            })
+            ->values();
+
+        $this->validateConsecutiveLecciones($leccionesSeleccionadas, $validator);
 
             // PRIORIDAD 7: Validar que no exista un horario duplicado para el mismo profesor, recinto y fecha/día (menos restrictivo)
             $query = Horario::where('user_id', $this->user_id)
@@ -373,28 +386,30 @@ class StoreHorarioRequest extends FormRequest
     /**
      * Validar que las lecciones seleccionadas sean consecutivas en tiempo
      */
-    private function validateConsecutiveLecciones($validator)
+    function validateConsecutiveLecciones($lecciones, Validator $validator)
     {
-        if (!$this->has('lecciones') || empty($this->lecciones) || count($this->lecciones) <= 1) {
-            return; // Si hay una o ninguna lección, no necesita validación de consecutividad
-        }
+        // Recorremos todas las lecciones en orden
+        for ($i = 0; $i < count($lecciones) - 1; $i++) {
+            $leccionActual = $lecciones[$i];
+            $leccionSiguiente = $lecciones[$i + 1];
 
-        // Obtener las lecciones seleccionadas ordenadas por hora de inicio
-        $leccionesSeleccionadas = \App\Models\Leccion::whereIn('id', $this->lecciones)
-            ->orderBy('hora_inicio')
-            ->get();
+            // Convertimos a objetos Carbon para comparar
+            $horaFinal = Carbon::parse($leccionActual->hora_final);
+            $horaInicioSiguiente = Carbon::parse($leccionSiguiente->hora_inicio);
 
-        // Verificar que las lecciones sean consecutivas
-        for ($i = 0; $i < count($leccionesSeleccionadas) - 1; $i++) {
-            $leccionActual = $leccionesSeleccionadas[$i];
-            $leccionSiguiente = $leccionesSeleccionadas[$i + 1];
+            // Calculamos diferencia en minutos
+            $diferencia = $horaFinal->diffInMinutes($horaInicioSiguiente, false); 
+            // con `false` obtenemos diferencia con signo
 
-            // La hora final de la lección actual debe ser igual a la hora de inicio de la siguiente
-            if ($leccionActual->hora_final !== $leccionSiguiente->hora_inicio) {
+            // Validamos: debe empezar después y con máximo 20 min de diferencia
+            if ($diferencia < 0 || $diferencia > 20) {
                 $validator->errors()->add('lecciones', 
-                    "Las lecciones seleccionadas deben ser consecutivas. La lección de {$leccionActual->hora_inicio} a {$leccionActual->hora_final} no es consecutiva con la lección de {$leccionSiguiente->hora_inicio} a {$leccionSiguiente->hora_final}."
+                    "Las lecciones seleccionadas deben ser consecutivas o con una diferencia máxima de 20 minutos.\n" .
+                    "La lección de {$leccionActual->hora_inicio} a {$leccionActual->hora_final} " .
+                    "no es consecutiva con la lección de {$leccionSiguiente->hora_inicio} " .
+                    "a {$leccionSiguiente->hora_final}."
                 );
-                return; // Salir después del primer error encontrado
+                return; // detenemos en el primer error
             }
         }
     }

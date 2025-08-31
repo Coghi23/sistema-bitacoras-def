@@ -12,6 +12,7 @@ use App\Models\Llave;
 use App\Models\TipoRecinto;
 use App\Http\Requests;
 use Exception;
+use App\Models\Bitacora;
 
 
 
@@ -120,22 +121,36 @@ class RecintoController extends Controller
      */
     public function destroy(string $id)
     {
-         $message='';
-        $recinto=Recinto::find($id);
-        if($recinto->condicion==1){
-            Recinto::where('id', $recinto->id)
-            ->update([
-                'condicion' => 0
-            ]);
-            $message = 'Recinto eliminado correctamente.';
+        $message = '';
+        $recinto = Recinto::find($id);
+
+        if ($recinto) {
+            // Buscar la bitácora asociada al recinto (usa id_recinto, no recinto_id)
+            $bitacora = \App\Models\Bitacora::where('id_recinto', $recinto->id)->first();
+
+            if ($recinto->condicion == 1) {
+                Recinto::where('id', $recinto->id)
+                    ->update(['condicion' => 0]);
+                // Desactivar la bitácora asociada si existe
+                if ($bitacora) {
+                    $bitacora->condicion = 0;
+                    $bitacora->save();
+                }
+                $message = 'Recinto eliminado correctamente.';
+            } else {
+                Recinto::where('id', $recinto->id)
+                    ->update(['condicion' => 1]);
+                // Restaurar la bitácora asociada si existe
+                if ($bitacora) {
+                    $bitacora->condicion = 1;
+                    $bitacora->save();
+                }
+                $message = 'Recinto restaurado correctamente.';
+            }
+        } else {
+            $message = 'Recinto no encontrado.';
         }
-        else{
-            Recinto::where('id', $recinto->id)
-            ->update([
-                'condicion' => 1
-            ]);
-            $message = 'Recinto restaurado correctamente.';
-        }
+
         return redirect()->route('recinto.index')->with('success', $message);
     }
 }

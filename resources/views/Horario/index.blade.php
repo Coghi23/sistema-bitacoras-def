@@ -324,18 +324,15 @@
     <div class="modal fade" id="modalEditarHorario{{ $horario->id }}" tabindex="-1" aria-labelledby="modalEditarHorarioLabel{{ $horario->id }}" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
+                <div class="modal-header modal-header-custom">
+                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <h5 class="modal-title">Modificar horario</h5>
+                </div>
                 <form method="POST" action="{{ route('horario.update', ['horario' => $horario]) }}">
                     @csrf
                     @method('PUT')
-                    <div class="modal-header custom-header text-white px-4 py-3 position-relative justify-content-center">
-                        <button type="button" class="btn p-0 d-flex align-items-center position-absolute start-0 ms-3" data-bs-dismiss="modal" aria-label="Cerrar">
-                            <div class="circle-yellow d-flex justify-content-center align-items-center">
-                                <i class="fas fa-arrow-left text-blue-forced"></i>
-                            </div>
-                            <div class="linea-vertical-amarilla ms-2"></div>
-                        </button>
-                        <h5 class="modal-title m-0" id="modalEditarHorarioLabel">Modificar horario</h5>
-                    </div>
                     <div class="linea-divisoria-horizontal"></div>
                     
                     <input type="hidden" name="id" value="{{ $horario->id }}">
@@ -586,6 +583,23 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Recargar la página al cerrar cualquier modal de crear o editar
+        var modalCrear = document.getElementById('modalHorario');
+        if (modalCrear) {
+            modalCrear.addEventListener('hidden.bs.modal', function () {
+                window.location.reload();
+            });
+        }
+
+        document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modalEditar) {
+            modalEditar.addEventListener('hidden.bs.modal', function () {
+                window.location.reload();
+            });
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
 
             document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modal) {
         const id = modal.id.replace('modalEditarHorario', '');
@@ -791,6 +805,8 @@ function deseleccionarTodasLecciones() {
     const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
     checkboxes.forEach(checkbox => checkbox.checked = false);
 }
+
+
 
 
 </script>
