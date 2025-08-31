@@ -174,7 +174,7 @@ Route::get('/eventos/profesor/load', [EventoController::class, 'loadEventosProfe
 Route::get('/eventos/soporte/load', [EventoController::class, 'loadEventosSoporte'])->name('eventos.soporte.load');
 
 // Rutas para actualizar y desactivar eventos
-Route::post('/evento/update', [EventoController::class, 'update'])->name('evento.update');
+Route::post('/evento/{id}/update', [EventoController::class, 'update'])->name('evento.update');
 Route::get('/evento', [EventoController::class, 'index'])->name('evento.index');
 
 

@@ -18,7 +18,17 @@
                 </div>
             </div>
 
-            <!-- Tabla de eventos -->
+            <!-- Botones para alternar entre activos e inactivos -->
+            <div class="d-flex justify-content-end mb-3">
+                <a href="{{ route('evento.index_profesor', array_merge(request()->except('ver_inactivos'), ['ver_inactivos' => null])) }}" class="btn btn-outline-primary me-2 @if(!request('ver_inactivos')) active @endif">
+                    Ver Activos
+                </a>
+                <a href="{{ route('evento.index_profesor', array_merge(request()->except('ver_inactivos'), ['ver_inactivos' => 1])) }}" class="btn btn-outline-secondary @if(request('ver_inactivos')) active @endif">
+                    Ver Inactivos
+                </a>
+            </div>
+
+            <!-- Tabla de eventos (activos o inactivos según filtro) -->
             <div id="tabla-reportes" class="tabla-contenedor shadow-sm rounded">
                 <!-- Encabezados -->
                 <div class="header-row text-white" style="background-color: #134496;">
@@ -27,6 +37,7 @@
                     <div class="col-fecha">Fecha</div>
                     <div class="col-hora">Hora</div>
                     <div class="col-institucion">Institución</div>
+                    <div class="col-condicion_evento">Condición</div>
                     <div class="col-prioridad">Prioridad</div>
                     <div class="col-estado">Estado</div>
                     <div class="col-detalles">Detalles</div>
@@ -34,13 +45,18 @@
 
                 <!-- Contenedor para datos asíncronos -->
                 <div id="eventos-container">
+                    @php
+                        $verInactivos = request('ver_inactivos');
+                    @endphp
                     @foreach ($eventos as $evento)
+                        @if(($verInactivos && $evento->condicion == 0) || (!$verInactivos && $evento->condicion == 1))
                         <div class="record-row hover-effect">
                             <div data-label="Docente">{{ $evento->usuario->name ?? 'N/A' }}</div>
                             <div data-label="Recinto">{{ $evento->horario->recinto->nombre ?? '' }}</div>
                             <div data-label="Fecha">{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</div>
                             <div data-label="Hora">{{ \Carbon\Carbon::parse($evento->hora_envio)->format('H:i') }}</div>
                             <div data-label="Institución">{{ $evento->horario->recinto->institucion->nombre ?? '' }}</div>
+                            <div data-label="Condicion_evento">{{ $evento->condicion == 1 ? 'Activo' : 'Inactivo' }}</div>
                             <div data-label="Prioridad">
                                 <span class="badge bg-secondary">
                                     {{ ucfirst($evento->prioridad) }}
@@ -60,17 +76,24 @@
                                 </span>
                             </div>
                             <div data-label="Detalles" class="d-flex gap-2 justify-content-center">
+                            @if($evento->condicion == 1)
                                 <button class="btn btn-sm btn-primary rounded-pill px-3" style="background-color: #134496;"
-                                    onclick="abrirModal({{ $evento->id }})">
+                                    onclick='abrirModal(@json($evento))'>
                                     <i class="bi bi-pencil"></i>
                                 </button>
+
                                 <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" data-bs-toggle="modal"
                                     data-bs-target="#modalConfirmacionEliminar-{{ $evento->id }}" aria-label="Eliminar Evento">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                @else
+                                <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-toggle="modal"
+                                    data-bs-target="#modalConfirmacionEliminar-{{ $evento->id }}" aria-label="Eliminar Evento">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                                @endif
                             </div>
                         </div>
-
                         <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $evento->id }}" tabindex="-1"
                             aria-hidden="true">
@@ -83,7 +106,7 @@
                                         <h4 class="mb-3" style="color: #2c3e50;">¿Desea desactivar este evento?</h4>
                                         <p class="text-muted mb-4">Esta acción no se puede deshacer</p>
                                         <div class="d-flex justify-content-center gap-3">
-                                            <form action="{{ route('evento.destroy', $evento->id) }}" method="POST">
+                                            <form action="{{ route('evento.destroy', ['evento' => $evento->id]) }}" method="POST">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-primary px-4"
@@ -99,28 +122,27 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- Modal Éxito Eliminar -->
-                            <div class="modal fade" id="modalExitoEliminar" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content text-center">
-                                    <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 256 256">
-                                        <g fill="#efc737" fill-rule="nonzero">
-                                            <g transform="scale(5.12,5.12)">
-                                            <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"/>
-                                            </g>
+                        <div class="modal fade" id="modalExitoEliminar" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content text-center">
+                                <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 256 256">
+                                    <g fill="#efc737" fill-rule="nonzero">
+                                        <g transform="scale(5.12,5.12)">
+                                        <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"/>
                                         </g>
-                                        </svg>
-                                        <p class="mb-0">Reporte eliminado con éxito</p>
-                                    </div>
-                                    </div>
+                                    </g>
+                                    </svg>
+                                    <p class="mb-0">Reporte eliminado con éxito</p>
+                                </div>
                                 </div>
                             </div>
+                        </div>
+                        @endif
                     @endforeach
                 </div>
             </div>
-        </div>
     </div>
 
 
