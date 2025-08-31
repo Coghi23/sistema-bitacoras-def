@@ -170,7 +170,7 @@
                             <label class="fw-bold me-3 w-50 text-start">
                                 <i class="fas fa-user text-primary me-2"></i>Nombre Completo:
                             </label>
-                            <input type="text" name="name" class="form-control rounded-4 w-50" placeholder="Mauricio Vargas" required>
+                            <input type="text" name="name" class="form-control rounded-4 w-50" placeholder="Nombre Completo" required>
                         </div>
                         
                         {{-- Cédula --}}
@@ -178,7 +178,7 @@
                             <label class="fw-bold me-3 w-50 text-start">
                                 <i class="fas fa-id-card text-info me-2"></i>Cédula:
                             </label>
-                            <input type="text" name="cedula" class="form-control rounded-4 w-50" placeholder="30458065" required>
+                            <input type="text" name="cedula" class="form-control rounded-4 w-50" placeholder="00000000" required>
                         </div>
                         
                         {{-- Correo Electrónico --}}
@@ -186,7 +186,7 @@
                             <label class="fw-bold me-3 w-50 text-start">
                                 <i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:
                             </label>
-                            <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="MauriVargas17@gmail.com" required>
+                            <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="ejemplo@gmail.com" required>
                         </div>
                         
                         {{-- Información sobre configuración de contraseña --}}
