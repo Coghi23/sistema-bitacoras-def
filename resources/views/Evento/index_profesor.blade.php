@@ -47,7 +47,17 @@
                                 </span>
                             </div>
                             <div data-label="Estado">
-                                <span class="badge bg-secondary">En espera</span>
+                                <span class="badge bg-secondary">
+                                    @if($evento->estado == 'en_espera')
+                                        En espera
+                                    @elseif($evento->estado == 'en_proceso')
+                                        En proceso
+                                    @elseif($evento->estado == 'completado')
+                                        Completado
+                                    @else
+                                        {{ ucfirst($evento->estado) }}
+                                    @endif
+                                </span>
                             </div>
                             <div data-label="Detalles" class="d-flex gap-2 justify-content-center">
                                 <button class="btn btn-sm btn-primary rounded-pill px-3" style="background-color: #134496;"
@@ -360,7 +370,7 @@
                                     <option value='baja' ${e.prioridad === 'baja' ? 'selected' : ''}>Baja</option>
                                 </select>
                                 <label>Estado:</label>
-                                <input type='text' class='form-control mb-2' value='En espera' disabled>
+                                <input type='text' class='form-control mb-2' value='@if($evento->estado == "en_espera")En espera@elseif($evento->estado == "en_proceso")En proceso@elseif($evento->estado == "completado")Completado@else{{ ucfirst($evento->estado) }}@endif' disabled>
                             </div>
                         </div>
                         <div class='observaciones mt-3'>

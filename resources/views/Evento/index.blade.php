@@ -45,7 +45,17 @@
                             </span>
                         </div>
                         <div data-label="Estado">
-                            <span class="badge bg-secondary">En espera</span>
+                            <span class="badge bg-secondary">
+                                @if($evento->estado == 'en_espera')
+                                    En espera
+                                @elseif($evento->estado == 'en_proceso')
+                                    En proceso
+                                @elseif($evento->estado == 'completado')
+                                    Completado
+                                @else
+                                    {{ ucfirst($evento->estado) }}
+                                @endif
+                            </span>
                         </div>
                         <div data-label="Detalles">
                             <button class="btn btn-sm rounded-pill px-3" 
@@ -107,7 +117,7 @@
                         <input type="text" value="{{ ucfirst($evento->prioridad) }}" disabled>
 
                         <label>Estado:</label>
-                        <input type="text" value="En espera" disabled>
+                        <input type="text" value="@if($evento->estado == 'en_espera')En espera@elseif($evento->estado == 'en_proceso')En proceso@elseif($evento->estado == 'completado')Completado@else{{ ucfirst($evento->estado) }}@endif" disabled>
                     </div>
                 </div>
 
