@@ -28,11 +28,13 @@
                     @endif
                 </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalAgregarTipoRecinto"
-                title="Agregar Tipo de Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
+            @can('create_tipo_recinto')
+                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                    data-bs-toggle="modal" data-bs-target="#modalAgregarTipoRecinto"
+                    title="Agregar Tipo de Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                    Agregar <i class="bi bi-plus-circle ms-2"></i>
+                </button>
+            @endcan
         </div>
 
 
@@ -74,109 +76,133 @@
             </div>
         </div>
 
-
-       
-        <!-- Modal Editar Tipo de Recinto -->
         <div class="table-responsive">
-            <table class="table align-middle table-hover">
+            {{-- Botones para mostrar/ocultar tipos de recinto inactivos --}}
+            <a href="{{ route('tipoRecinto.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+                Mostrar inactivos
+            </a>
+            <a href="{{ route('tipoRecinto.index') }}" class="btn btn-primary mb-3">
+                Mostrar activos
+            </a>
+            <table class="table table-striped">
                 <thead>
-                    <tr>
-                        <th class="text-center" style="width: 90%;">Nombre del Tipo de Recinto</th>
-                        <th class="text-center" style="width: 10%;">Acciones</th>
+                    <tr class="header-row">
+                        <th class="text-center">Nombre del Tipo de Recinto</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($tipoRecintos as $tipoRecinto)
-                        @if ($tipoRecinto->condicion == 1)
-                            <tr>
-                                <td class="text-center">{{ $tipoRecinto->nombre }}</td>
-                                <td class="text-center">
-                                    <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarTipoRecinto-{{ $tipoRecinto->id }}">
-                                        <i class="bi bi-pencil"></i>
+                    @php
+                        $mostrarInactivos = request('inactivos') == 1;
+                    @endphp
+                    @forelse($tipoRecintos as $tipoRecinto)
+                        @if(($mostrarInactivos && $tipoRecinto->condicion == 0) || (!$mostrarInactivos && $tipoRecinto->condicion == 1))
+                        <tr class="record-row">
+                            <td class="text-center">{{ $tipoRecinto->nombre }}</td>
+                            <td class="text-center">
+                                <span class="badge {{ isset($tipoRecinto->condicion) && $tipoRecinto->condicion ? 'bg-success' : 'bg-danger' }}">
+                                    {{ isset($tipoRecinto->condicion) && $tipoRecinto->condicion ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                @can('edit_tipo_recinto')
+                                    <button type="button" class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarTipoRecinto-{{ $tipoRecinto->id }}" title="Editar tipo de recinto">
+                                        <i class="bi bi-pencil icon-editar"></i>
                                     </button>
-                                    <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $tipoRecinto->id }}" aria-label="Eliminar Tipo de Recinto">
-                                            <i class="bi bi-trash"></i>
-                                    </button>
-                                </td>
-                            </tr>
-
-
-                            <!-- Modal Editar -->
-                            <div class="modal fade" id="modalEditarTipoRecinto-{{ $tipoRecinto->id }}" tabindex="-1" aria-labelledby="modalEditarTipoRecintoLabel-{{ $tipoRecinto->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header modal-header-custom">
-                <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                    <i class="bi bi-arrow-left"></i>
-                </button>
-                <h5 class="modal-title">Editar Tipo de Recinto</h5>
-            </div>
-            <div class="modal-body px-4 py-4">
-                <form action="{{ route('tipoRecinto.update',['tipoRecinto'=>$tipoRecinto]) }}" method="post">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="id" id="editarIdTipoRecinto">
-                    <div class="mb-3">
-                        <label for="editarNombreTipoRecinto" class="form-label fw-bold">Nombre del Tipo de Recinto</label>
-                        <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre',$tipoRecinto->nombre)}}">
-                    </div>
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-                            <!-- Modal eliminar -->
-                            <div class="modal fade" id="modalConfirmacionEliminar-{{ $tipoRecinto->id }}" tabindex="-1" aria-labelledby="modalTipoRecintoEliminarLabel-{{ $tipoRecinto->id }}"
-                            aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content custom-modal">
-                                        <div class="modal-body text-center">
-                                            <div class="icon-container">
-                                                <div class="circle-icon">
+                                @endcan
+                                @can('delete_tipo_recinto')
+                                    @if($tipoRecinto->condicion == 1)
+                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $tipoRecinto->id }}" title="Desactivar tipo de recinto">
+                                            <i class="bi bi-trash icon-eliminar"></i>
+                                        </button>
+                                    @else
+                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarTipoRecinto-{{ $tipoRecinto->id }}" title="Activar tipo de recinto">
+                                            <i class="bi bi-arrow-counterclockwise icon-eliminar"></i>
+                                        </button>
+                                    @endif
+                                @endcan
+                            </td>
+                        </tr>
+                        {{-- Modal Editar --}}
+                        <div class="modal fade" id="modalEditarTipoRecinto-{{ $tipoRecinto->id }}" tabindex="-1" aria-labelledby="modalEditarTipoRecintoLabel-{{ $tipoRecinto->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header modal-header-custom">
+                                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <h5 class="modal-title">Editar Tipo de Recinto</h5>
+                                    </div>
+                                    <div class="modal-body px-4 py-4">
+                                        <form action="{{ route('tipoRecinto.update',['tipoRecinto'=>$tipoRecinto]) }}" method="post">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="id" id="editarIdTipoRecinto">
+                                            <div class="mb-3">
+                                                <label for="editarNombreTipoRecinto" class="form-label fw-bold">Nombre del Tipo de Recinto</label>
+                                                <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre',$tipoRecinto->nombre)}}">
+                                            </div>
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Modal Eliminar --}}
+                        <div class="modal fade" id="modalConfirmacionEliminar-{{ $tipoRecinto->id }}" tabindex="-1" aria-labelledby="modalTipoRecintoEliminarLabel-{{ $tipoRecinto->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon">
                                                 <i class="bi bi-exclamation-circle"></i>
-                                                </div>
                                             </div>
-                                            <p class="modal-text">¿Desea Eliminar el Tipo de Recinto?</p>
-                                            <div class="btn-group-custom">
-                                                <form action="{{ route('tipoRecinto.destroy', ['tipoRecinto' => $tipoRecinto->id]) }}" method="post">
-                                                    @method('DELETE')
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-custom {{ $tipoRecinto->condicion == 1 }}">Sí</button>
-                                                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                                                </form>
-                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Desea Eliminar el Tipo de Recinto?</p>
+                                        <div class="btn-group-custom">
+                                            <form action="{{ route('tipoRecinto.destroy', ['tipoRecinto' => $tipoRecinto->id]) }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="submit" class="btn btn-custom {{ $tipoRecinto->condicion == 1 }}">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                           
-                           
-                            <!-- Modal Éxito Eliminar -->
-                            <div class="modal fade" id="modalExitoEliminar" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content text-center">
-                                    <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 256 256">
-                                        <g fill="#efc737" fill-rule="nonzero">
-                                            <g transform="scale(5.12,5.12)">
-                                            <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"/>
-                                            </g>
-                                        </g>
-                                        </svg>
-                                        <p class="mb-0">Tipo de recinto eliminado con éxito</p>
-                                    </div>
+                        </div>
+                        {{-- Modal Reactivar --}}
+                        <div class="modal fade" id="modalReactivarTipoRecinto-{{ $tipoRecinto->id }}" tabindex="-1" aria-labelledby="modalReactivarTipoRecintoLabel-{{ $tipoRecinto->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon" style="background-color: #28a745; color: #fff;">
+                                                <i class="bi bi-arrow-counterclockwise" style="color: #fff;"></i>
+                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Desea reactivar el Tipo de Recinto?</p>
+                                        <div class="btn-group-custom">
+                                            <form action="{{ route('tipoRecinto.destroy', ['tipoRecinto' => $tipoRecinto->id]) }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="submit" class="btn btn-custom" style="background-color: #28a745; color: #fff;">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                        </div>
                         @endif
-                    @endforeach
+                    @empty
+                    <tr class="record-row">
+                        <td class="text-center" colspan="3">No hay tipos de recinto registrados.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

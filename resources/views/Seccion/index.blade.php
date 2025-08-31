@@ -86,18 +86,29 @@
 
         {{-- Tabla --}}
         <div class="table-responsive">
-            <table class="table align-middle table-hover">
+            {{-- Botones para mostrar/ocultar secciones inactivas --}}
+            <a href="{{ route('seccion.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+                Mostrar inactivas
+            </a>
+            <a href="{{ route('seccion.index') }}" class="btn btn-primary mb-3">
+                Mostrar activas
+            </a>
+            <table class="table table-striped">
                 <thead>
-                    <tr>
+                    <tr class="header-row">
                         <th class="text-center">Sección</th>
                         <th class="text-center">Especialidad</th>
+                        <th class="text-center">Estado</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($secciones as $seccion)
-                    <tr>
-                        @if ($seccion->condicion == 1)
+                    @php
+                        $mostrarInactivas = request('inactivos') == 1;
+                    @endphp
+                    @forelse($secciones as $seccion)
+                        @if(($mostrarInactivas && $seccion->condicion == 0) || (!$mostrarInactivas && $seccion->condicion == 1))
+                        <tr class="record-row">
                             <td class="text-center">{{ $seccion->nombre }}</td>
                             <td class="text-center">
                                 @if($seccion->especialidades->count() > 0)
@@ -109,116 +120,41 @@
                                 @endif
                             </td>
                             <td class="text-center">
+                                <span class="badge {{ isset($seccion->condicion) && $seccion->condicion ? 'bg-success' : 'bg-danger' }}">
+                                    {{ isset($seccion->condicion) && $seccion->condicion ? 'Activa' : 'Inactiva' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
                                 @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarSeccion-{{ $seccion->id }}">
-                                    <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
-                                </button>
-                                <button class="btn btn-link text-danger p-0" data-bs-toggle="modal"
-                                    data-bs-target="#modalEliminarSeccion-{{ $seccion->id }}">
-                                    <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
-                                </button>
+                                    <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarSeccion-{{ $seccion->id }}">
+                                        <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
+                                    </button>
+                                    @if($seccion->condicion == 1)
+                                        <button class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarSeccion-{{ $seccion->id }}">
+                                            <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
+                                        </button>
+                                    @else
+                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarSeccion-{{ $seccion->id }}" title="Reactivar sección">
+                                            <i class="bi bi-arrow-counterclockwise icon-eliminar" style="font-size: 1.5rem; color: #28a745;"></i>
+                                        </button>
+                                    @endif
                                 @else
-                                <span class="text-muted">Solo vista</span>
+                                    <span class="text-muted">Solo vista</span>
                                 @endif
                             </td>
-                        @endif
-                    </tr>
-
-
-                    {{-- Modal Editar --}}
-                    <div class="modal fade" id="modalEditarSeccion-{{ $seccion->id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header modal-header-custom">
-                                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                                        <i class="bi bi-arrow-left"></i>
-                                    </button>
-                                    <h5 class="modal-title">Registro de sección</h5>
-                                </div>
-                <div class="modal-body px-4 py-4">
-                    <form action="{{ route('seccion.update', $seccion->id) }}" method="POST">
-                        @csrf
-                        @method('PATCH')
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Sección</label>
-                            <input type="text" name="nombre" class="form-control @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('nombre')) is-invalid @endif"
-                                value="{{ old('nombre', $seccion->nombre) }}" required>
-                            @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('nombre'))
-                                <div class="invalid-feedback">{{ $errors->first('nombre') }}</div>
-                            @endif
+                        </tr>
+                        {{-- Modal Editar --}}
+                        <div class="modal fade" id="modalEditarSeccion-{{ $seccion->id }}" tabindex="-1" aria-hidden="true">
+                            ...existing code...
                         </div>
-
-
-                        <div class="mb-3">
-                            <label class="form-label fw-bold">Especialidad</label>
-                            @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('especialidades'))
-                                <div class="text-danger small mb-2">
-                                    {{ $errors->first('especialidades') }}
-                                    <br><small><i class="bi bi-info-circle"></i> Una sección debe tener al menos una especialidad asignada.</small>
-                                </div>
-                            @endif                                            <!-- Especialidades actualmente asignadas como checkboxes ocultos -->
-                                            <div style="display: none;">
-                                                @foreach($especialidades as $especialidad)
-                                                    <input type="checkbox"
-                                                           id="esp-{{ $seccion->id }}-{{ $especialidad->id }}"
-                                                           name="especialidades[]"
-                                                           value="{{ $especialidad->id }}"
-                                                           @if($seccion->especialidades->where('id', $especialidad->id)->where('pivot.condicion', 1)->count() > 0) checked @endif>
-                                                @endforeach
-                                            </div>
-                                           
-                                            <!-- Select para agregar especialidades -->
-                                            <div class="input-group dynamic-group mb-3">
-                                                <select id="selectEspecialidadEdit-{{ $seccion->id }}" class="form-select">
-                                                    <option value="">Seleccione una especialidad para agregar</option>
-                                                    @foreach ($especialidades as $especialidad)
-                                                        <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidadSimple('{{ $seccion->id }}');" style="min-width: 38px; padding: 8px;">
-                                                    <i class="bi bi-plus"></i>
-                                                </button>
-                                            </div>
-                                           
-                                            <!-- Contenedor para mensajes de validación -->
-                                            <div id="mensajeValidacion-{{ $seccion->id }}" class="alert alert-danger d-none" role="alert">
-                                                <i class="bi bi-exclamation-triangle"></i> <span id="textoMensaje-{{ $seccion->id }}"></span>
-                                            </div>
-                                           
-                                            <!-- Especialidades visibles actualmente asignadas -->
-                                            <div id="especialidadesVisuales-{{ $seccion->id }}">
-                                                @foreach($seccion->especialidades->where('pivot.condicion', 1) as $especialidadAsignada)
-                                                    <div class="input-group mt-2 especialidad-visual" data-id="{{ $especialidadAsignada->id }}">
-                                                        <input type="text" class="form-control" value="{{ $especialidadAsignada->nombre }}" readonly>
-                                                        <button type="button" class="btn btn-danger" onclick="eliminarEspecialidadSimple('{{ $seccion->id }}', '{{ $especialidadAsignada->id }}')">
-                                                            <i class="bi bi-x"></i>
-                                                        </button>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-
-
-                                        <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-primary">Modificar</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    {{-- Modal Eliminar --}}
-                        <div class="modal fade" id="modalEliminarSeccion-{{ $seccion->id }}" tabindex="-1" aria-labelledby="modalSeccionEliminarLabel-{{ $seccion->id }}"
-                        aria-hidden="true">
+                        {{-- Modal Eliminar --}}
+                        <div class="modal fade" id="modalEliminarSeccion-{{ $seccion->id }}" tabindex="-1" aria-labelledby="modalSeccionEliminarLabel-{{ $seccion->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content custom-modal">
                                     <div class="modal-body text-center">
                                         <div class="icon-container">
                                             <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
+                                                <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
                                         <p class="modal-text">¿Desea eliminar la sección?</p>
@@ -234,7 +170,35 @@
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                        {{-- Modal Reactivar --}}
+                        <div class="modal fade" id="modalReactivarSeccion-{{ $seccion->id }}" tabindex="-1" aria-labelledby="modalReactivarSeccionLabel-{{ $seccion->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon" style="background-color: #28a745; color: #fff;">
+                                                <i class="bi bi-arrow-counterclockwise" style="color: #fff;"></i>
+                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Desea reactivar la sección?</p>
+                                        <div class="btn-group-custom">
+                                            <form action="{{ route('seccion.destroy', ['seccion' => $seccion->id]) }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="submit" class="btn btn-custom" style="background-color: #28a745; color: #fff;">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+                    @empty
+                    <tr class="record-row">
+                        <td class="text-center" colspan="4">No hay secciones registradas.</td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>

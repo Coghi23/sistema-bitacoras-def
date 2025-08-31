@@ -108,7 +108,18 @@ class PermisosController extends Controller
         $name = strtolower($name);
         $name = trim($name);
         $name = preg_replace('/[\s_]+/', '_', $name); // espacios y guiones bajos a uno solo
-        // Prefijos estándar
+
+        // Corrección de errores comunes de tipeo para prefijos
+        $typoMap = [
+            // ver
+            'ver' => ['ver', 'veer', 'verr', 'verr_', 'ver_', 'verr '],
+            // crear
+            'crear' => ['crear', 'crearr', 'crea', 'creaar', 'crearr_', 'crear_', 'crearr '],
+            // editar
+            'editar' => ['editar', 'edita', 'editarr', 'edtar', 'edtir', 'editr', 'edita_', 'editar_', 'editarr_'],
+            // eliminar
+            'eliminar' => ['eliminar', 'elimiar', 'elminar', 'elimnar', 'eliminar_', 'elimiar_', 'eliminarr', 'eliminarr_'],
+        ];
         $prefixes = [
             'ver' => 'view_',
             'view' => 'view_',
@@ -119,14 +130,46 @@ class PermisosController extends Controller
             'eliminar' => 'delete_',
             'delete' => 'delete_',
         ];
-        foreach ($prefixes as $key => $std) {
-            if (preg_match('/^' . $key . '(_|\s)/', $name)) {
-                $name = preg_replace('/^' . $key . '(_|\s)*/', $std, $name);
-                break;
+
+        // Detectar y corregir errores de tipeo en el prefijo
+        $prefixFound = false;
+        foreach ($typoMap as $correct => $variants) {
+            foreach ($variants as $variant) {
+                if (preg_match('/^' . preg_quote($variant, '/') . '(_|\s)/', $name)) {
+                    // Reemplazar por el prefijo correcto
+                    $name = preg_replace('/^' . preg_quote($variant, '/') . '(_|\s)*/', $prefixes[$correct], $name);
+                    $prefixFound = true;
+                    break 2;
+                }
             }
         }
-        $name = preg_replace('/_{2,}/', '_', $name); // evitar dobles guiones bajos
-        $name = trim($name, '_');
+        // Si no se detectó error de tipeo, usar los prefijos estándar
+        if (!$prefixFound) {
+            foreach ($prefixes as $key => $std) {
+                if (preg_match('/^' . $key . '(_|\s)/', $name)) {
+                    $name = preg_replace('/^' . $key . '(_|\s)*/', $std, $name);
+                    $prefixFound = true;
+                    break;
+                }
+            }
+        }
+
+        // Estandarizar nombres de recursos multi-palabra (ej: tipo recinto, tipo_recinto, Tipo_recinto)
+        if ($prefixFound) {
+            // Si hay prefijo, separar el resto
+            if (preg_match('/^(view_|create_|edit_|delete_)(.+)$/', $name, $matches)) {
+                $resource = $matches[2];
+                $resource = preg_replace('/[\s_]+/', '_', $resource); // unificar separadores
+                $resource = preg_replace('/_{2,}/', '_', $resource);
+                $resource = trim($resource, '_');
+                $name = $matches[1] . $resource;
+            }
+        } else {
+            // Si no hay prefijo, estandarizar todo
+            $name = preg_replace('/[\s_]+/', '_', $name);
+            $name = preg_replace('/_{2,}/', '_', $name);
+            $name = trim($name, '_');
+        }
         return $name;
     }
 

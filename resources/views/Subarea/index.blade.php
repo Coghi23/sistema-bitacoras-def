@@ -38,13 +38,13 @@
                     @endif
                 </form>
             </div>
-            @if(Auth::user() && !Auth::user()->hasRole('director'))
+            @can('create_subarea')
                 <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                     data-bs-toggle="modal" data-bs-target="#modalAgregarSubArea"
                     title="Agregar Subárea" style="background-color: #134496; font-size: 1.2rem;">
                     Agregar <i class="bi bi-plus-circle ms-2"></i>
                 </button>
-            @endif
+            @endcan
         </div>
 
 
@@ -79,6 +79,7 @@
                     </tr>
                 </thead>
                 <tbody>
+                    
                     @php
                         $mostrarActivos = request('activos') == 1 || !request('inactivos');
                         $mostrarInactivos = request('inactivos') == 1;
@@ -92,14 +93,17 @@
 
                         )
                         <tr>
-                            <td class="text-center">{{ $subarea->nombre }}</td>
-                            <td class="text-center">{{ $subarea->especialidad ? $subarea->especialidad->nombre : 'Sin especialidad' }}</td>
-                            <td class="text-center">
-                                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                            @can('view_subarea')
+                                <td class="text-center">{{ $subarea->nombre }}</td>
+                                <td class="text-center">{{ $subarea->especialidad ? $subarea->especialidad->nombre : 'Sin especialidad' }}</td>
+                                <td class="text-center">
+                                @can('view_subarea')
                                     <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal"
                                         data-bs-target="#modalEditarSubArea-{{ $subarea->id }}">
                                         <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
                                     </button>
+                                @endcan
+                                @can('delete_subarea')
                                     <button class="btn btn-link {{ $subarea->condicion == 1 ? 'text-danger' : 'text-success' }} p-0"
                                         data-bs-toggle="modal"
                                         data-bs-target="#modalEliminarSubarea-{{ $subarea->id }}">
@@ -109,9 +113,8 @@
                                             <i class="bi bi-arrow-counterclockwise" style="font-size: 1.5rem;"></i>
                                         @endif
                                     </button>
-                                @else
-                                    <span class="text-muted">Solo vista</span>
-                                @endif
+                                @endcan
+                            @endcan
                             </td>
                         </tr>
                         @endif

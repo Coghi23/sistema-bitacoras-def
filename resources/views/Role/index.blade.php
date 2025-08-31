@@ -61,14 +61,15 @@
                 </span>
             </div>
         @endif 
-            <button id="btnMostrarInactivos" class="btn btn-warning mb-3 me-2" type="button">
-                Mostrar inactivos
-            </button>
-            <button id="btnMostrarActivos" class="btn btn-primary mb-3 me-2" type="button">
-                Mostrar activos
-            </button>
 
         <div id="tabla-roles">
+            {{-- Botones para mostrar/ocultar roles inactivos --}}
+            <a href="{{ route('role.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3 me-2">
+                Mostrar inactivos
+            </a>
+            <a href="{{ route('role.index') }}" class="btn btn-primary mb-3 me-2">
+                Mostrar activos
+            </a>
             <table class="table table-striped">
                 <thead>
                     <tr class="header-row">
@@ -80,49 +81,101 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $mostrarInactivos = request('inactivos') == 1;
+                    @endphp
                     @forelse($roles as $role)
-                        <tr class="record-row {{ $role->condicion == 0 ? 'fila-inactiva' : 'fila-activa' }}">
-                        <td>{{ $role->name }}</td>
-                        <td>
-                            @if($role->permissions->count() > 0)
-                                <span class="badge bg-info">{{ $role->permissions->count() }} permisos</span>
-                            @else
-                                <span class="badge bg-secondary">Sin Permisos</span>
-                            @endif
-                        </td>
-                        <td>{{ $role->created_at->format('d/m/Y') }}</td>
-                        <td>
-                            <span class="badge {{ $role->condicion == 1 ? 'bg-success' : 'bg-danger' }}">
-                                {{ $role->condicion == 1 ? 'Activo' : 'Inactivo' }}
-                            </span>
-                        </td>
-                        <td>
-                            @can('edit_roles')
-                            <button 
-                                class="btn p-0 me-2" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#editRoleModal"
-                                title="Editar rol"
-                                onclick="loadEditModal({{ $role->id }}, '{{ addslashes($role->name) }}', @json($role->permissions->pluck('id')))">
-                                <i class="bi bi-pencil icon-editar"></i>
-                            </button>
-                            @endcan
-                            @if($role->condicion == 1)
-                                @can('delete_roles')
-                                <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#eliminarRoleModal{{ $role->id }}" title="Desactivar rol">
-                                    <i class="bi bi-trash icon-eliminar"></i>
+                        @if(($mostrarInactivos && $role->condicion == 0) || (!$mostrarInactivos && $role->condicion == 1))
+                        <tr class="record-row">
+                            <td>{{ $role->name }}</td>
+                            <td>
+                                @if($role->permissions->count() > 0)
+                                    <span class="badge bg-info">{{ $role->permissions->count() }} permisos</span>
+                                @else
+                                    <span class="badge bg-secondary">Sin Permisos</span>
+                                @endif
+                            </td>
+                            <td>{{ $role->created_at->format('d/m/Y') }}</td>
+                            <td>
+                                <span class="badge {{ $role->condicion == 1 ? 'bg-success' : 'bg-danger' }}">
+                                    {{ $role->condicion == 1 ? 'Activo' : 'Inactivo' }}
+                                </span>
+                            </td>
+                            <td>
+                                @can('edit_roles')
+                                <button 
+                                    class="btn p-0 me-2" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#editRoleModal"
+                                    title="Editar rol"
+                                    onclick="loadEditModal({{ $role->id }}, '{{ addslashes($role->name) }}', @json($role->permissions->pluck('id')))">
+                                    <i class="bi bi-pencil icon-editar"></i>
                                 </button>
                                 @endcan
-                            @else
-                                @can('delete_roles')
-                                <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#reactivarRoleModal{{ $role->id }}" title="Activar rol">
-                                    <i class="bi bi-recycle icon-eliminar"></i>
-                                </button>
-                                @endcan
-                            @endif
-
-                        </td>
-                    </tr>
+                                @if($role->condicion == 1)
+                                    @can('delete_roles')
+                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#eliminarRoleModal{{ $role->id }}" title="Desactivar rol">
+                                        <i class="bi bi-trash icon-eliminar"></i>
+                                    </button>
+                                    @endcan
+                                @else
+                                    @can('delete_roles')
+                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#reactivarRoleModal{{ $role->id }}" title="Activar rol">
+                                        <i class="bi bi-arrow-counterclockwise icon-eliminar" style="color: #28a745;"></i>
+                                    </button>
+                                    @endcan
+                                @endif
+                            </td>
+                        </tr>
+                        {{-- Modal Desactivar Rol --}}
+                        <div class="modal fade" id="eliminarRoleModal{{ $role->id }}" tabindex="-1" aria-labelledby="modalEliminarRoleLabel{{ $role->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon">
+                                                <i class="bi bi-exclamation-circle"></i>
+                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Está seguro de desactivar este rol?</p>
+                                        <p class="text-muted small mb-0">{{ $role->name }}</p>
+                                        <div class="btn-group-custom">
+                                            <form method="POST" action="{{ route('role.destroy', $role->id) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-custom">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{-- Modal Reactivar Rol --}}
+                        <div class="modal fade" id="reactivarRoleModal{{ $role->id }}" tabindex="-1" aria-labelledby="modalReactivarRoleLabel{{ $role->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon" style="background-color: #28a745; color: #fff;">
+                                                <i class="bi bi-arrow-counterclockwise" style="color: #fff;"></i>
+                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Está seguro de reactivar este rol?</p>
+                                        <p class="text-muted small mb-0">{{ $role->name }}</p>
+                                        <div class="btn-group-custom">
+                                            <form method="POST" action="{{ route('role.destroy', $role->id) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-custom" style="background-color: #28a745; color: #fff;">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
                     @empty
                     <tr class="record-row">
                         <td class="text-center" colspan="5">No hay roles registrados.</td>
