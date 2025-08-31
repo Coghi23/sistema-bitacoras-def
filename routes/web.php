@@ -180,15 +180,5 @@ Route::get('/evento', [EventoController::class, 'index'])->name('evento.index');
 Route::get('/evento/profesor', [EventoController::class, 'index_profesor'])->name('evento.index_profesor');
 Route::get('/evento/soporte', [EventoController::class, 'index_soporte'])->name('evento.index_soporte');
 
-// Añadir esta ruta para el index de eventos del profesor
-Route::middleware(['auth', 'role:profesor'])->group(function () {
-    Route::get('/evento/profesor', [EventoController::class, 'indexProfesor'])->name('evento.index_profesor');
-});
-
-// Añadir esta ruta para el index de eventos de soporte
-Route::middleware(['auth', 'role:soporte'])->group(function () {
-    Route::get('/evento/soporte', [EventoController::class, 'indexSoporte'])->name('evento.index_soporte');
-});
-
 require __DIR__.'/auth.php';
 

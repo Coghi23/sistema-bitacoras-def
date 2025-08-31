@@ -20,6 +20,7 @@ class Evento extends Model
         'fecha',
         'observacion',
         'prioridad',
+        'estado',
         'confirmacion'
     ];
 

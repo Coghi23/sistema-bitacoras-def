@@ -314,70 +314,83 @@
         const intervalId = setInterval(cargarEventos, 3000);
 
         // Función para abrir modal
-        // Función para abrir modal
-        function abrirModal(evento) {
+        function abrirModal(id) {
+            const evento = @json($eventos);
+            const e = evento.find(ev => ev.id === id);
+            if (!e) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Evento no encontrado' });
+                return;
+            }
             Swal.fire({
-                title: 'Detalles del Evento',
+                title: '',
                 html: `
-                <div>
-                    <label>Docente:</label>
-                    <input type="text" class="form-control" value="${evento.usuario.name ?? 'N/A'}" disabled>
-
-                    <label>Institución:</label>
-                    <input type="text" class="form-control" value="${evento.horario.recinto.institucion?.nombre ?? ''}" disabled>
-
-                    <label>SubÁrea:</label>
-                    <input type="text" class="form-control" value="${evento.subarea?.nombre ?? ''}" disabled>
-
-                    <label>Sección:</label>
-                    <input type="text" class="form-control" value="${evento.seccion?.nombre ?? ''}" disabled>
-
-                    <label>Especialidad:</label>
-                    <input type="text" class="form-control" value="${evento.subarea?.especialidad?.nombre ?? ''}" disabled>
-
-                    <label>Fecha:</label>
-                    <input type="text" class="form-control" value="${evento.fecha_formateada}" disabled>
-
-                    <label>Hora:</label>
-                    <input type="text" class="form-control" value="${evento.hora_formateada}" disabled>
-
-                    <label>Recinto:</label>
-                    <input type="text" class="form-control" value="${evento.horario.recinto.nombre ?? ''}" disabled>
-
-                    <label>Prioridad:</label>
-                    <select class="form-select" id="prioridadInput">
-                        <option value="alta" ${evento.prioridad == 'alta' ? 'selected' : ''}>Alta</option>
-                        <option value="media" ${evento.prioridad == 'media' ? 'selected' : ''}>Media</option>
-                        <option value="regular" ${evento.prioridad == 'regular' ? 'selected' : ''}>Regular</option>
-                        <option value="baja" ${evento.prioridad == 'baja' ? 'selected' : ''}>Baja</option>
-                    </select>
-
-                    <label>Observaciones:</label>
-                    <textarea id="observacionInput" class="form-control">${evento.observacion}</textarea>
+                <div class='modal-contenido'>
+                    <div class='modal-encabezado d-flex align-items-center mb-3'>
+                        <span class='icono-atras' onclick='Swal.close()' style='cursor:pointer;'>
+                            <img width='40' height='40' src='https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png' alt='icono volver'/>
+                        </span>
+                        <h1 class='titulo ms-3 mb-0' style='font-size:1.5rem;'>Editar Evento</h1>
+                    </div>
+                    <div class='modal-cuerpo'>
+                        <div class='row'>
+                            <div class='col'>
+                                <label>Docente:</label>
+                                <input type='text' class='form-control mb-2' value='${e.usuario?.name ?? ''}' disabled>
+                                <label>Institución:</label>
+                                <input type='text' class='form-control mb-2' value='${e.horario?.recinto?.institucion?.nombre ?? ''}' disabled>
+                                <label>SubÁrea:</label>
+                                <input type='text' class='form-control mb-2' value='${e.subarea?.nombre ?? ''}' disabled>
+                                <label>Sección:</label>
+                                <input type='text' class='form-control mb-2' value='${e.seccion?.nombre ?? ''}' disabled>
+                                <label>Especialidad:</label>
+                                <input type='text' class='form-control mb-2' value='${e.subarea?.especialidad?.nombre ?? ''}' disabled>
+                            </div>
+                            <div class='col'>
+                                <label>Fecha:</label>
+                                <input type='text' class='form-control mb-2' value='${e.fecha ?? ''}' disabled>
+                                <label>Hora:</label>
+                                <input type='text' class='form-control mb-2' value='${e.hora_envio ?? ''}' disabled>
+                                <label>Recinto:</label>
+                                <input type='text' class='form-control mb-2' value='${e.horario?.recinto?.nombre ?? ''}' disabled>
+                                <label>Prioridad:</label>
+                                <select class='form-select mb-2' id='prioridadInput'>
+                                    <option value='alta' ${e.prioridad === 'alta' ? 'selected' : ''}>Alta</option>
+                                    <option value='media' ${e.prioridad === 'media' ? 'selected' : ''}>Media</option>
+                                    <option value='regular' ${e.prioridad === 'regular' ? 'selected' : ''}>Regular</option>
+                                    <option value='baja' ${e.prioridad === 'baja' ? 'selected' : ''}>Baja</option>
+                                </select>
+                                <label>Estado:</label>
+                                <input type='text' class='form-control mb-2' value='En espera' disabled>
+                            </div>
+                        </div>
+                        <div class='observaciones mt-3'>
+                            <label>Observaciones:</label>
+                            <textarea id='observacionInput' class='form-control mb-2'>${e.observacion ?? ''}</textarea>
+                        </div>
+                    </div>
                 </div>
-            `,
+                `,
                 showCancelButton: true,
                 confirmButtonText: 'Guardar Cambios',
                 cancelButtonText: 'Cerrar',
+                width: '800px',
                 customClass: {
-                    popup: 'swal2-custom-popup'
+                    popup: 'bg-transparent',
+                    content: 'swal2-content',
+                    container: 'modal-detalles-container'
                 },
                 preConfirm: () => {
-                    // Retornar datos a enviar
                     return {
                         prioridad: document.getElementById('prioridadInput').value,
                         observacion: document.getElementById('observacionInput').value
                     };
                 }
-            }).then(async (result) => {
+            }).then((result) => {
                 if (result.isConfirmed) {
-                    // Llamar a la función de guardado
-                    await guardarCambios(evento.id, result.value);
+                    guardarCambios(id, result.value);
                 }
             });
         }
-
-
 
         function cerrarModal(id) {
             Swal.close();
@@ -412,20 +425,19 @@
 
 
 
-        async function guardarCambios(id, data) {
-            try {
-                const formData = new FormData();
-                formData.append('prioridad', data.prioridad);
-                formData.append('observacion', data.observacion);
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-
-                const response = await fetch(`/evento/${id}/update`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
+        function guardarCambios(id, data) {
+            const formData = new FormData();
+            formData.append('prioridad', data.prioridad);
+            formData.append('observacion', data.observacion);
+            formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+            formData.append('_method', 'PATCH'); // Importante para spoofing de método
+            fetch(`/evento/${id}`, {
+                method: 'POST', // Laravel reconoce _method para spoofing
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
                 if (result.success) {
                     Swal.fire({
                         icon: 'success',
@@ -433,20 +445,16 @@
                         toast: true,
                         position: 'top-end',
                         showConfirmButton: false,
-                        timer: 2500
+                        timer: 2000
                     });
-                    location.reload(); // recarga la página para reflejar cambios
+                    setTimeout(() => location.reload(), 1200);
                 } else {
                     throw new Error(result.message || 'Error al guardar cambios');
                 }
-
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message
-                });
-            }
+            })
+            .catch(error => {
+                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+            });
         }
 
 
