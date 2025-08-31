@@ -20,16 +20,34 @@ class StoreEventoRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
+{
+    return [
+       
+        'id_seccion' => 'required|exists:seccione,id',   
+        'id_subarea' => 'required|exists:subarea,id',    
+        'id_horario' => 'required|exists:horarios,id',
+        'observacion' => 'required|string|max:500',
+        'prioridad' => 'required|in:alta,media,regular,baja',
+    ];
+}
+
+
+    public function messages(): array
     {
         return [
-            'idBitacora' => 'required|exists:bitacora,id',
-            'user_id' => 'required|exists:users,id',
-            'fecha' => 'required|date',
-            'observacion' => 'required|string|max:255',
-            'prioridad' => 'required|integer',
-            'confirmacion' => 'required|boolean',
-            'descripcion' => 'required|string|max:255',
-            'condicion' => 'required|boolean'
+            'id_bitacora.required' => 'La bitácora es obligatoria.',
+            'id_bitacora.exists' => 'La bitácora seleccionada no existe.',
+            'id_seccion.required' => 'La sección es obligatoria.',
+            'id_seccion.exists' => 'La sección seleccionada no existe.',
+            'id_subarea.required' => 'La subárea es obligatoria.',
+            'id_subarea.exists' => 'La subárea seleccionada no existe.',
+            'id_horario.required' => 'El horario es obligatorio.',
+            'id_horario.exists' => 'El horario seleccionado no existe.',
+            'prioridad.required' => 'La prioridad es obligatoria.',
+            'prioridad.in' => 'La prioridad debe ser alta, media, regular o baja.',
+            'observacion.required' => 'La observación es obligatoria.',
+            'observacion.string' => 'La observación debe ser texto.',
+            'observacion.max' => 'La observación no puede exceder los 500 caracteres.',
         ];
     }
 }

@@ -39,7 +39,7 @@
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
-            <a href="{{asset('bitacora')}}" class="sidebar-item">
+            <a href="{{route('evento.create')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Bitácora</div>
             </a>
@@ -48,10 +48,13 @@
                 <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Gestión de Llaves">Llaves</div>
             </a>
-            <a href="#" class="sidebar-item">
+
+            <a href="{{route('evento.index_profesor')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
+                <div class="label" data-bs-toggle="tooltip" title="Reportes">Mis reportes</div>
             </a>
+
+
             <div class="mt-auto mb-3" style="width:100%;">
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                     @csrf

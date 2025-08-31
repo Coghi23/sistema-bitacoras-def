@@ -14,9 +14,11 @@ class Bitacora extends Model
    
     protected $fillable = [
         'id_recinto',
+
         'id_llave',
         'condicion',
-        'estado'
+        'estado',
+
     ];
 
 
@@ -26,9 +28,6 @@ class Bitacora extends Model
         return $this->belongsTo(Recinto::class, 'id_recinto');
    
     }
-
-
-
 
     public function llave()
     {
@@ -49,6 +48,7 @@ class Bitacora extends Model
             $query->where('name', 'profesor');
         });
     }
+
 
 
     public function evento(){

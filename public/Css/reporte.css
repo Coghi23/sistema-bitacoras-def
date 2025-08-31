@@ -1,0 +1,398 @@
+/* INICIO DE REPORTES */
+
+/* Contenedor de filtros: los pongo en línea con espacio entre ellos */
+.report-filters {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+/* Estilo para el input de búsqueda */
+.report-filters input{
+  display: flex;
+  min-width: 100px; /* Evita que se encoja en pantallas pequeñas */
+  align-items: center;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 9999px; /* Lo hago redondito */
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 2rem;
+  width: 100%;
+  border: 2px solid #00A0E6; /* Borde azul */
+}
+
+/* Estilo para el select de filtros */
+.report-filters select {
+  font-size: 1.1rem;
+  display: flex;
+  min-width: 60px;
+  align-items: center;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 2rem;
+  border: 2px solid #00A0E6;
+}
+
+/* Contenedores de input y select, para poder posicionar íconos */
+.input-wrapper,
+.select-wrapper {
+  position: relative;
+  width: 80%;
+}
+
+/* Íconos que aparecen dentro del input y del select */
+.input-wrapper i,
+.select-wrapper i {
+  position: absolute;
+  top: 40%;
+  left: 1rem;
+  transform: translateY(-50%);
+  color: #0b0b0b;
+  font-size: 1.30rem;
+  pointer-events: none; /* El ícono no interfiere con clics */
+}
+
+/* Le agrego espacio a la izquierda del input y select por el ícono */
+.input-wrapper input,
+.select-wrapper select {
+  padding-left: 3rem !important;
+}
+
+/* Contenedor de la tabla con scroll horizontal para móviles */
+.tabla-contenedor {
+  overflow-x: auto;
+  width: 93%;
+}
+
+/* Fila de encabezados y filas de datos (estructura general) */
+.header-row,
+.record-row {
+  display: flex;
+  min-width: 700; /* ⚠ Esto debería tener 'px' */
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  white-space: nowrap;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  padding: 0.5rem 2rem;
+}
+
+/* Encabezado con fondo azul y letras blancas */
+.header-row {
+  background-color: #134496;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+/* Fila de datos con fondo blanco y sombra */
+.record-row {
+  background-color: white;
+  color: black;
+  border: 1px solid #ddd;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Estructura de cada celda en filas y encabezados */
+#tabla-reportes .header-row > div,
+#tabla-reportes .record-row > div {
+  flex: 1;
+  padding: 0 6px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-right: 1px solid #ccc;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 17px;
+}
+
+/* Estado "En espera" con fondo vinotinto */
+.estado-espera {
+  background-color: #870031;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+/* Estado "Atendido" con fondo verde */
+.estado-atendido {
+  background-color: #318700;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+/* Elimino borde derecho de la última columna */
+.col-detalles {
+  border-right: none;
+}
+
+/* Hago la columna del docente un poco más angosta */
+.col-docente {
+  flex: 0.8;
+}
+
+/* Estilo del botón "Ver más" */
+#btn-ver-mas {
+  background-color: #134496;
+  color: white;
+  border-radius: 50px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+/* Ajustes para móviles */
+@media (max-width: 765px) {
+  .header-row, .record-row {
+    font-size: 0.85rem;
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+  }
+
+  .btn-ver-mas {
+    font-size: 5rem; /* ⚠ Muy grande, pero así está */
+    padding: 0.2rem 0.6rem;
+  }
+}
+
+/* MODAAAALLLL (modal de detalles del reporte) */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  top: 0;
+  width: 90%;
+  height: 90%;
+  background: rgba(0, 0, 0, 0.6);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/* Contenedor interno del modal */
+.modal-contenido {
+  background: white;
+  margin: 3% auto;
+  width: 90%;
+  max-width: 700px;
+  max-height: 800px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 3px solid #004AAD;
+  box-shadow: 0 0 12px rgba(0,0,0,0.4);
+}
+
+/* Modal adaptado a pantallas pequeñas */
+@media (max-width: 600px) {
+  .modal {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+  }
+
+  .modal-contenido {
+    width: 95%;
+    height: auto;
+    max-height: 90%;
+    margin: 10% auto;
+    overflow-y: auto;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .col {
+    width: 100%;
+  }
+}
+
+/* Encabezado del modal */
+.modal-encabezado {
+  background: #004AAD;
+  color: white;
+  padding: 0.5rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  border-bottom: 4px solid #FDB813;
+}
+
+/* Ícono de retroceso en el modal */
+.modal-encabezado .icono-atras {
+  position: absolute;
+  left: 1rem;
+  cursor: pointer;
+}
+
+/* Título del modal centrado */
+.modal-encabezado .titulo {
+  margin: 0 auto;
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+/* Cuerpo del modal con los inputs */
+.modal-cuerpo {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Estructura de inputs por columnas */
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.col label {
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.col input {
+  border: 1px solid #ccc;
+  border-radius: 16px;
+  padding: 6px 10px;
+  text-align: center;
+  background-color: #f8f8f8;
+  font-weight: 500;
+}
+
+/* Etiqueta de "Estado" */
+.estado label {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* Botones de estado, aunque no se usan como tal */
+.estado-botones {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.estado-btn {
+  border: 1px solid #444;
+  padding: 6px 12px;
+  border-radius: 20px;
+  background-color: white;
+  cursor: default;
+}
+
+/* Caja de observaciones */
+.observaciones label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.observaciones textarea {
+  width: 100%;
+  height: 60px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 8px;
+  resize: none;
+  background-color: #fefefe;
+}
+
+/* Responsive avanzado para pantallas más pequeñas */
+@media (max-width: 700px) {
+  .header-row {
+    display: none; /* Oculto encabezados en móvil */
+  }
+
+  .report-filters {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 58%;
+    padding: 1rem;
+    box-sizing: border-box;
+    background-color: #fff;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .report-filters input {
+    min-width: unset !important;
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 9999px;
+    border: 1px solid #00A0E6;
+    width: 150%;
+  }
+
+  .report-filters select {
+    min-width: unset !important;
+    box-sizing: border-box;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 9999px;
+    border: 1px solid #00A0E6;
+    width: 90%;
+  }
+
+  .record-row {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin-bottom: 5px;
+    border-radius: 8px;
+    background-color: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    width: 70%;
+    box-sizing: border-box;
+  }
+
+  .record-row > div {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-right: none !important;
+    width: 100%;
+  }
+
+  .record-row > div::before {
+    content: attr(data-label);
+    font-weight: bold;
+    margin-right: 10px;
+    flex-shrink: 0;
+  }
+
+  .estado-atendido,
+  .estado-espera {
+    color: white;
+    padding: 4px 12px;
+    border-radius: 999px;
+    display: inline;
+  }
+
+  .btn-ver-mas {
+    align-self: flex-end;
+    margin-top: 10px;
+  }
+}

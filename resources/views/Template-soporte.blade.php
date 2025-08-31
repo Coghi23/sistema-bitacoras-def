@@ -28,6 +28,7 @@
 
 
     <div id="sidebar-navbar">
+
         <div class="topbar">
             <button class="hamburger d-md-none" onclick="toggleSidebar()">
                 <i class="bi bi-list"></i>
@@ -44,8 +45,6 @@
             <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo COVAO" class="logo" />
            
         </div>
-
-
         <div class="yellow-line"></div>
         <div class="sidebar-separator d-none d-md-block"></div>
 
@@ -54,17 +53,11 @@
             <div class="sidebar-logo">
                 <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
             </div>
-
-
-            <a href="{{ route('dashboard') }}" class="sidebar-item">
+            <a href="{{route('dashboard')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
-            </a>
 
-
-
-
-            <a href="{{ url('reportes.html') }}" class="sidebar-item">
+            <a href="{{route('evento.index_soporte')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>
@@ -97,13 +90,17 @@
     </div>
 
 
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('JS/Sidebar.js') }}"></script>
+    <script src="{{ asset('JS/indexBitacoras.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     <script src="{{ asset('JS/modals-create-especialidad.js') }}"></script>
     <script src="{{ asset('JS/modals-edit-especialidad.js') }}"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO" crossorigin="anonymous"></script>
-   
-    <!-- Scripts específicos de páginas -->
     @stack('scripts')
 </body>
 

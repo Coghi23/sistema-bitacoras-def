@@ -31,6 +31,7 @@ Route::get('/', function () {
 Route::resource('bitacora', BitacoraController::class);
 
 
+
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de recursos con protección para directores en acciones de escritura
 
@@ -69,7 +70,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('llave', LlaveController::class);
 
-    Route::view('evento', EventoController::class);
+    // Define only the routes you need
+    Route::resource('evento', EventoController::class)->except(['show']);
 
     Route::view('/template-administrador', 'Template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'Template-profesor')->name('template-profesor');
@@ -168,6 +170,30 @@ Route::get('/clear-cache', function () {
         return 'No cache to clear.';
     }
 });
+
+// Nueva ruta para cargar eventos
+
+Route::get('/eventos/load', [EventoController::class, 'loadEventos'])->name('eventos.load');
+Route::get('/eventos/profesor/load', [EventoController::class, 'loadEventosProfesor'])->name('eventos.profesor.load');
+Route::get('/eventos/soporte/load', [EventoController::class, 'loadEventosSoporte'])->name('eventos.soporte.load');
+
+// Rutas para actualizar y desactivar eventos
+Route::post('/evento/{id}/update', [EventoController::class, 'update'])->name('evento.update');
+Route::get('/evento', [EventoController::class, 'index'])->name('evento.index');
+
+
+
+
+// Añadir esta ruta para el index de eventos del profesor
+Route::middleware(['auth', 'role:profesor'])->group(function () {
+    Route::get('/evento/profesor', [EventoController::class, 'index_profesor'])->name('evento.index_profesor');
+});
+
+// Añadir esta ruta para el index de eventos de soporte
+Route::middleware(['auth', 'role:soporte'])->group(function () {
+    Route::get('/evento/soporte', [EventoController::class, 'index_soporte'])->name('evento.index_soporte');
+});
+Route::delete('/evento/{evento}', [EventoController::class, 'destroy'])->name('evento.destroy');
 
 require __DIR__.'/auth.php';
 
