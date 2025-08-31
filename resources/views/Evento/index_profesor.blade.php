@@ -63,31 +63,50 @@
 
                         <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $evento->id }}" tabindex="-1"
-                            aria-labelledby="modalEventoEliminarLabel-{{ $evento->id }}" aria-hidden="true">
+                            aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content custom-modal">
-                                    <div class="modal-body text-center">
-                                        <div class="icon-container">
-                                            <div class="circle-icon">
-                                                <i class="bi bi-exclamation-circle"></i>
-                                            </div>
+                                <div class="modal-content" style="border-radius: 15px; border: none;">
+                                    <div class="modal-body p-4 text-center">
+                                        <div class="mb-4">
+                                            <i class="bi bi-exclamation-circle text-warning" style="font-size: 3rem;"></i>
                                         </div>
-                                        <p class="modal-text">¿Desea Eliminar el Evento?</p>
-                                        <div class="btn-group-custom">
-                                            <form action="{{ route('evento.destroy', ['evento' => $evento->id]) }}"
-                                                method="post">
-                                                @method('DELETE')
+                                        <h4 class="mb-3" style="color: #2c3e50;">¿Desea desactivar este evento?</h4>
+                                        <p class="text-muted mb-4">Esta acción no se puede deshacer</p>
+                                        <div class="d-flex justify-content-center gap-3">
+                                            <form action="{{ route('evento.destroy', $evento->id) }}" method="POST">
                                                 @csrf
-                                                <button type="submit"
-                                                    class="btn btn-custom">Sí</button>
-                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-primary px-4"
+                                                    style="background-color: #134496; border: none;">
+                                                    <i class="bi bi-check-lg me-2"></i>Sí, desactivar
+                                                </button>
                                             </form>
+                                            <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                                                <i class="bi bi-x-lg me-2"></i>Cancelar
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
+                        <!-- Modal Éxito Eliminar -->
+                            <div class="modal fade" id="modalExitoEliminar" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content text-center">
+                                    <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 256 256">
+                                        <g fill="#efc737" fill-rule="nonzero">
+                                            <g transform="scale(5.12,5.12)">
+                                            <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"/>
+                                            </g>
+                                        </g>
+                                        </svg>
+                                        <p class="mb-0">Reporte eliminado con éxito</p>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
                     @endforeach
                 </div>
             </div>
@@ -272,190 +291,6 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        const loadingSpinner = document.getElementById('loadingSpinner');
-        const eventosContainer = document.getElementById('eventos-container');
-        let currentTimestamp = '{{ $eventos->max('updated_at') }}';
-
-        async function cargarEventos() {
-            try {
-                const response = await fetch(`{{ route('eventos.soporte.load') }}?timestamp=${currentTimestamp}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json'
-                    }
-                });
-
-                if (!response.ok) throw new Error('Error en la red');
-
-                const data = await response.json();
-
-                if (data.success && data.hasNewData) {
-                    loadingSpinner.classList.remove('d-none');
-                    eventosContainer.style.opacity = '0.6';
-
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = data.html;
-
-                    const newEventosContainer = tempDiv.querySelector('#eventos-container');
-                    if (newEventosContainer) {
-                        eventosContainer.innerHTML = newEventosContainer.innerHTML;
-                        currentTimestamp = data.timestamp;
-                    }
-
-                    eventosContainer.style.opacity = '1';
-                    loadingSpinner.classList.add('d-none');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        }
-
-        // Comprobar cambios cada 3 segundos
-        const intervalId = setInterval(cargarEventos, 3000);
-
-        // Función para abrir modal
-        // Función para abrir modal
-        function abrirModal(evento) {
-            Swal.fire({
-                title: 'Detalles del Evento',
-                html: `
-                <div>
-                    <label>Docente:</label>
-                    <input type="text" class="form-control" value="${evento.usuario.name ?? 'N/A'}" disabled>
-
-                    <label>Institución:</label>
-                    <input type="text" class="form-control" value="${evento.horario.recinto.institucion?.nombre ?? ''}" disabled>
-
-                    <label>SubÁrea:</label>
-                    <input type="text" class="form-control" value="${evento.subarea?.nombre ?? ''}" disabled>
-
-                    <label>Sección:</label>
-                    <input type="text" class="form-control" value="${evento.seccion?.nombre ?? ''}" disabled>
-
-                    <label>Especialidad:</label>
-                    <input type="text" class="form-control" value="${evento.subarea?.especialidad?.nombre ?? ''}" disabled>
-
-                    <label>Fecha:</label>
-                    <input type="text" class="form-control" value="${evento.fecha_formateada}" disabled>
-
-                    <label>Hora:</label>
-                    <input type="text" class="form-control" value="${evento.hora_formateada}" disabled>
-
-                    <label>Recinto:</label>
-                    <input type="text" class="form-control" value="${evento.horario.recinto.nombre ?? ''}" disabled>
-
-                    <label>Prioridad:</label>
-                    <select class="form-select" id="prioridadInput">
-                        <option value="alta" ${evento.prioridad == 'alta' ? 'selected' : ''}>Alta</option>
-                        <option value="media" ${evento.prioridad == 'media' ? 'selected' : ''}>Media</option>
-                        <option value="regular" ${evento.prioridad == 'regular' ? 'selected' : ''}>Regular</option>
-                        <option value="baja" ${evento.prioridad == 'baja' ? 'selected' : ''}>Baja</option>
-                    </select>
-
-                    <label>Observaciones:</label>
-                    <textarea id="observacionInput" class="form-control">${evento.observacion}</textarea>
-                </div>
-            `,
-                showCancelButton: true,
-                confirmButtonText: 'Guardar Cambios',
-                cancelButtonText: 'Cerrar',
-                customClass: {
-                    popup: 'swal2-custom-popup'
-                },
-                preConfirm: () => {
-                    // Retornar datos a enviar
-                    return {
-                        prioridad: document.getElementById('prioridadInput').value,
-                        observacion: document.getElementById('observacionInput').value
-                    };
-                }
-            }).then(async (result) => {
-                if (result.isConfirmed) {
-                    // Llamar a la función de guardado
-                    await guardarCambios(evento.id, result.value);
-                }
-            });
-        }
-
-
-
-        function cerrarModal(id) {
-            Swal.close();
-        }
-
-        // Add to your existing scripts section
-        function confirmarEliminacion(id) {
-            Swal.fire({
-                title: '¿Desea desactivar este evento?',
-                html: '<div class="text-muted">Esta acción no se puede deshacer</div>',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#134496',
-                cancelButtonColor: '#6c757d',
-                confirmButtonText: '<i class="bi bi-check-lg me-1"></i>Sí, desactivar',
-                cancelButtonText: '<i class="bi bi-x-lg me-1"></i>Cancelar',
-                customClass: {
-                    container: 'delete-modal-container',
-                    popup: 'delete-modal-popup',
-                    title: 'delete-modal-title',
-                    htmlContainer: 'delete-modal-content',
-                    confirmButton: 'btn btn-primary px-4',
-                    cancelButton: 'btn btn-secondary px-4'
-                },
-                buttonsStyling: false
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    eliminarEvento(id);
-                }
-            });
-        }
-
-
-
-        async function guardarCambios(id, data) {
-            try {
-                const formData = new FormData();
-                formData.append('prioridad', data.prioridad);
-                formData.append('observacion', data.observacion);
-                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
-
-                const response = await fetch(`/evento/${id}/update`, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Cambios guardados',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 2500
-                    });
-                    location.reload(); // recarga la página para reflejar cambios
-                } else {
-                    throw new Error(result.message || 'Error al guardar cambios');
-                }
-
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: error.message
-                });
-            }
-        }
-
-
-        // Limpiar intervalo cuando se abandona la página
-        window.addEventListener('beforeunload', () => {
-            clearInterval(intervalId);
-        });
-
-        // Cargar datos iniciales
-        document.addEventListener('DOMContentLoaded', cargarEventos);
+        
     </script>
 @endpush

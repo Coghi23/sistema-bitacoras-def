@@ -248,7 +248,7 @@ class EventoController extends Controller
             $evento->save();
 
             DB::commit();
-            return redirect()->route('evento.index')
+            return redirect()->route('evento.index_profesor')
                 ->with('success', 'Evento guardado correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
