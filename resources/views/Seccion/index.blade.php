@@ -310,6 +310,21 @@
     // Variables globales para crear sección
     let especialidadesAgregadas = [];
 
+    // Recargar la página al cerrar cualquier modal de crear o editar sección
+    document.addEventListener('DOMContentLoaded', function() {
+        var modalCrear = document.getElementById('modalAgregarSeccion');
+        if (modalCrear) {
+            modalCrear.addEventListener('hidden.bs.modal', function () {
+                window.location.reload();
+            });
+        }
+        document.querySelectorAll('[id^="modalEditarSeccion-"]').forEach(function(modalEditar) {
+            modalEditar.addEventListener('hidden.bs.modal', function () {
+                window.location.reload();
+            });
+        });
+    });
+
 
     // ========== FUNCIONES PARA VALIDACIÓN ==========
    
