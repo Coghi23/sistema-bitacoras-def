@@ -18,35 +18,54 @@
 <div class="wrapper">
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="input-group w-50">
-                <span class="input-group-text bg-white border-white">
-                    <i class="bi bi-search text-secondary"></i>
-                </span>
-                <form method="GET" action="{{ route('horario.index') }}" class="d-flex w-100">
-                    <input type="text" class="form-control border-start-0 shadow-sm" style="border-radius: 20px;" placeholder="Buscar docente..." name="busquedaDocente" value="{{ request('busquedaDocente') }}" autocomplete="off" />
-                </form>
-            </div>
-            <div class="d-flex gap-2">
-                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center" 
-                    data-bs-toggle="modal" data-bs-target="#modalHorario" 
-                    title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem;">
-                    Agregar <i class="bi bi-plus-circle ms-2"></i>
-                </button>
-                <div class="dropdown">
-                    <button class="btn btn-outline-primary rounded-pill px-4 d-flex align-items-center dropdown-toggle" 
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false"
-                        style="font-size: 1.2rem;">
-                        <i class="bi bi-funnel me-2"></i>
-                        Filtros
-                    </button>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="{{ route('horario.index') }}">Todos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'fijo']) }}">Horarios fijos</a></li>
-                        <li><a class="dropdown-item" href="{{ route('horario.index', ['tipo' => 'temporal']) }}">Horarios temporales</a></li>
-                    </ul>
+            <div class="search-bar-wrapper mb-4">
+                <div class="search-bar">
+                    <form id="busquedaForm" method="GET" action="{{ route('horario.index') }}" class="w-100 position-relative">
+                        <span class="search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Buscar horario..."
+                            name="busquedaHorario"
+                            value="{{ request('busquedaHorario') }}"
+                            id="inputBusqueda"
+                            autocomplete="off"
+                        >
+                        @if(request('busquedaHorario'))
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                            id="limpiarBusqueda"
+                            title="Limpiar búsqueda"
+                            style="background: transparent;"
+                        >
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                        @endif
+                    </form>
                 </div>
+                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                        data-bs-toggle="modal" data-bs-target="#modalHorario"
+                        title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem;">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
+                    </button>
+                @endif
+            
             </div>
         </div>
+      {{-- Indicador de resultados de búsqueda --}}
+            @if(request('busquedaHorario'))
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <span>
+                        Mostrando {{ $horarios->count() }} resultado(s) para "<strong>{{ request('busquedaHorario') }}</strong>"
+                        <a href="{{ route('horario.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
+                    </span>
+                </div>
+            @endif
 
         {{-- Tabla Horarios Fijos --}}
         <div id="tabla-horarios-fijos">
@@ -566,7 +585,89 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
+
+            document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modal) {
+        const id = modal.id.replace('modalEditarHorario', '');
+        const fijoRadio = modal.querySelector(`#fijoRadio${id}`);
+        const temporalRadio = modal.querySelector(`#temporalRadio${id}`);
+        const fechaInput = modal.querySelector('input[name="fecha"]');
+        const diaSelect = modal.querySelector('select[name="dia"]');
+
+        function toggleFieldsEditar() {
+            if (fijoRadio && fijoRadio.checked) {
+                if (fechaInput) {
+                    fechaInput.disabled = true;
+                    fechaInput.style.backgroundColor = '#f8f9fa';
+                    fechaInput.style.color = '#6c757d';
+                    fechaInput.style.cursor = 'not-allowed';
+                }
+                if (diaSelect) {
+                    diaSelect.disabled = false;
+                    diaSelect.style.backgroundColor = '';
+                    diaSelect.style.color = '';
+                    diaSelect.style.cursor = '';
+                }
+            } else if (temporalRadio && temporalRadio.checked) {
+                if (diaSelect) {
+                    diaSelect.disabled = true;
+                    diaSelect.style.backgroundColor = '#f8f9fa';
+                    diaSelect.style.color = '#6c757d';
+                    diaSelect.style.cursor = 'not-allowed';
+                }
+                if (fechaInput) {
+                    fechaInput.disabled = false;
+                    fechaInput.style.backgroundColor = '';
+                    fechaInput.style.color = '';
+                    fechaInput.style.cursor = '';
+                }
+            }
+        }
+
+        if (fijoRadio && temporalRadio && fechaInput && diaSelect) {
+            fijoRadio.addEventListener('change', toggleFieldsEditar);
+            temporalRadio.addEventListener('change', toggleFieldsEditar);
+
+            modal.addEventListener('shown.bs.modal', function() {
+                toggleFieldsEditar();
+            });
+
+            // Estado inicial
+            toggleFieldsEditar();
+        }
+    });
+
+
+    // Funcionalidad de búsqueda en tiempo real
+    let timeoutId;
+    const inputBusqueda = document.getElementById('inputBusqueda');
+    const formBusqueda = document.getElementById('busquedaForm');
+    const btnLimpiar = document.getElementById('limpiarBusqueda');
+    
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('input', function() {
+            clearTimeout(timeoutId);
+            timeoutId = setTimeout(function() {
+                formBusqueda.submit();
+            }, 500); // Espera 500ms después de que el usuario deje de escribir
+        });
+        
+        // También permitir búsqueda al presionar Enter
+        inputBusqueda.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                formBusqueda.submit();
+            }
+        });
+    }
+    
+    // Funcionalidad del botón limpiar
+    if (btnLimpiar) {
+        btnLimpiar.addEventListener('click', function() {
+            inputBusqueda.value = '';
+            window.location.href = '{{ route("horario.index") }}';
+        });
+    }
     // Abrir modal automáticamente si hay errores de validación
     @if ($errors->any() && (old('_method') === null))
         // Si hay errores y no es una actualización (método PUT), abrir modal de creación
@@ -691,55 +792,5 @@ function deseleccionarTodasLecciones() {
     checkboxes.forEach(checkbox => checkbox.checked = false);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modal) {
-        const id = modal.id.replace('modalEditarHorario', '');
-        const fijoRadio = modal.querySelector(`#fijoRadio${id}`);
-        const temporalRadio = modal.querySelector(`#temporalRadio${id}`);
-        const fechaInput = modal.querySelector('input[name="fecha"]');
-        const diaSelect = modal.querySelector('select[name="dia"]');
 
-        function toggleFieldsEditar() {
-            if (fijoRadio && fijoRadio.checked) {
-                if (fechaInput) {
-                    fechaInput.disabled = true;
-                    fechaInput.style.backgroundColor = '#f8f9fa';
-                    fechaInput.style.color = '#6c757d';
-                    fechaInput.style.cursor = 'not-allowed';
-                }
-                if (diaSelect) {
-                    diaSelect.disabled = false;
-                    diaSelect.style.backgroundColor = '';
-                    diaSelect.style.color = '';
-                    diaSelect.style.cursor = '';
-                }
-            } else if (temporalRadio && temporalRadio.checked) {
-                if (diaSelect) {
-                    diaSelect.disabled = true;
-                    diaSelect.style.backgroundColor = '#f8f9fa';
-                    diaSelect.style.color = '#6c757d';
-                    diaSelect.style.cursor = 'not-allowed';
-                }
-                if (fechaInput) {
-                    fechaInput.disabled = false;
-                    fechaInput.style.backgroundColor = '';
-                    fechaInput.style.color = '';
-                    fechaInput.style.cursor = '';
-                }
-            }
-        }
-
-        if (fijoRadio && temporalRadio && fechaInput && diaSelect) {
-            fijoRadio.addEventListener('change', toggleFieldsEditar);
-            temporalRadio.addEventListener('change', toggleFieldsEditar);
-
-            modal.addEventListener('shown.bs.modal', function() {
-                toggleFieldsEditar();
-            });
-
-            // Estado inicial
-            toggleFieldsEditar();
-        }
-    });
-});
 </script>
