@@ -39,9 +39,9 @@
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
-            <a href="{{asset('bitacora')}}" class="sidebar-item">
+            <a href="{{ route('bitacora.index') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Horarios">Bitácora</div>
+                <div class="label" data-bs-toggle="tooltip" title="Bitácora">Bitácora</div>
             </a>
 
             <a href="{{ route('profesor-llave.index') }}" class="sidebar-item" title="Ir a Gestión de Llaves">
@@ -64,7 +64,11 @@
         </div>
     </div>
 
-    @yield('content')
+    <div class="wrapper">
+        <div class="main-content p-4">
+            @yield('content')
+        </div>
+    </div>
 
     <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
