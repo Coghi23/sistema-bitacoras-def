@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\InstitucionController;
 use App\Http\Controllers\SubareaController;
 use App\Http\Controllers\SeccionController;
@@ -71,7 +72,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('llave', LlaveController::class);
 
     // Define only the routes you need
-    Route::resource('evento', EventoController::class)->except(['show']);
+    // Ruta personalizada para crear evento con bitacora_id
+    Route::get('evento/create/{bitacora_id?}', [App\Http\Controllers\EventoController::class, 'create'])->name('evento.create');
+    Route::resource('evento', EventoController::class)->except(['show', 'create']);
 
     Route::view('/template-administrador', 'Template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'Template-profesor')->name('template-profesor');
@@ -208,5 +211,8 @@ Route::middleware(['auth', 'role:soporte'])->group(function () {
 });
 Route::delete('/evento/{evento}', [EventoController::class, 'destroy'])->name('evento.destroy');
 
-require __DIR__.'/auth.php';
 
+
+
+
+require __DIR__.'/auth.php';

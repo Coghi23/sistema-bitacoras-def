@@ -159,44 +159,46 @@ class EventoController extends Controller
     {
         $eventos = Evento::with('bitacora', 'usuario', 'seccion', 'subarea', 'horario')->get();
         $bitacoras = Bitacora::all();
-
         $seccione = Seccione::all();
         $subareas = Subarea::all();
-
-    // Mostrar todos los horarios (sin filtrar por usuario) para depuración
-    $horarios = Horario::with(['recinto', 'subarea', 'seccion', 'leccion'])->get();
-
-        // Obtener todas las lecciones disponibles
-        $lecciones = $horarios->flatMap(function ($horario) {
-            return $horario->leccion->map(function ($leccion) use ($horario) {
-                $leccion->horario_data = $horario;
-                return $leccion;
-            });
-        })->unique('id');
-
 
         // Obtener todos los usuarios con rol profesor
         $profesores = User::whereHas('roles', function ($query) {
             $query->where('name', 'profesor');
         })->get();
 
-        // Obtener datos del horario seleccionado si existe
+        // Si se recibe id_bitacora, filtrar por el horario de esa bitácora
+        $lecciones = collect();
         $horarioSeleccionado = null;
-        if ($request->filled('leccion')) {
-            $horarioSeleccionado = $horarios->where('id', $request->get('leccion'))->first();
+        $fecha = null;
+        $seccion = '';
+        $subarea = '';
+        $recinto = '';
+        $bitacoraId = null;
+        $horarios = collect();
+
+        if ($request->filled('id_bitacora')) {
+            $bitacoraId = $request->get('id_bitacora');
+            $bitacora = Bitacora::find($bitacoraId);
+            if ($bitacora && $bitacora->id_recinto) {
+                // Buscar el horario que tenga ese recinto
+                $horarioSeleccionado = Horario::with(['recinto', 'subarea', 'seccion', 'leccion'])
+                    ->where('idRecinto', $bitacora->id_recinto)
+                    ->first();
+                if ($horarioSeleccionado) {
+                    $horarios = collect([$horarioSeleccionado]);
+                    // Asignar horario_data a cada lección
+                    $lecciones = $horarioSeleccionado->leccion->map(function($leccion) use ($horarioSeleccionado) {
+                        $leccion->horario_data = $horarioSeleccionado;
+                        return $leccion;
+                    });
+                    $fecha = $horarioSeleccionado->fecha;
+                    $seccion = $horarioSeleccionado->seccion ? $horarioSeleccionado->seccion->nombre : '';
+                    $subarea = $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
+                    $recinto = $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
+                }
+            }
         }
-
-        // Obtener la fecha del primer horario o horario seleccionado
-        $fecha = $horarioSeleccionado ? $horarioSeleccionado->fecha : ($horarios->first() ? $horarios->first()->fecha : null);
-
-        // Obtener datos dinámicos basados en la selección
-        $seccion = $horarioSeleccionado && $horarioSeleccionado->seccion ? $horarioSeleccionado->seccion->nombre : '';
-        $subarea = $horarioSeleccionado && $horarioSeleccionado->subarea ? $horarioSeleccionado->subarea->nombre : '';
-        $recinto = $horarioSeleccionado && $horarioSeleccionado->recinto ? $horarioSeleccionado->recinto->nombre : '';
-
-        // Obtener la bitácora asociada al recinto seleccionado
-        $bitacoraId = $horarioSeleccionado && $horarioSeleccionado->recinto ?
-            Bitacora::where('recinto_id', $horarioSeleccionado->recinto->id)->value('id') : null;
 
         return view('Evento.create', compact(
             'eventos',
