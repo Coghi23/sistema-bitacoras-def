@@ -1,6 +1,8 @@
 @extends('Template-administrador')
 
+
 @section('title', 'QR Temporales Activos')
+
 
 @section('content')
 <div class="wrapper">
@@ -18,10 +20,12 @@
             </div>
         </div>
 
+
         <div class="alert alert-info">
             <i class="bi bi-info-circle"></i>
             <strong>Vista Administrativa:</strong> Aquí puedes ver todos los códigos QR temporales generados por los profesores que aún están activos.
         </div>
+
 
         @if($qrsTemporales->count() > 0)
             <div class="row" id="qrs-container">
@@ -43,25 +47,25 @@
                                     <strong><i class="bi bi-person"></i> Profesor:</strong>
                                     <span class="text-primary">{{ $qr->profesor_nombre }}</span>
                                 </div>
-                                
+                               
                                 <div class="mb-2">
                                     <strong><i class="bi bi-building"></i> Recinto:</strong>
                                     {{ $qr->recinto_nombre }}
                                 </div>
-                                
+                               
                                 <div class="mb-2">
                                     <strong><i class="bi bi-key"></i> Llave:</strong>
                                     {{ $qr->llave_nombre }}
                                     <span class="badge {{ $qr->llave_estado == 0 ? 'bg-success' : 'bg-warning' }} ms-1 llave-estado-badge" data-llave-estado="{{ $qr->llave_estado }}">
-                                        {{ $qr->llave_estado == 0 ? 'No Entregada' : 'Entregada' }}
+                                        {{ $qr->llave_estado == 0 ? 'Entregada' : 'No Entregada' }}
                                     </span>
                                 </div>
-                                
+                               
                                 <div class="mb-2">
                                     <strong><i class="bi bi-clock"></i> Generado:</strong>
                                     {{ \Carbon\Carbon::parse($qr->created_at)->format('d/m/Y H:i:s') }}
                                 </div>
-                                
+                               
                                 <div class="mb-3">
                                     <strong><i class="bi bi-alarm"></i> Expira:</strong>
                                     <span class="text-{{ \Carbon\Carbon::parse($qr->expira_en) < now() ? 'danger' : 'warning' }} expira-tiempo">
@@ -69,15 +73,16 @@
                                     </span>
                                 </div>
 
+
                                 <div class="text-center">
-                                    <button class="btn btn-outline-primary btn-sm btn-ver-qr" 
+                                    <button class="btn btn-outline-primary btn-sm btn-ver-qr"
                                             data-qr-code="{{ $qr->codigo_qr }}"
                                             data-profesor-nombre="{{ $qr->profesor_nombre }}"
                                             data-recinto-nombre="{{ $qr->recinto_nombre }}"
                                             data-llave-nombre="{{ $qr->llave_nombre }}">
                                         <i class="bi bi-eye"></i> Ver QR
                                     </button>
-                                    
+                                   
                                     @if(!$qr->usado && \Carbon\Carbon::parse($qr->expira_en) > now())
                                         <button class="btn btn-outline-danger btn-sm ms-2 btn-escanear"
                                                 data-qr-code="{{ $qr->codigo_qr }}">
@@ -100,6 +105,7 @@
     </div>
 </div>
 
+
 <!-- Modal Ver QR -->
 <div class="modal fade" id="modalVerQR" tabindex="-1" aria-labelledby="modalVerQRLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -117,11 +123,11 @@
                     <p><strong>Llave:</strong> <span id="modal-llave"></span></p>
                     <p><strong>Código:</strong> <span id="modal-codigo"></span></p>
                 </div>
-                
+               
                 <div id="qr-image-container" class="mb-3">
                     <img id="qr-image" src="" alt="Código QR" style="max-width: 100%; height: auto; border: 1px solid #ddd; border-radius: 8px; padding: 10px;">
                 </div>
-                
+               
                 <div class="mt-3">
                     <small class="text-muted">Este código QR puede ser escaneado por el sistema</small>
                 </div>
@@ -130,15 +136,18 @@
     </div>
 </div>
 
+
 @endsection
+
 
 @push('scripts')
 <script>
 $(document).ready(function() {
     console.log('🎯 Admin QR - Sistema Iniciado');
-    
+   
     let pollingInterval;
     let lastUpdateTime = '';
+
 
     // Event listener para ver QR (usando delegación de eventos)
     $(document).on('click', '.btn-ver-qr', function(e) {
@@ -149,9 +158,9 @@ $(document).ready(function() {
         const profesor = $(this).data('profesor-nombre');
         const recinto = $(this).data('recinto-nombre');
         const llave = $(this).data('llave-nombre');
-        
+       
         console.log('Datos QR:', {codigo, profesor, recinto, llave});
-        
+       
         $('#modal-profesor').text(profesor);
         $('#modal-recinto').text(recinto);
         $('#modal-llave').text(llave);
@@ -160,26 +169,27 @@ $(document).ready(function() {
         $('#modalVerQR').modal('show');
     });
 
+
     // Event listener para simular escaneo (usando delegación de eventos)
     $(document).on('click', '.btn-escanear', function(e) {
         e.preventDefault();
         console.log('Click en escanear QR detectado');
         const button = $(this);
         const qrCode = button.data('qr-code');
-        
+       
         console.log('QR Code para escanear:', qrCode);
-        
+       
         if (!qrCode) {
             showToast('Código QR no encontrado', 'error');
             return;
         }
-        
+       
         if (!confirm('¿Simular escaneo? Esto cambiará el estado de la llave.')) {
             return;
         }
-        
+       
         button.prop('disabled', true).html('<i class="spinner-border spinner-border-sm"></i> Escaneando...');
-        
+       
         $.ajax({
             url: '{{ route("qr.escanear") }}',
             method: 'POST',
@@ -203,16 +213,17 @@ $(document).ready(function() {
         });
     });
 
+
     // ===== SISTEMA DE TIEMPO REAL =====
     function initRealTimeSystem() {
         console.log('🚀 Iniciando sistema de tiempo real - QRs cada 3 segundos');
         updateQRsRealTime();
         pollingInterval = setInterval(updateQRsRealTime, 3000);
     }
-    
+   
     function updateQRsRealTime() {
         console.log('🔄 Actualizando QRs temporales...');
-        
+       
         $.ajax({
             url: '{{ route("admin.qr.realtime") }}',
             method: 'GET',
@@ -221,20 +232,20 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status === 'success') {
                     console.log('✅ QRs actualizados:', response.total);
-                    
+                   
                     // Actualizar contador
                     $('#total-qrs').text(response.total);
-                    
+                   
                     // Actualizar QRs
                     updateExistingQRs(response.qrs);
-                    
+                   
                     // Mostrar indicador (comentado para ocultar mensaje)
                     // showUpdateIndicator(response.timestamp);
                 }
             },
             error: function(xhr, status, error) {
                 console.error('❌ Error actualizando QRs:', error);
-                
+               
                 // Reducir frecuencia si hay error
                 if (pollingInterval) {
                     clearInterval(pollingInterval);
@@ -245,10 +256,10 @@ $(document).ready(function() {
             }
         });
     }
-    
+   
     function updateExistingQRs(qrs) {
         const container = $('#qrs-container');
-        
+       
         if (qrs.length === 0) {
             container.html(`
                 <div class="text-center py-5">
@@ -259,20 +270,20 @@ $(document).ready(function() {
             `);
             return;
         }
-        
+       
         // Asegurar estructura de tarjetas
         if (!container.hasClass('row')) {
             container.removeClass().addClass('row');
         }
-        
+       
         // Crear un array de IDs de QRs recibidos
         const qrIds = qrs.map(qr => qr.id.toString());
-        
+       
         // Actualizar QRs existentes y agregar nuevos
         qrs.forEach(function(qr) {
             updateOrCreateQRCard(qr);
         });
-        
+       
         // Remover QRs expirados (que no están en la respuesta)
         container.find('[data-qr-id]').each(function() {
             const cardId = $(this).data('qr-id').toString();
@@ -284,10 +295,10 @@ $(document).ready(function() {
             }
         });
     }
-    
+   
     function updateOrCreateQRCard(qr) {
         let card = $(`[data-qr-id="${qr.id}"]`);
-        
+       
         if (card.length === 0) {
             // Crear nueva tarjeta solo si no existe
             console.log('Creando nueva tarjeta QR:', qr.id);
@@ -300,7 +311,7 @@ $(document).ready(function() {
             updateQRCardContent(card, qr);
         }
     }
-    
+   
     function createQRCardHTML(qr) {
         return `
             <div class="col-md-6 col-lg-4 mb-4" data-qr-id="${qr.id}">
@@ -320,12 +331,12 @@ $(document).ready(function() {
                             <strong><i class="bi bi-person"></i> Profesor:</strong>
                             <span class="text-primary">${qr.profesor_nombre}</span>
                         </div>
-                        
+                       
                         <div class="mb-2">
                             <strong><i class="bi bi-building"></i> Recinto:</strong>
                             ${qr.recinto_nombre}
                         </div>
-                        
+                       
                         <div class="mb-2">
                             <strong><i class="bi bi-key"></i> Llave:</strong>
                             ${qr.llave_nombre}
@@ -333,12 +344,12 @@ $(document).ready(function() {
                                 ${qr.llave_estado_texto}
                             </span>
                         </div>
-                        
+                       
                         <div class="mb-2">
                             <strong><i class="bi bi-clock"></i> Generado:</strong>
                             ${qr.created_at}
                         </div>
-                        
+                       
                         <div class="mb-3">
                             <strong><i class="bi bi-alarm"></i> Expira:</strong>
                             <span class="${qr.expira_class} expira-tiempo">
@@ -346,8 +357,9 @@ $(document).ready(function() {
                             </span>
                         </div>
 
+
                         <div class="text-center">
-                            <button class="btn btn-outline-primary btn-sm btn-ver-qr" 
+                            <button class="btn btn-outline-primary btn-sm btn-ver-qr"
                                     data-qr-code="${qr.codigo_qr}"
                                     data-qr-url="${qr.qr_url}"
                                     data-profesor-nombre="${qr.profesor_nombre}"
@@ -367,7 +379,7 @@ $(document).ready(function() {
             </div>
         `;
     }
-    
+   
     function updateQRCardContent(card, qr) {
         // Actualizar estado del QR en el badge
         const estadoBadge = card.find('[data-qr-estado]');
@@ -377,12 +389,12 @@ $(document).ready(function() {
                       .addClass(qr.usado ? 'bg-light text-dark' : 'bg-warning text-dark')
                       .text(qr.estado_qr)
                       .data('qr-estado', qr.estado_qr.toLowerCase());
-            
+           
             // Animación de cambio
             estadoBadge.addClass('estado-actualizado');
             setTimeout(() => estadoBadge.removeClass('estado-actualizado'), 1500);
         }
-        
+       
         // Actualizar estado de la llave
         const llaveBadge = card.find('.llave-estado-badge');
         const currentLlaveEstado = llaveBadge.data('llave-estado');
@@ -391,37 +403,37 @@ $(document).ready(function() {
                       .addClass(qr.llave_estado_badge.replace('bg-warning text-dark', 'bg-warning'))
                       .text(qr.llave_estado_texto)
                       .data('llave-estado', qr.llave_estado);
-                      
+                     
             // Notificación de cambio
             showToast(`🔑 Llave ${qr.llave_nombre}: ${qr.llave_estado_texto}`, 'info', 3000);
         }
-        
+       
         // Actualizar tiempo de expiración
         const expiraSpan = card.find('.expira-tiempo');
         expiraSpan.removeClass('text-warning text-danger text-success')
                   .addClass(qr.expira_class)
                   .text(qr.expira_en);
-        
+       
         // Actualizar el borde de la tarjeta según el estado
         const cardElement = card.find('.card');
         cardElement.removeClass('border-success border-secondary')
                   .addClass(qr.usado ? 'border-secondary' : 'border-success');
-        
+       
         // Actualizar header de la tarjeta
         const cardHeader = card.find('.card-header');
         cardHeader.removeClass('bg-success bg-secondary')
                  .addClass(qr.estado_qr_badge);
-        
+       
         // Actualizar botones si el estado cambió de activo a usado
         if (qr.usado) {
             card.find('.btn-escanear').remove(); // Remover botón de escaneo si ya fue usado
         }
     }
-    
+   
     function showUpdateIndicator(timestamp) {
         if (lastUpdateTime !== timestamp) {
             lastUpdateTime = timestamp;
-            
+           
             let indicator = $('#update-indicator');
             if (indicator.length === 0) {
                 $('body').append(`
@@ -431,23 +443,24 @@ $(document).ready(function() {
                 `);
                 indicator = $('#update-indicator');
             }
-            
+           
             indicator.stop().animate({opacity: 1}, 200).delay(1500).animate({opacity: 0}, 500);
         }
     }
-    
+   
     // Limpiar interval al salir
     $(window).on('beforeunload', function() {
         if (pollingInterval) {
             clearInterval(pollingInterval);
         }
     });
-    
+   
     // Inicializar sistema de tiempo real
     initRealTimeSystem();
-    
+   
     console.log('✅ Sistema QR Admin en tiempo real configurado');
 });
+
 
 function showToast(message, type = 'info', duration = 3000) {
     const toastTypes = {
@@ -456,10 +469,10 @@ function showToast(message, type = 'info', duration = 3000) {
         warning: 'bg-warning',
         info: 'bg-info'
     };
-    
+   
     const toastClass = toastTypes[type] || 'bg-info';
     const toastId = 'toast-' + Date.now();
-    
+   
     const toast = $(`
         <div id="${toastId}" class="toast align-items-center text-white ${toastClass} border-0 mb-2" role="alert" style="opacity: 0;">
             <div class="d-flex">
@@ -468,20 +481,20 @@ function showToast(message, type = 'info', duration = 3000) {
             </div>
         </div>
     `);
-    
+   
     // Agregar al contenedor
     let container = $('.toast-container');
     if (container.length === 0) {
         $('body').append('<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
         container = $('.toast-container');
     }
-    
+   
     container.append(toast);
     const toastElement = $(`#${toastId}`);
-    
+   
     // Mostrar con animación
     toastElement.animate({opacity: 1}, 300);
-    
+   
     // Auto-remover
     setTimeout(() => {
         toastElement.animate({opacity: 0}, 300, function() {
@@ -492,16 +505,19 @@ function showToast(message, type = 'info', duration = 3000) {
 </script>
 @endpush
 
+
 @push('styles')
 <style>
 .card {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
+
 .card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
+
 
 .toast-container {
     position: fixed;
@@ -510,19 +526,23 @@ function showToast(message, type = 'info', duration = 3000) {
     z-index: 1055;
 }
 
+
 .border-success {
     border-color: #198754 !important;
 }
 
+
 .border-secondary {
     border-color: #6c757d !important;
 }
+
 
 .wrapper {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
+
 
 .main-content {
     background: #f8f9fa;
@@ -531,10 +551,12 @@ function showToast(message, type = 'info', duration = 3000) {
     border-radius: 10px;
 }
 
+
 /* Animaciones para tiempo real */
 .estado-actualizado {
     animation: pulso-estado 1.5s ease-in-out;
 }
+
 
 @keyframes pulso-estado {
     0% { transform: scale(1); }
@@ -542,22 +564,27 @@ function showToast(message, type = 'info', duration = 3000) {
     100% { transform: scale(1); }
 }
 
+
 .llave-estado-badge {
     transition: all 0.3s ease;
 }
 
+
 .llave-estado-badge.actualizado {
     animation: brillo-llave 2s ease-in-out;
 }
+
 
 @keyframes brillo-llave {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.7; transform: scale(1.05); }
 }
 
+
 .expira-tiempo {
     transition: color 0.3s ease;
 }
+
 
 /* Indicador de tiempo real */
 #update-indicator {
@@ -567,10 +594,12 @@ function showToast(message, type = 'info', duration = 3000) {
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
 
+
 /* Estados de conectividad */
 .realtime-status {
     position: relative;
 }
+
 
 .realtime-status::after {
     content: '';
@@ -585,20 +614,24 @@ function showToast(message, type = 'info', duration = 3000) {
     animation: parpadeo-conexion 2s infinite;
 }
 
+
 @keyframes parpadeo-conexion {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.3; }
 }
+
 
 .realtime-status.error::after {
     background-color: #dc3545;
     animation: parpadeo-error 1s infinite;
 }
 
+
 @keyframes parpadeo-error {
     0%, 100% { opacity: 1; }
     50% { opacity: 0; }
 }
+
 
 /* Efectos de aparición de nuevas tarjetas */
 @keyframes aparicion-card {
@@ -612,9 +645,11 @@ function showToast(message, type = 'info', duration = 3000) {
     }
 }
 
+
 .nueva-card {
     animation: aparicion-card 0.5s ease-out;
 }
+
 
 /* Efectos de desaparición de tarjetas expiradas */
 @keyframes desaparicion-card {
@@ -628,9 +663,11 @@ function showToast(message, type = 'info', duration = 3000) {
     }
 }
 
+
 .card-expirada {
     animation: desaparicion-card 0.5s ease-in;
 }
+
 
 /* Mejorar apariencia del contador */
 .badge-contador {
@@ -639,17 +676,18 @@ function showToast(message, type = 'info', duration = 3000) {
     border-radius: 20px;
 }
 
+
 /* Responsive design para tablets y móviles */
 @media (max-width: 768px) {
     .card {
         margin-bottom: 1rem;
     }
-    
+   
     .btn-sm {
         font-size: 0.75rem;
         padding: 0.25rem 0.5rem;
     }
-    
+   
     #update-indicator {
         font-size: 0.75rem;
         padding: 0.5rem 0.75rem;
@@ -657,3 +695,7 @@ function showToast(message, type = 'info', duration = 3000) {
 }
 </style>
 @endpush
+
+
+
+

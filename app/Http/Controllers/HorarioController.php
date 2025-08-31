@@ -17,11 +17,40 @@ use Exception;
 
 class HorarioController extends Controller
 {
-    //metodo index
-    public function index()
+    //metodo index con búsqueda
+    public function index(Request $request)
     {
+        $query = Horario::with('recinto', 'subarea', 'seccion', 'profesor', 'leccion');
 
-        $horarios = Horario::with('recinto', 'subarea', 'seccion', 'profesor', 'leccion')->get();
+        // Búsqueda por tipoHorario, fecha, día, docente, recinto
+        if ($request->filled('busquedaHorario')) {
+            $busqueda = $request->busquedaHorario;
+            $query->where(function($q) use ($busqueda) {
+                $q->where('tipoHorario', 'like', "%{$busqueda}%")
+                  ->orWhere('fecha', 'like', "%{$busqueda}%")
+                  ->orWhere('dia', 'like', "%{$busqueda}%")
+                  ->orWhereHas('profesor', function($q2) use ($busqueda) {
+                      $q2->where('name', 'like', "%{$busqueda}%");
+                  })
+                  ->orWhereHas('recinto', function($q3) use ($busqueda) {
+                      $q3->where('nombre', 'like', "%{$busqueda}%");
+                  })
+                  ->orWhereHas('subarea', function($q3) use ($busqueda) {
+                      $q3->where('nombre', 'like', "%{$busqueda}%");
+                  })
+                  ->orWhereHas('leccion', function($q3) use ($busqueda) {
+                      $q3->where('hora_inicio', 'like', "%{$busqueda}%");
+                  })     
+                  ->orWhereHas('leccion', function($q3) use ($busqueda) {
+                      $q3->where('hora_final', 'like', "%{$busqueda}%");
+                  })                                   
+                  ->orWhereHas('seccion', function($q3) use ($busqueda) {
+                      $q3->where('nombre', 'like', "%{$busqueda}%");
+                  });                                   
+            });
+        }
+
+        $horarios = $query->get();
         $recintos = Recinto::all();
         $subareas = Subarea::all();
         $secciones = Seccione::all();

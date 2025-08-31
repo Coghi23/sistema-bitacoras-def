@@ -1,8 +1,13 @@
 @extends('Template-administrador')
 
+
 @section('title', 'Sistema de Bitácoras')
 
+
 @section('content')
+
+
+
 
 
 
@@ -16,7 +21,7 @@
                         <i class="bi bi-search"></i>
                     </span>
                     <input type="text" class="form-control"
-                        placeholder="Buscar llave..." name="busquedaLlave" 
+                        placeholder="Buscar llave..." name="busquedaLlave"
                         value="{{ request('busquedaLlave') }}" id="inputBusqueda" autocomplete="off">
                     @if(request('busquedaLlave'))
                     <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
@@ -26,12 +31,15 @@
                 </form>
             </div>
 
+
             <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                 data-bs-toggle="modal" data-bs-target="#modalAgregarLlave"
                 title="Agregar Llave" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
         </div>
+
+
 
 
         {{-- Indicador de resultados de búsqueda --}}
@@ -44,6 +52,7 @@
                 </span>
             </div>
         @endif
+
 
         <!-- Modal Crear Llave -->
         <div class="modal fade" id="modalAgregarLlave" tabindex="-1" aria-labelledby="modalAgregarLlaveLabel" aria-hidden="true">
@@ -75,7 +84,7 @@
                 </div>
             </div>
         </div>
-    
+   
         {{-- Apartado resumen de llaves --}}
 @php
     $llavesActivas = $llaves->where('condicion', 1);
@@ -83,6 +92,7 @@
     $disponibles = $llavesActivas->where('estado', 0)->count(); // Ajusta el valor según tu lógica de estado disponible
     $entregadas = $llavesActivas->where('estado', 1)->count();  // Ajusta el valor según tu lógica de estado entregada
 @endphp
+
 
 <div class="row mb-4">
     <div class="col-md-4">
@@ -113,6 +123,7 @@
         </div>
     </div>
 </div>
+
 
         <!-- Tabla -->
         <div class="table-responsive">
@@ -147,7 +158,7 @@
                                         data-bs-target="#modalEditarLlave-{{ $llave->id }}">
                                         <i class="bi bi-pencil"></i>
                                     </button>
-                                    
+                                   
                                     <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $llave->id }}" aria-label="Eliminar Llave">
                                         <i class="bi bi-trash"></i>
                                     </button>
@@ -158,9 +169,10 @@
                             @endif
                         </tr>
 
+
                         @if(Auth::user() && !Auth::user()->hasRole('director'))
                         <!-- Modal Editar Llave -->
-                        
+                       
 <div class="modal fade" id="modalEditarLlave-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalEditarLlaveLabel-{{ $llave->id }}" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -201,7 +213,7 @@
     </div>
 </div>
                         <!-- Modal eliminar -->
-                        <div class="modal fade" id="modalConfirmacionEliminar-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalLlaveEliminarLabel-{{ $llave->id }}" 
+                        <div class="modal fade" id="modalConfirmacionEliminar-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalLlaveEliminarLabel-{{ $llave->id }}"
                         aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content custom-modal">
@@ -224,7 +236,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+                       
                         <!-- Modal Éxito Eliminar -->
                         <div class="modal fade" id="modalExitoEliminar" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -246,11 +258,13 @@
                     @endforeach
                 </tbody>
             </table>
-        </div> 
+        </div>
     </div>
 </div>
 
+
 @endsection
+
 
 @push('scripts')
 <script>
@@ -259,7 +273,7 @@
     const inputBusqueda = document.getElementById('inputBusqueda');
     const formBusqueda = document.getElementById('busquedaForm');
     const btnLimpiar = document.getElementById('limpiarBusqueda');
-    
+   
     if (inputBusqueda) {
         inputBusqueda.addEventListener('input', function() {
             clearTimeout(timeoutId);
@@ -267,7 +281,7 @@
                 formBusqueda.submit();
             }, 500);
         });
-        
+       
         inputBusqueda.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -275,7 +289,7 @@
             }
         });
     }
-    
+   
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', function() {
             inputBusqueda.value = '';
@@ -283,23 +297,24 @@
         });
     }
 
+
 $(document).ready(function() {
     console.log('🔧 Sistema de Llaves - Tiempo Real Iniciado');
-    
+   
     let pollingInterval;
     let lastUpdate = '';
-    
+   
     // Inicializar sistema de tiempo real
     function initRealTimeSystem() {
         console.log('🚀 Iniciando polling de llaves cada 2 segundos');
         updateLlavesRealTime();
         pollingInterval = setInterval(updateLlavesRealTime, 2000); // Cada 2 segundos
     }
-    
+   
     // Actualizar llaves en tiempo real
     function updateLlavesRealTime() {
         console.log('🔄 Actualizando estado de llaves...');
-        
+       
         $.ajax({
             url: '{{ route("admin.llaves.realtime") }}',
             method: 'GET',
@@ -308,11 +323,11 @@ $(document).ready(function() {
             success: function(response) {
                 if (response.status === 'success') {
                     console.log('✅ Datos recibidos:', response.llaves.length, 'llaves');
-                    
+                   
                     response.llaves.forEach(function(llave) {
                         updateLlaveRow(llave);
                     });
-                    
+                   
                     // Mostrar indicador de última actualización (comentado para ocultar mensaje)
                     // showUpdateIndicator(response.timestamp);
                 } else {
@@ -321,7 +336,7 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error('❌ Error al actualizar llaves:', error);
-                
+               
                 // Si hay error, reducir frecuencia de polling
                 if (pollingInterval) {
                     clearInterval(pollingInterval);
@@ -332,7 +347,7 @@ $(document).ready(function() {
             }
         });
     }
-    
+   
     // Actualizar fila individual de llave
     function updateLlaveRow(llave) {
         const row = $(`#llave-row-${llave.id}`);
@@ -340,44 +355,44 @@ $(document).ready(function() {
             console.log(`⚠️ Fila no encontrada para llave ID: ${llave.id}`);
             return;
         }
-        
+       
         const estadoBadge = row.find('.estado-badge');
         const ultimaActualizacion = row.find('.ultima-actualizacion');
-        
+       
         // Verificar si el estado cambió
         const currentEstado = estadoBadge.data('estado');
         if (currentEstado !== llave.estado) {
             console.log(`🔄 Estado cambiado para ${llave.nombre}: ${currentEstado} → ${llave.estado}`);
-            
+           
             // Actualizar badge de estado con animación
             estadoBadge.removeClass('bg-success bg-warning text-dark');
             estadoBadge.addClass(llave.estado_badge_class);
             estadoBadge.text(llave.estado_texto);
             estadoBadge.data('estado', llave.estado);
-            
+           
             // Agregar animación de cambio
             estadoBadge.addClass('estado-actualizado');
             row.addClass('fila-actualizada');
-            
+           
             // Remover animación después de un tiempo
             setTimeout(() => {
                 estadoBadge.removeClass('estado-actualizado');
                 row.removeClass('fila-actualizada');
             }, 2000);
-            
+           
             // Mostrar notificación
             showToast(`🔑 ${llave.nombre}: ${llave.estado_texto}`, 'info', 3000);
         }
-        
+       
         // Actualizar tiempo de última actualización
         ultimaActualizacion.text(llave.ultima_actualizacion);
     }
-    
+   
     // Mostrar indicador de actualización
     function showUpdateIndicator(timestamp) {
         if (lastUpdate !== timestamp) {
             lastUpdate = timestamp;
-            
+           
             // Agregar indicador visual en la esquina superior derecha
             let indicator = $('#update-indicator');
             if (indicator.length === 0) {
@@ -388,11 +403,11 @@ $(document).ready(function() {
                 `);
                 indicator = $('#update-indicator');
             }
-            
+           
             indicator.stop().animate({opacity: 1}, 200).delay(1000).animate({opacity: 0}, 500);
         }
     }
-    
+   
     // Función para mostrar notificaciones toast
     function showToast(message, type = 'info', duration = 3000) {
         const toastTypes = {
@@ -401,10 +416,10 @@ $(document).ready(function() {
             warning: 'bg-warning',
             info: 'bg-info'
         };
-        
+       
         const toastClass = toastTypes[type] || 'bg-info';
         const toastId = 'toast-' + Date.now();
-        
+       
         const toastHTML = `
             <div id="${toastId}" class="toast align-items-center text-white ${toastClass} border-0 mb-2" role="alert" style="opacity: 0;">
                 <div class="d-flex">
@@ -413,20 +428,20 @@ $(document).ready(function() {
                 </div>
             </div>
         `;
-        
+       
         // Agregar al contenedor de toasts
         let container = $('.toast-container');
         if (container.length === 0) {
             $('body').append('<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;"></div>');
             container = $('.toast-container');
         }
-        
+       
         container.append(toastHTML);
         const toast = $(`#${toastId}`);
-        
+       
         // Mostrar con animación
         toast.animate({opacity: 1}, 300);
-        
+       
         // Auto-remover después del tiempo especificado
         setTimeout(() => {
             toast.animate({opacity: 0}, 300, function() {
@@ -434,20 +449,21 @@ $(document).ready(function() {
             });
         }, duration);
     }
-    
+   
     // Inicializar sistema al cargar la página
     initRealTimeSystem();
-    
+   
     // Limpiar interval al salir de la página
     $(window).on('beforeunload', function() {
         if (pollingInterval) {
             clearInterval(pollingInterval);
         }
     });
-    
+   
     console.log('✅ Sistema de tiempo real configurado correctamente');
 });
 </script>
+
 
 <style>
 /* Animaciones para cambios de estado */
@@ -455,15 +471,18 @@ $(document).ready(function() {
     animation: pulso 1s ease-in-out;
 }
 
+
 .fila-actualizada {
     background-color: #e3f2fd !important;
     transition: background-color 2s ease-out;
 }
 
+
 @keyframes pulso {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }
 }
+
 
 /* Indicador de actualización */
 #update-indicator {
@@ -472,3 +491,7 @@ $(document).ready(function() {
 }
 </style>
 @endpush
+
+
+
+

@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers;
 use App\Models\Recinto;
 use App\Http\Requests\StoreRecintoRequest;
@@ -14,6 +15,9 @@ use Exception;
 
 
 
+
+
+
 class RecintoController extends Controller
 {
     /**
@@ -21,10 +25,11 @@ class RecintoController extends Controller
      */
     public function index()
     {
-        
+       
         $query = Recinto::with(['institucion', 'tipoRecinto', 'estadoRecinto', 'llave'])
             ->where('condicion', 1)
             ->orderBy('nombre');
+
 
         if (request('busquedaRecinto')) {
             $busqueda = request('busquedaRecinto');
@@ -36,14 +41,17 @@ class RecintoController extends Controller
             });
         }
 
+
         $recintos = $query->get();
         $instituciones = Institucione::all();
         $tiposRecinto = TipoRecinto::all();
         $estadosRecinto = EstadoRecinto::all();
         $llaves = Llave::all();
 
+
         return view('Recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto', 'llaves'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -52,7 +60,9 @@ class RecintoController extends Controller
     {
       return view('Recinto.create');
 
+
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -70,6 +80,7 @@ class RecintoController extends Controller
         return redirect()->route('recinto.index')->with('success', 'Recinto creado correctamente.');
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -77,6 +88,7 @@ class RecintoController extends Controller
     {
         //
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -86,6 +98,7 @@ class RecintoController extends Controller
          $recinto->load('institucion');
          return view('Recinto.edit', compact('recinto'));
     }
+
 
     /**
      * Update the specified resource in storage.
@@ -97,8 +110,10 @@ class RecintoController extends Controller
         return redirect()->route('recinto.index')->with('success', 'Recinto actualizada correctamente.');
     }
 
-        
-    
+
+       
+   
+
 
     /**
      * Remove the specified resource from storage.

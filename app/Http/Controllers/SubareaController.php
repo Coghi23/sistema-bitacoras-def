@@ -1,15 +1,18 @@
 <?php
 
+
 namespace App\Http\Controllers;
+
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Models\Subarea; 
+use App\Models\Subarea;
 use App\Models\Especialidade;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreSubareaRequest;
 use App\Http\Requests\UpdateSubareaRequest;
-use Exception; 
+use Exception;
+
 
 class SubareaController extends Controller
 {
@@ -19,7 +22,17 @@ class SubareaController extends Controller
     public function index(Request $request)
     {
         $query = Subarea::with('especialidad');
-        
+
+
+        if ($request->query('inactivos')) {
+            $query->where('condicion', 0);
+        } elseif ($request->query('activos')) {
+            $query->where('condicion', 1);
+        } else {
+            $query->where('condicion', 1);
+        }
+
+
         // Búsqueda por nombre de subarea o especialidad
         if ($request->filled('busquedaSubarea')) {
             $busqueda = $request->busquedaSubarea;
@@ -30,11 +43,12 @@ class SubareaController extends Controller
                   });
             });
         }
-        
+       
         $subareas = $query->get();
         $especialidades = Especialidade::all();
         return view('Subarea.index', compact('subareas', 'especialidades'));
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -43,6 +57,7 @@ class SubareaController extends Controller
     {
         return view('Subarea.create');
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -60,6 +75,7 @@ class SubareaController extends Controller
         return redirect()->route('subarea.index')->with('success', 'Subárea creada correctamente.');
     }
 
+
     /**
      * Display the specified resource.
      */
@@ -67,6 +83,7 @@ class SubareaController extends Controller
     {
         //
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -77,6 +94,7 @@ class SubareaController extends Controller
          return view('Subarea.edit', compact('subarea'));
     }
 
+
     /**
      * Update the specified resource in storage.
      */
@@ -86,7 +104,9 @@ class SubareaController extends Controller
             ->update($request->validated());
         return redirect()->route('subarea.index')->with('success', 'Subárea actualizada correctamente.');
 
+
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -111,5 +131,12 @@ class SubareaController extends Controller
         }
         return redirect()->route('subarea.index')->with('success', $message);
 
+
     }
+
+
 }
+
+
+
+

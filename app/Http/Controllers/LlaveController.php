@@ -20,7 +20,7 @@ class LlaveController extends Controller
     {
         $query = Llave::with('recinto');
 
-        // Aplicar filtro de búsqueda si existe
+        // Aplicar filtro de bÃºsqueda si existe
         if ($request->filled('busquedaLlave')) {
             $busqueda = $request->get('busquedaLlave');
             $query->where('nombre', 'LIKE', '%' . $busqueda . '%');
@@ -45,7 +45,7 @@ class LlaveController extends Controller
                         'id' => $llave->id,
                         'nombre' => $llave->nombre,
                         'estado' => $llave->estado,
-                        'estado_texto' => $llave->estado == 0 ? 'No Entregada' : 'Entregada',
+                        'estado_texto' => $llave->estado == 0 ? 'Entregada' : 'No Entregada',
                         'estado_badge_class' => $llave->estado == 0 ? 'bg-success' : 'bg-warning text-dark',
                         'ultima_actualizacion' => $llave->updated_at->format('d/m/Y H:i:s')
                     ];
@@ -99,7 +99,7 @@ class LlaveController extends Controller
                         'recinto_nombre' => $qr->recinto_nombre,
                         'llave_nombre' => $qr->llave_nombre,
                         'llave_estado' => $qr->llave_estado,
-                        'llave_estado_texto' => $qr->llave_estado == 0 ? 'No Entregada' : 'Entregada',
+                        'llave_estado_texto' => $qr->llave_estado == 0 ? 'Entregada' : 'No Entregada',
                         'llave_estado_badge' => $qr->llave_estado == 0 ? 'bg-success' : 'bg-warning text-dark',
                         'usado' => $qr->usado,
                         'estado_qr' => $qr->usado ? 'Usado' : 'Activo',
