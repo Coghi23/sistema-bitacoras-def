@@ -50,7 +50,7 @@ class EventoController extends Controller
         return view('Evento.index', compact('eventos'));
     }
 
-    public function indexSoporte(Request $request)
+    public function index_soporte(Request $request)
     {
         $eventos = Evento::with([
             'bitacora',
@@ -82,7 +82,7 @@ class EventoController extends Controller
         return view('Evento.index_soporte', compact('eventos'));
     }
 
-        public function indexProfesor(Request $request)
+        public function index_profesor(Request $request)
     {
         $eventos = Evento::with([
             'bitacora',
