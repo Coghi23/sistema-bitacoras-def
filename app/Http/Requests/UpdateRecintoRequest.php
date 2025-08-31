@@ -22,16 +22,13 @@ class UpdateRecintoRequest extends FormRequest
     public function rules(): array
     {
         $recinto = $this->route('recinto');
-        
         $recintoId = $recinto->id;
         return [
             'nombre' => 'required|string|max:55|unique:recinto,nombre,' . $recintoId,
             'institucion_id' => 'required|exists:institucione,id',
-            'llave_id' => 'required',
+            'llave_id' => 'required|exists:llave,id|unique:recinto,llave_id,' . $recintoId,
             'estadoRecinto_id' => 'required|exists:estadorecinto,id',
             'tipoRecinto_id' => 'required|exists:tiporecinto,id',
-            
-            
         ];
     }
     
@@ -48,6 +45,7 @@ class UpdateRecintoRequest extends FormRequest
             'id_llave.required' => 'La llave es obligatoria.',
             'id_llave.integer' => 'La llave debe ser un número entero.',
             'id_llave.exists' => 'La llave seleccionada no es válida.',
+            'llave_id.unique' => 'Ya existe un recinto con esta llave.',
             
             'id_estadoRecinto.required' => 'El estado del recinto es obligatorio.',
             'id_estadoRecinto.integer' => 'El estado del recinto debe ser un número entero.',
