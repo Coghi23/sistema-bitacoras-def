@@ -22,6 +22,15 @@ class HorarioController extends Controller
     {
         $query = Horario::with('recinto', 'subarea', 'seccion', 'profesor', 'leccion');
 
+        // Filtrar por activos/inactivos
+        if ($request->query('inactivos')) {
+            $query->where('condicion', 0);
+        } elseif ($request->query('activos')) {
+            $query->where('condicion', 1);
+        } else {
+            $query->where('condicion', 1);
+        }
+
         // Búsqueda por tipoHorario, fecha, día, docente, recinto
         if ($request->filled('busquedaHorario')) {
             $busqueda = $request->busquedaHorario;

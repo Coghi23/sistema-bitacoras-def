@@ -51,6 +51,14 @@
 
 
         <!-- Modal Crear Tipo de Recinto -->
+         {{-- Mostrar errores de validación --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <div>{{ $error }}</div>
+                @endforeach
+            </div>
+        @endif
         <div class="modal fade" id="modalAgregarTipoRecinto" tabindex="-1" aria-labelledby="modalAgregarTipoRecintoLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">

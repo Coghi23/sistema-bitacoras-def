@@ -84,6 +84,14 @@
                 </div>
             </div>
         </div>
+        {{-- Mostrar errores de validación --}}
+                                        @if ($errors->any())
+                                            <div class="alert alert-danger">
+                                                @foreach ($errors->all() as $error)
+                                                    <div>{{ $error }}</div>
+                                                @endforeach
+                                            </div>
+                                        @endif
    
         {{-- Apartado resumen de llaves --}}
         @php

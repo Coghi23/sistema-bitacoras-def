@@ -17,13 +17,22 @@ class InstitucionController extends Controller
     public function index(Request $request)
     {
         $query = Institucione::with('especialidad');
-        
+
+        // Filtrar por activos/inactivos
+        if ($request->query('inactivos')) {
+            $query->where('condicion', 0);
+        } elseif ($request->query('activos')) {
+            $query->where('condicion', 1);
+        } else {
+            $query->where('condicion', 1);
+        }
+
         // Búsqueda por nombre
         if ($request->filled('busquedaInstitucion')) {
             $busqueda = $request->busquedaInstitucion;
             $query->where('nombre', 'like', "%{$busqueda}%");
         }
-        
+
         $instituciones = $query->get();
         return view('Institucion.index', compact('instituciones'));
     }

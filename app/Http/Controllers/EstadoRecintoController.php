@@ -19,6 +19,13 @@ class EstadoRecintoController extends Controller
     {
         $query = EstadoRecinto::query();
 
+        // Filtro activos/inactivos
+        if ($request->query('inactivos')) {
+            $query->where('condicion', 0);
+        } else {
+            $query->where('condicion', 1);
+        }
+
         // Aplicar filtro de búsqueda si existe
         if ($request->filled('busquedaEstadoRecinto')) {
             $busqueda = $request->get('busquedaEstadoRecinto');
@@ -26,7 +33,6 @@ class EstadoRecintoController extends Controller
         }
 
         $estadoRecintos = $query->get();
-        
         return view('EstadoRecinto.index', compact('estadoRecintos'));
     }
 

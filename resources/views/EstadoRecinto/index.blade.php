@@ -31,6 +31,15 @@
             </button>
         </div>
 
+        <div class="mb-3">
+            <a href="{{ route('estadoRecinto.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+                Mostrar inactivos
+            </a>
+            <a href="{{ route('estadoRecinto.index', ['activos' => 1]) }}" class="btn btn-primary mb-3">
+                Mostrar activos
+            </a>
+        </div>
+
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaEstadoRecinto'))
@@ -44,6 +53,14 @@
         @endif
 
         <!-- Modal Crear estado recinto -->
+         {{-- Mostrar errores de validación --}}
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    @foreach ($errors->all() as $error)
+                        <div>{{ $error }}</div>
+                    @endforeach
+                </div>
+            @endif
     <div class="modal fade" id="modalAgregarEstadoRecinto" tabindex="-1" aria-labelledby="modalAgregarEstadoRecintoLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
@@ -86,8 +103,13 @@
                 </thead>
                 <tbody>
                     @foreach ($estadoRecintos as $estadoRecinto)
+
+                        @php
+                            $mostrarActivos = !request('inactivos');
+                            $mostrarInactivos = request('inactivos');
+                        @endphp
                         <tr>
-                            @if ($estadoRecinto->condicion == 1)
+                            @if (($mostrarActivos && $estadoRecinto->condicion == 1) || ($mostrarInactivos && $estadoRecinto->condicion == 0))
                                 <td class="text-center">{{ $estadoRecinto->nombre }}</td>
                                 <td class="text-center">
                                     <span class="badge" style="background-color: {{ $estadoRecinto->color }};">
@@ -95,20 +117,25 @@
                                     </span>
                                 <td class="text-center">
                                     @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                    <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarEstadoRecinto-{{ $estadoRecinto->id }}">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $estadoRecinto->id }}" aria-label="Eliminar Estado de Recinto">
-                                            <i class="bi bi-trash"></i>
-                                    </button>
+                                        @if($mostrarActivos && $estadoRecinto->condicion == 1)
+                                            <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditarEstadoRecinto-{{ $estadoRecinto->id }}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $estadoRecinto->id }}" aria-label="Eliminar Estado de Recinto">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        @elseif($mostrarInactivos && $estadoRecinto->condicion == 0)
+                                            <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $estadoRecinto->id }}" aria-label="Restaurar Estado de Recinto">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        @endif
                                     @else
-                                    <span class="text-muted">Solo Vista</span>
+                                        <span class="text-muted">Solo Vista</span>
                                     @endif
                                 </td>
                             @endif
-                            
                         </tr>
 
                         <div class="modal fade" id="modalEditarEstadoRecinto-{{ $estadoRecinto->id }}" tabindex="-1" aria-labelledby="modalEditarEstadoRecintoLabel-{{ $estadoRecinto->id }}" aria-hidden="true">
@@ -153,7 +180,13 @@
                                             <i class="bi bi-exclamation-circle"></i>
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea Eliminar el Estado de Recinto?</p>
+                                        <p class="modal-text">
+                                            @if($estadoRecinto->condicion == 1)
+                                                ¿Desea Eliminar el Estado de Recinto?
+                                            @else
+                                                ¿Desea Restaurar el Estado de Recinto?
+                                            @endif
+                                        </p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('estadoRecinto.destroy', ['estadoRecinto' => $estadoRecinto->id]) }}" method="post">
                                                 @method('DELETE')
