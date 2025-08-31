@@ -36,14 +36,13 @@
                     @endif
                 </form>
             </div>
-
-            @if(Auth::user() && !Auth::user()->hasRole('director'))
+            @can('create_institucion')
             <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar" 
                 data-bs-toggle="modal" data-bs-target="#modalAgregarInstitucion" 
                 title="Agregar Institución" style="background-color: #134496; font-size: 1.2rem;">
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
-            @endif
+            @endcan
         </div>
         {{-- Fin búsqueda + botón agregar --}}
         <a href="{{ route('institucion.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
@@ -109,26 +108,30 @@
 
                         @if (($mostrarActivos && $institucion->condicion == 1) || ($mostrarInactivos && $institucion->condicion == 0))
                         <tr>
-                            <td class="text-center">{{ $institucion->nombre }}</td>
-                            <td class="text-center">
-                                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                            @can('view_institucion')
+                                <td class="text-center">{{ $institucion->nombre }}</td>
+                                <td class="text-center">
+                            @endcan
                                     @if($mostrarActivos && $institucion->condicion == 1)
+                                    @can('edit_institucion')
                                         <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
                                             data-bs-toggle="modal"
                                             data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}">
                                             <i class="bi bi-pencil"></i>
                                         </button>
+                                    @endcan
+                                    @can('delete_institucion')
                                         <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Eliminar Institución">
                                             <i class="bi bi-trash"></i>
                                         </button>
+                                    @endcan
                                     @elseif($mostrarInactivos && $institucion->condicion == 0)
-                                        <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Restaurar Institución">
-                                            <i class="bi bi-arrow-counterclockwise"></i>
-                                        </button>
+                                        @can('restore_institucion')
+                                            <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Restaurar Institución">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        @endcan        
                                     @endif
-                                @else
-                                    <span class="text-muted">Solo Vista</span>
-                                @endif
                             </td>
                         </tr>
                         @endif

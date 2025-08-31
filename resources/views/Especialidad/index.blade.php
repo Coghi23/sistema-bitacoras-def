@@ -36,14 +36,13 @@
                     @endif
                 </form>
             </div>
-
-            @if(Auth::user() && !Auth::user()->hasRole('director'))
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar" 
-                data-bs-toggle="modal" data-bs-target="#modalAgregarespecialidad" 
-                title="Agregar Especialidad" style="background-color: #134496; font-size: 1.2rem;">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
-            @endif
+            @can('create_especialidad')
+                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar" 
+                    data-bs-toggle="modal" data-bs-target="#modalAgregarespecialidad" 
+                    title="Agregar Especialidad" style="background-color: #134496; font-size: 1.2rem;">
+                    Agregar <i class="bi bi-plus-circle ms-2"></i>
+                </button>
+            @endcan
         </div>
         {{-- Fin búsqueda + botón agregar --}}
         <a href="{{ route('especialidad.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
@@ -116,34 +115,38 @@
             @foreach ($especialidades as $especialidad)
 
                 @if (($mostrarActivos && $especialidad->condicion == 1) || ($mostrarInactivos && $especialidad->condicion == 0))
-                <tr>
-                    <td class="text-center">{{ $especialidad->nombre }}</td>
-                    <td class="text-center">{{ $especialidad->institucion->nombre }}</td>
-                    <td class="text-center">
-                        @if(Auth::user() && !Auth::user()->hasRole('director'))
-                            @if($mostrarActivos && $especialidad->condicion == 1)
-                                <button class="btn btn-link text-info p-0 me-2 btn-editar" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#modalEditarEspecialidad-{{ $especialidad->id }}"
-                                    data-id="{{ $especialidad->id }}" 
-                                    data-nombre="{{ $especialidad->nombre }}"
-                                    data-institucion="{{ $especialidad->institucion->id }}"
-                                    aria-label="Editar Especialidad">
-                                    <i class="bi bi-pencil" style="font-size: 1.8rem;"></i>
-                                </button>
-                                <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Eliminar Especialidad">
-                                    <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
-                                </button>
-                            @elseif($mostrarInactivos && $especialidad->condicion == 0)
-                                <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Restaurar Especialidad">
-                                    <i class="bi bi-arrow-counterclockwise" style="font-size: 1.8rem;"></i>
-                                </button>
-                            @endif
-                        @else
-                            <span class="text-muted">Solo Vista</span>
-                        @endif
-                    </td>
-                </tr>
+                    @can('view_especialidad')
+                        <tr>
+                            <td class="text-center">{{ $especialidad->nombre }}</td>
+                            <td class="text-center">{{ $especialidad->institucion->nombre }}</td>
+                            <td class="text-center">
+                                @if($mostrarActivos && $especialidad->condicion == 1)
+                                    @can('edit_especialidad')
+                                        <button class="btn btn-link text-info p-0 me-2 btn-editar" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modalEditarEspecialidad-{{ $especialidad->id }}"
+                                            data-id="{{ $especialidad->id }}" 
+                                            data-nombre="{{ $especialidad->nombre }}"
+                                            data-institucion="{{ $especialidad->institucion->id }}"
+                                            aria-label="Editar Especialidad">
+                                            <i class="bi bi-pencil" style="font-size: 1.8rem;"></i>
+                                        </button>
+                                    @endcan
+                                    @can('delete_especialidad')
+                                        <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Eliminar Especialidad">
+                                            <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
+                                        </button>
+                                    @endcan
+                                @elseif($mostrarInactivos && $especialidad->condicion == 0)
+                                    @can('delete_especialidad')
+                                        <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Restaurar Especialidad">
+                                            <i class="bi bi-arrow-counterclockwise" style="font-size: 1.8rem;"></i>
+                                        </button>
+                                    @endcan
+                                @endif
+                            </td>
+                        </tr>
+                    @endcan
                 @endif
 
 

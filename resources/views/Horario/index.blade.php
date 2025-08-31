@@ -36,14 +36,13 @@
                         @endif
                     </form>
                 </div>
-                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                @can('create_horario')
                     <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                         data-bs-toggle="modal" data-bs-target="#modalHorario"
                         title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem;">
                         Agregar <i class="bi bi-plus-circle ms-2"></i>
                     </button>
-                @endif
-            
+                @endcan
             </div>
         </div>
         <div class="mb-3">
@@ -89,34 +88,42 @@
                     @foreach ($horarios as $horario)
                         @if (($mostrarActivos && $horario->condicion == 1) || ($mostrarInactivos && $horario->condicion == 0))
                             @php $hayHorarios = true; @endphp
-                            <tr class="record-row">
-                                <td class="col-dia">
-                                    @if($horario->tipoHorario == false)
-                                        {{ $horario->fecha->format('Y/m/d') }}
-                                    @endif
-                                    {{ $horario->dia }}
-                                </td>
-                                <td class="col-recinto">{{ $horario->recinto->nombre ?? '' }}</td>
-                                <td class="col-especialidad">{{ $horario->subarea->nombre ?? '' }}</td>
-                                <td class="col-seccion">{{ $horario->seccion->nombre ?? '' }}</td>
-                                <td class="col-entrada">{{ $horario->hora_entrada }}</td>
-                                <td class="col-salida">{{ $horario->hora_salida }}</td>
-                                <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
-                                <td class="col-acciones">
-                                    @if($mostrarActivos && $horario->condicion == 1)
-                                        <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
-                                            <i class="bi bi-pencil icon-editar"></i>
-                                        </button>
-                                        <button class="btn p-0 text-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
-                                            <i class="bi bi-trash icon-eliminar"></i>
-                                        </button>
-                                    @elseif($mostrarInactivos && $horario->condicion == 0)
-                                        <button class="btn p-0 text-success" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
-                                            <i class="bi bi-arrow-counterclockwise icon-eliminar"></i>
-                                        </button>
-                                    @endif
-                                </td>
-                            </tr>
+                            @can('view_horario')
+                                <tr class="record-row">
+                                    <td class="col-dia">
+                                        @if($horario->tipoHorario == false)
+                                            {{ $horario->fecha->format('Y/m/d') }}
+                                        @endif
+                                        {{ $horario->dia }}
+                                    </td>
+                                    <td class="col-recinto">{{ $horario->recinto->nombre ?? '' }}</td>
+                                    <td class="col-especialidad">{{ $horario->subarea->nombre ?? '' }}</td>
+                                    <td class="col-seccion">{{ $horario->seccion->nombre ?? '' }}</td>
+                                    <td class="col-entrada">{{ $horario->hora_entrada }}</td>
+                                    <td class="col-salida">{{ $horario->hora_salida }}</td>
+                                    <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
+                                    <td class="col-acciones">
+                                        @if($mostrarActivos && $horario->condicion == 1)
+                                            @can('edit_horario')
+                                                <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
+                                                    <i class="bi bi-pencil icon-editar"></i>
+                                                </button>
+                                            @endcan
+                                            @can('delete_horario')
+                                                <button class="btn p-0 text-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
+                                                    <i class="bi bi-trash icon-eliminar"></i>
+                                                </button>
+                                            @endcan
+                                        @elseif($mostrarInactivos && $horario->condicion == 0)
+                                            @can('delete_horario')
+                                                <button class="btn p-0 text-success" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
+                                                    <i class="bi bi-arrow-counterclockwise icon-eliminar"></i>
+                                                </button>
+                                            @endcan
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endcan
                         @endif
                     @endforeach
                     @unless($hayHorarios)

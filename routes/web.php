@@ -99,7 +99,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
         
         // Para administradores
-        Route::middleware('role:administrador|director')->group(function () {
+    Route::middleware('role:superadmin|administrador|director')->group(function () {
             Route::get('/admin/qr', [QrController::class, 'indexAdmin'])->name('admin.qr.index');
             
             // Rutas para datos en tiempo real del administrador

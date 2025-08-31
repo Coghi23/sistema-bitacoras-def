@@ -24,11 +24,13 @@
                     @endif
                 </form>
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalAgregarEstadoRecinto"
-                title="Agregar Estado de Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
+            @can('create_estado_recinto')
+                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                    data-bs-toggle="modal" data-bs-target="#modalAgregarEstadoRecinto"
+                    title="Agregar Estado de Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                    Agregar <i class="bi bi-plus-circle ms-2"></i>
+                </button>
+            @endcan
         </div>
 
         <div class="mb-3">
@@ -108,66 +110,74 @@
                             $mostrarActivos = !request('inactivos');
                             $mostrarInactivos = request('inactivos');
                         @endphp
-                        <tr>
-                            @if (($mostrarActivos && $estadoRecinto->condicion == 1) || ($mostrarInactivos && $estadoRecinto->condicion == 0))
-                                <td class="text-center">{{ $estadoRecinto->nombre }}</td>
-                                <td class="text-center">
-                                    <span class="badge" style="background-color: {{ $estadoRecinto->color }};">
-                                        {{ $estadoRecinto->color }}
-                                    </span>
-                                <td class="text-center">
-                                    @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                        @if($mostrarActivos && $estadoRecinto->condicion == 1)
-                                            <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalEditarEstadoRecinto-{{ $estadoRecinto->id }}">
-                                                <i class="bi bi-pencil"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $estadoRecinto->id }}" aria-label="Eliminar Estado de Recinto">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        @elseif($mostrarInactivos && $estadoRecinto->condicion == 0)
-                                            <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $estadoRecinto->id }}" aria-label="Restaurar Estado de Recinto">
-                                                <i class="bi bi-arrow-counterclockwise"></i>
-                                            </button>
+                        @can('view_estado_recinto')
+                            <tr>
+                                @if (($mostrarActivos && $estadoRecinto->condicion == 1) || ($mostrarInactivos && $estadoRecinto->condicion == 0))
+                                    <td class="text-center">{{ $estadoRecinto->nombre }}</td>
+                                    <td class="text-center">
+                                        <span class="badge" style="background-color: {{ $estadoRecinto->color }};">
+                                            {{ $estadoRecinto->color }}
+                                        </span>
+                                    <td class="text-center">
+                                        @if(Auth::user() && !Auth::user()->hasRole('director'))
+                                            @if($mostrarActivos && $estadoRecinto->condicion == 1)
+                                                @can('edit_estado_recinto')
+                                                    <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalEditarEstadoRecinto-{{ $estadoRecinto->id }}">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </button>
+                                                @endcan
+                                                @can('delete_estado_recinto')
+                                                    <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $estadoRecinto->id }}" aria-label="Eliminar Estado de Recinto">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                @endcan
+                                            @elseif($mostrarInactivos && $estadoRecinto->condicion == 0)
+                                                @can('delete_estado_recinto')
+                                                    <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $estadoRecinto->id }}" aria-label="Restaurar Estado de Recinto">
+                                                        <i class="bi bi-arrow-counterclockwise"></i>
+                                                    </button>
+                                                @endcan
+                                            @endif
+                                        @else
+                                            <span class="text-muted">Solo Vista</span>
                                         @endif
-                                    @else
-                                        <span class="text-muted">Solo Vista</span>
-                                    @endif
-                                </td>
-                            @endif
-                        </tr>
-
+                                    </td>
+                                @endif
+                            </tr>
+                        @endcan
+                        <!-- Modal editar Estado de Recinto -->
                         <div class="modal fade" id="modalEditarEstadoRecinto-{{ $estadoRecinto->id }}" tabindex="-1" aria-labelledby="modalEditarEstadoRecintoLabel-{{ $estadoRecinto->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header modal-header-custom">
-                <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                    <i class="bi bi-arrow-left"></i>
-                </button>
-                <h5 class="modal-title">Editar Estado de Recinto</h5>
-            </div>
-            <div class="modal-body px-4 py-4">
-                <form action="{{ route('estadoRecinto.update',['estadoRecinto'=>$estadoRecinto]) }}" method="post">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="id" id="editarIdEstadoRecinto">
-                    <div class="mb-3">
-                        <label for="editarNombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
-                        <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre',$estadoRecinto->nombre)}}">
-                    </div>
-                    <div class="mb-3">
-                        <label for="colorEstadoRecinto" class="form-label fw-bold">Color a asignar al estado de recinto</label>
-                        <input type="color" value="{{old('nombre',$estadoRecinto->color)}}" name="color" id="colorEstadoRecinto" class="form-control" required>
-                    </div>
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header modal-header-custom">
+                                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <h5 class="modal-title">Editar Estado de Recinto</h5>
+                                    </div>
+                                    <div class="modal-body px-4 py-4">
+                                        <form action="{{ route('estadoRecinto.update',['estadoRecinto'=>$estadoRecinto]) }}" method="post">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="id" id="editarIdEstadoRecinto">
+                                            <div class="mb-3">
+                                                <label for="editarNombreEstadoRecinto" class="form-label fw-bold">Nombre del Estado de Recinto</label>
+                                                <input type="text" name="nombre" id="nombre" class="form-control" value="{{old('nombre',$estadoRecinto->nombre)}}">
+                                            </div>
+                                            <div class="mb-3">
+                                                <label for="colorEstadoRecinto" class="form-label fw-bold">Color a asignar al estado de recinto</label>
+                                                <input type="color" value="{{old('nombre',$estadoRecinto->color)}}" name="color" id="colorEstadoRecinto" class="form-control" required>
+                                            </div>
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
                             <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $estadoRecinto->id }}" tabindex="-1" aria-labelledby="modalEstadoRecintoEliminarLabel-{{ $estadoRecinto->id }}" 
