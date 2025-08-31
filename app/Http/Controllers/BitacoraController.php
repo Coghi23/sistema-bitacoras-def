@@ -56,7 +56,8 @@ class BitacoraController extends Controller
         \Log::info('BitacoraController - Ejecutando indexAdmin');
         
         // Para el administrador, mostrar el historial de bitácoras
-        $bitacoras = Bitacora::with(['recinto', 'evento'])->orderBy('created_at', 'desc')->get();
+        $bitacoras = Bitacora::with(['recinto', 'evento' => function($q) { $q->where('condicion', 1); }])
+            ->orderBy('created_at', 'desc')->get();
         
         \Log::info('BitacoraController - Bitacoras encontradas: ' . $bitacoras->count());
         return view('admin.bitacora.index', compact('bitacoras'));
@@ -81,7 +82,7 @@ class BitacoraController extends Controller
             
             // Filtrar bitácoras solo de los recintos asignados al profesor
             if (!empty($recintoIds)) {
-                $bitacoras = Bitacora::with(['recinto', 'evento'])
+                $bitacoras = Bitacora::with(['recinto', 'evento' => function($q) { $q->where('condicion', 1); }])
                     ->whereIn('id_recinto', $recintoIds)
                     ->orderBy('created_at', 'desc')
                     ->get();
@@ -150,32 +151,33 @@ class BitacoraController extends Controller
 
     //Display the specified resource.*/
     public function show(string $id){
-        $bitacora = DB::table('bitacoras')
-            ->join('recinto', 'bitacoras.id_recinto', '=', 'recinto.id')
-            ->join('seccione', 'bitacoras.id_seccion', '=', 'seccione.id')
-            ->join('subarea', 'bitacoras.id_subarea', '=', 'subarea.id')
-            ->join('horarios', 'bitacoras.id_horario', '=', 'horarios.id')
-            ->leftJoin('llave', 'recinto.llave_id', '=', 'llave.id')
-            ->where('bitacoras.id', $id)
-            ->select(
-                'bitacoras.*',
-                'recinto.nombre as recinto_nombre',
-                'seccione.nombre as seccion_nombre',
-                'subarea.nombre as subarea_nombre',
-                'horarios.nombre as horario_nombre',
-                'llave.nombre as llave_nombre',
-                'llave.estado as llave_estado'
-            )
-            ->first();
+    
+            $bitacora = DB::table('bitacoras')
+                ->join('recinto', 'bitacoras.id_recinto', '=', 'recinto.id')
+                ->join('seccione', 'bitacoras.id_seccion', '=', 'seccione.id')
+                ->join('subarea', 'bitacoras.id_subarea', '=', 'subarea.id')
+                ->join('horarios', 'bitacoras.id_horario', '=', 'horarios.id')
+                ->leftJoin('llave', 'recinto.llave_id', '=', 'llave.id')
+                ->where('bitacoras.id', $id)
+                ->select(
+                    'bitacoras.*',
+                    'recinto.nombre as recinto_nombre',
+                    'seccione.nombre as seccion_nombre',
+                    'subarea.nombre as subarea_nombre',
+                    'horarios.nombre as horario_nombre',
+                    'llave.nombre as llave_nombre',
+                    'llave.estado as llave_estado'
+                )
+                ->first();
 
-        if (!$bitacora) {
-            return redirect()->back()->with('error', 'Bitácora no encontrada.');
-        }
+            if (!$bitacora) {
+                return redirect()->back()->with('error', 'Bitácora no encontrada.');
+            }
 
-        // Determinar la vista según el rol
-        $view = Auth::user()->hasRole('Administrador') ? 'admin.bitacora.show' : 'profesor.bitacora.show';
-        
-        return view($view, compact('bitacora'));
+            // Determinar la vista según el rol
+            $view = Auth::user()->hasRole('Administrador') ? 'admin.bitacora.show' : 'profesor.bitacora.show';
+            
+            return view($view, compact('bitacora'));
     }
 
     

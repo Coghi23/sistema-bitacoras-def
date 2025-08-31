@@ -1,9 +1,13 @@
 {{-- filepath: resources/views/Evento/create.blade.php --}}
+{{-- Vista de listado y creación de reportes de eventos para bitácoras --}}
 @extends('layouts.app')
 
 @section('content')
 <div class="container">
+    {{-- Título principal de la página --}}
     <h2>Crear Reporte de Evento</h2>
+
+    {{-- Muestra errores de validación si existen --}}
     @if ($errors->any())
         <div class="alert alert-danger">
             <ul>
@@ -14,9 +18,11 @@
         </div>
     @endif
 
+    {{-- Formulario para crear un nuevo evento asociado a una bitácora --}}
     <form action="{{ route('evento.store') }}" method="POST">
         @csrf
 
+        {{-- Selector de bitácora (recinto) --}}
         <div class="mb-3">
             <label for="id_bitacora" class="form-label">Bitácora (Recinto)</label>
             <select name="id_bitacora" id="id_bitacora" class="form-control" required>
@@ -29,6 +35,7 @@
             </select>
         </div>
 
+        {{-- Selector de sección --}}
         <div class="mb-3">
             <label for="id_seccion" class="form-label">Sección</label>
             <select name="id_seccion" id="id_seccion" class="form-control" required>
@@ -39,6 +46,7 @@
             </select>
         </div>
 
+        {{-- Selector de subárea --}}
         <div class="mb-3">
             <label for="id_subarea" class="form-label">Subárea</label>
             <select name="id_subarea" id="id_subarea" class="form-control" required>
@@ -49,6 +57,7 @@
             </select>
         </div>
 
+        {{-- Selector de horario --}}
         <div class="mb-3">
             <label for="id_horario" class="form-label">Horario</label>
             <select name="id_horario" id="id_horario" class="form-control" required>
@@ -61,16 +70,19 @@
             </select>
         </div>
 
+        {{-- Campo para la hora de envío del evento --}}
         <div class="mb-3">
             <label for="hora_envio" class="form-label">Hora de Envío</label>
             <input type="time" name="hora_envio" id="hora_envio" class="form-control" required>
         </div>
 
+        {{-- Campo para observaciones adicionales --}}
         <div class="mb-3">
             <label for="observacion" class="form-label">Observación</label>
             <textarea name="observacion" id="observacion" class="form-control" rows="3"></textarea>
         </div>
 
+        {{-- Selector de prioridad del evento --}}
         <div class="mb-3">
             <label for="prioridad" class="form-label">Prioridad</label>
             <select name="prioridad" id="prioridad" class="form-control">
@@ -82,6 +94,7 @@
             </select>
         </div>
 
+        {{-- Botón para guardar el evento --}}
         <button type="submit" class="btn btn-primary">Guardar Evento</button>
     </form>
 </div>
