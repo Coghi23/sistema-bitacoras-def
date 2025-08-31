@@ -63,12 +63,6 @@ class RolePermissions extends Seeder
             \Spatie\Permission\Models\Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Asignar permisos de solo vista al director
-        $director = \Spatie\Permission\Models\Role::where('name', 'director')->first();
-        if ($director) {
-            $director->syncPermissions($permissions);
-        }
-
         // El administrador tiene todos los permisos
         $admin = \Spatie\Permission\Models\Role::where('name', 'administrador')->first();
         if ($admin) {
