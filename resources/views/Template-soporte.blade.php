@@ -13,7 +13,7 @@
 
 <body>
     <div id="sidebar-navbar">
-    <div class="topbar">
+        <div class="topbar mt-0">
             <button class="hamburger d-md-none" onclick="toggleSidebar()">
                 <i class="bi bi-list"></i>
             </button>
@@ -22,21 +22,23 @@
 
                 <div class="separator"></div>
                 <img src="https://covao.ed.cr/wp-content/uploads/2025/01/Especialidades-logos-05-e1736905518920.webp" alt="Logo COVAO Nocturno" class="logo" />
-              
+               
+            </div>
             <div class="title">Sistema Integrado de Registro de Bitácoras</div>
             <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" alt="Logo COVAO" class="logo" />
            
         </div>
+
         <div class="yellow-line"></div>
         <div class="sidebar-separator d-none d-md-block"></div>
         <div class="sidebar" id="sidebar">
             <div class="sidebar-logo">
                 <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" />
             </div>
-            <a href="#" class="sidebar-item">
+            <a href="{{route('dashboard')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
-            </a>
+
             <a href="{{route('evento.index_soporte')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
@@ -55,7 +57,12 @@
 
     @yield('content')
 
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ asset('JS/Sidebar.js') }}"></script>
+    <script src="{{ asset('JS/indexBitacoras.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
     @stack('scripts')
 </body>
