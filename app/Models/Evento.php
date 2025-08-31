@@ -16,12 +16,11 @@ class Evento extends Model
         'id_subarea',
         'id_horario',
         'id_horario_leccion',
-        'usuario_id',
+        'user_id',
         'fecha',
         'observacion',
         'prioridad',
-        'confirmacion',
-        'condicion'
+        'confirmacion'
     ];
 
     public function bitacora()

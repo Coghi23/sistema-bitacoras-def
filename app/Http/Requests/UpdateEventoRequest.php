@@ -21,8 +21,10 @@ class UpdateEventoRequest extends FormRequest
      */
     public function rules(): array
     {
+        $evento = $this->route('evento');
+        $eventoId = $evento->id;
         return [
-            'idBitacora' => 'required|exists:bitacora,id',
+            'id_Bitacora' => 'required|exists:bitacora,id',
             'user_id' => 'required|exists:users,id',
             'fecha' => 'required|date',
             'observacion' => 'required|string|max:255',

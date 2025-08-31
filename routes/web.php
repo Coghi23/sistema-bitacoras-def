@@ -30,8 +30,6 @@ Route::get('/', function () {
 Route::resource('bitacora', BitacoraController::class);
 
 
-// Route for reporting events
-Route::post('/evento/reportar', [EventoController::class, 'store'])->name('evento.reportar');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     // Rutas de recursos con protección para directores en acciones de escritura
@@ -70,10 +68,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::resource('llave', LlaveController::class);
 
-    Route::get('evento', [EventoController::class, 'index'])->name('evento.index');
+    // Define only the routes you need
     Route::resource('evento', EventoController::class);
-
-
 
     Route::view('/template-administrador', 'Template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'Template-profesor')->name('template-profesor');
@@ -170,6 +166,16 @@ Route::get('/clear-cache', function () {
         return 'No cache to clear.';
     }
 });
+
+// Nueva ruta para cargar eventos
+
+Route::get('/eventos/load', [EventoController::class, 'loadEventos'])->name('eventos.load');
+Route::get('/eventos/profesor/load', [EventoController::class, 'loadEventosProfesor'])->name('eventos.profesor.load');
+Route::get('/eventos/soporte/load', [EventoController::class, 'loadEventosSoporte'])->name('eventos.soporte.load');
+
+// Rutas para actualizar y desactivar eventos
+Route::post('/evento/update', [EventoController::class, 'update'])->name('evento.update');
+Route::post('/evento/destroy', [EventoController::class, 'destroy'])->name('evento.destroy');
 
 require __DIR__.'/auth.php';
 

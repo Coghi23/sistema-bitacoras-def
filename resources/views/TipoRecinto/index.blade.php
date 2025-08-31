@@ -139,7 +139,8 @@
                                                 <form action="{{ route('tipoRecinto.destroy', ['tipoRecinto' => $tipoRecinto->id]) }}" method="post">
                                                     @method('DELETE')
                                                     @csrf
-                                                    <button type="submit" class="btn btn-custom {{ $tipoRecinto->condicion == 1 }}">Sí</button>
+                                                    <button type="submit" class="btn btn-custom">Sí</button>
+
                                                     <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
                                                 </form>
                                             </div>

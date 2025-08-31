@@ -51,7 +51,7 @@
                             <button class="btn btn-sm rounded-pill px-3" 
                                     style="background-color: #134496; color: white;"
                                     onclick="abrirModal({{ $evento->id }})">
-                                <i class="bi bi-eye me-1"></i> Ver Más
+                                <i class="bi bi-pencil-square me-1"></i> Editar
                             </button>
                         </div>
                     </div>
@@ -107,13 +107,24 @@
                         <input type="text" value="{{ ucfirst($evento->prioridad) }}" disabled>
 
                         <label>Estado:</label>
-                        <input type="text" value="En espera" disabled>
+                        <select class="form-select mb-3" id="estado-{{ $evento->id }}">
+                            <option value="en_espera" selected>En espera</option>
+                            <option value="en_proceso">En proceso</option>
+                            <option value="completado">Completado</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="observaciones">
+                <div class="observaciones mt-3">
                     <label>Observaciones:</label>
                     <textarea disabled>{{ $evento->observacion }}</textarea>
+                </div>
+
+                <!-- Botón guardar cambios centrado y pequeño -->
+                <div class="mt-4 d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary px-4 py-2" style="background-color:#134496; min-width:150px;" onclick="guardarEstado({{ $evento->id }})">
+                        <i class="bi bi-save me-2"></i>Guardar cambios
+                    </button>
                 </div>
             </div>
         </div>
@@ -207,6 +218,18 @@
     transition: opacity 0.15s ease-in-out;
 }
 
+/* Add to your styles section */
+.form-select:not([disabled]) {
+    background-color: white;
+    border: 1px solid #134496;
+    cursor: pointer;
+}
+
+.form-select:not([disabled]):focus {
+    border-color: #134496;
+    box-shadow: 0 0 0 0.25rem rgba(19, 68, 150, 0.25);
+}
+
 @media (max-width: 768px) {
     .record-row {
         grid-template-columns: 1fr;
@@ -279,12 +302,13 @@ async function cargarEventos() {
 const intervalId = setInterval(cargarEventos, 3000);
 
 // Función para abrir modal
+// Función para abrir modal
 function abrirModal(id) {
     Swal.fire({
         html: document.getElementById('modalDetalles-' + id).innerHTML,
         width: '80%',
-        showConfirmButton: false,
-        showCloseButton: false,
+        showConfirmButton: false, // 🚫 Oculta el botón "Confirmar"
+        showCloseButton: false,   // 🚫 Oculta el botón de cerrar (X), cámbialo a true si lo quieres
         customClass: {
             container: 'modal-detalles-container',
             popup: 'bg-transparent',
@@ -292,6 +316,7 @@ function abrirModal(id) {
         }
     });
 }
+
 
 function cerrarModal(id) {
     Swal.close();
