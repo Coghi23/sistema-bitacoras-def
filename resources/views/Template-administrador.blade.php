@@ -105,7 +105,7 @@
 
             </a>
 
-            <a href="{{ url('reportes.html') }}" class="sidebar-item">
+            <a href="{{route('evento.index')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>

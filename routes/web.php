@@ -69,7 +69,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('llave', LlaveController::class);
 
     // Define only the routes you need
-    Route::resource('evento', EventoController::class);
+    Route::resource('evento', EventoController::class)->except(['show']);
 
     Route::view('/template-administrador', 'Template-administrador')->name('template-administrador');
     Route::view('/template-profesor', 'Template-profesor')->name('template-profesor');
@@ -176,6 +176,16 @@ Route::get('/eventos/soporte/load', [EventoController::class, 'loadEventosSoport
 // Rutas para actualizar y desactivar eventos
 Route::post('/evento/update', [EventoController::class, 'update'])->name('evento.update');
 Route::post('/evento/destroy', [EventoController::class, 'destroy'])->name('evento.destroy');
+
+// Añadir esta ruta para el index de eventos del profesor
+Route::middleware(['auth', 'role:profesor'])->group(function () {
+    Route::get('/evento/profesor', [EventoController::class, 'indexProfesor'])->name('evento.index_profesor');
+});
+
+// Añadir esta ruta para el index de eventos de soporte
+Route::middleware(['auth', 'role:soporte'])->group(function () {
+    Route::get('/evento/soporte', [EventoController::class, 'indexSoporte'])->name('evento.index_soporte');
+});
 
 require __DIR__.'/auth.php';
 

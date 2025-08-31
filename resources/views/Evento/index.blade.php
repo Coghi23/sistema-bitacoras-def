@@ -1,4 +1,4 @@
-@extends('Template-profesor')
+@extends('Template-administrador')
 
 @section('title', 'Sistema de Eventos')
 
