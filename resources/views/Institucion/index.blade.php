@@ -46,6 +46,12 @@
             @endif
         </div>
         {{-- Fin búsqueda + botón agregar --}}
+        <a href="{{ route('institucion.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+            Mostrar inactivos
+        </a>
+        <a href="{{ route('institucion.index', ['activos' => 1]) }}" class="btn btn-primary mb-3">
+            Mostrar activos
+        </a>
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaInstitucion'))
@@ -95,27 +101,37 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $mostrarActivos = request('activos') == 1 || !request('inactivos');
+                        $mostrarInactivos = request('inactivos') == 1;
+                    @endphp
                     @foreach ($instituciones as $institucion)
+
+                        @if (($mostrarActivos && $institucion->condicion == 1) || ($mostrarInactivos && $institucion->condicion == 0))
                         <tr>
-                            @if ($institucion->condicion == 1)
-                                <td class="text-center">{{ $institucion->nombre }}</td>
-                                <td class="text-center">
-                                    @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                    <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Eliminar Institución">
+                            <td class="text-center">{{ $institucion->nombre }}</td>
+                            <td class="text-center">
+                                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                                    @if($mostrarActivos && $institucion->condicion == 1)
+                                        <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Eliminar Institución">
                                             <i class="bi bi-trash"></i>
-                                    </button>
-                                    @else
-                                    <span class="text-muted">Solo Vista</span>
+                                        </button>
+                                    @elseif($mostrarInactivos && $institucion->condicion == 0)
+                                        <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Restaurar Institución">
+                                            <i class="bi bi-arrow-counterclockwise"></i>
+                                        </button>
                                     @endif
-                                </td>
-                            @endif
-                            
+                                @else
+                                    <span class="text-muted">Solo Vista</span>
+                                @endif
+                            </td>
                         </tr>
+                        @endif
 
                         <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -163,15 +179,25 @@
                                     <div class="modal-body text-center">
                                         <div class="icon-container">
                                             <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
+                                            @if($institucion->condicion == 1)
+                                                <i class="bi bi-exclamation-circle"></i>
+                                            @else
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            @endif
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea Eliminar la Institución?</p>
+                                        <p class="modal-text">
+                                            @if($institucion->condicion == 1)
+                                                ¿Desea eliminar la Institución?
+                                            @else
+                                                ¿Desea restaurar la Institución?
+                                            @endif
+                                        </p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('institucion.destroy', ['institucion' => $institucion->id]) }}" method="post">
                                                 @method('DELETE')
                                                 @csrf
-                                                <button type="submit" class="btn btn-custom {{ $institucion->condicion == 1 }}">Sí</button>
+                                                <button type="submit" class="btn btn-custom">Sí</button>
                                                 <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
                                             </form>
                                         </div>

@@ -19,7 +19,16 @@ class EspecialidadController extends Controller
     public function index(Request $request)
     {
         $query = Especialidade::with('institucion');
-        
+
+        // Filtrar por activos/inactivos
+        if ($request->query('inactivos')) {
+            $query->where('condicion', 0);
+        } elseif ($request->query('activos')) {
+            $query->where('condicion', 1);
+        } else {
+            $query->where('condicion', 1);
+        }
+
         // Búsqueda por nombre de especialidad o institución
         if ($request->filled('busquedaEspecialidad')) {
             $busqueda = $request->busquedaEspecialidad;
@@ -30,7 +39,7 @@ class EspecialidadController extends Controller
                   });
             });
         }
-        
+
         $especialidades = $query->get();
         $instituciones = Institucione::where('condicion', 1)->get();
 

@@ -46,6 +46,12 @@
             @endif
         </div>
         {{-- Fin búsqueda + botón agregar --}}
+        <a href="{{ route('especialidad.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+            Mostrar inactivos
+        </a>
+        <a href="{{ route('especialidad.index', ['activos' => 1]) }}" class="btn btn-primary mb-3">
+            Mostrar activos
+        </a>
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaEspecialidad'))
@@ -103,32 +109,42 @@
             </tr>
         </thead>
         <tbody>
+            @php
+                $mostrarActivos = request('activos') == 1 || !request('inactivos');
+                $mostrarInactivos = request('inactivos') == 1;
+            @endphp
             @foreach ($especialidades as $especialidad)
+
+                @if (($mostrarActivos && $especialidad->condicion == 1) || ($mostrarInactivos && $especialidad->condicion == 0))
                 <tr>
-                    @if ($especialidad->condicion == 1)
-                        <td class="text-center">{{ $especialidad->nombre }}</td>
-                        <td class="text-center">{{ $especialidad->institucion->nombre }}</td>
-                        <td class="text-center">
-                            @if(Auth::user() && !Auth::user()->hasRole('director'))
-                            <button class="btn btn-link text-info p-0 me-2 btn-editar" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#modalEditarEspecialidad-{{ $especialidad->id }}"
-                                data-id="{{ $especialidad->id }}" 
-                                data-nombre="{{ $especialidad->nombre }}"
-                                data-institucion="{{ $especialidad->institucion->id }}"
-                                aria-label="Editar Especialidad">
-                                <i class="bi bi-pencil" style="font-size: 1.8rem;"></i>
-                            </button>
-                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Eliminar Especialidad">
-                                <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
-                            </button>
-                            @else
-                            <span class="text-muted">Solo Vista</span>
+                    <td class="text-center">{{ $especialidad->nombre }}</td>
+                    <td class="text-center">{{ $especialidad->institucion->nombre }}</td>
+                    <td class="text-center">
+                        @if(Auth::user() && !Auth::user()->hasRole('director'))
+                            @if($mostrarActivos && $especialidad->condicion == 1)
+                                <button class="btn btn-link text-info p-0 me-2 btn-editar" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#modalEditarEspecialidad-{{ $especialidad->id }}"
+                                    data-id="{{ $especialidad->id }}" 
+                                    data-nombre="{{ $especialidad->nombre }}"
+                                    data-institucion="{{ $especialidad->institucion->id }}"
+                                    aria-label="Editar Especialidad">
+                                    <i class="bi bi-pencil" style="font-size: 1.8rem;"></i>
+                                </button>
+                                <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Eliminar Especialidad">
+                                    <i class="bi bi-trash" style="font-size: 1.8rem;"></i>
+                                </button>
+                            @elseif($mostrarInactivos && $especialidad->condicion == 0)
+                                <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $especialidad->id }}" aria-label="Restaurar Especialidad">
+                                    <i class="bi bi-arrow-counterclockwise" style="font-size: 1.8rem;"></i>
+                                </button>
                             @endif
-                        </td>
-                    @endif
-                    
+                        @else
+                            <span class="text-muted">Solo Vista</span>
+                        @endif
+                    </td>
                 </tr>
+                @endif
 
 
                <!-- Modal Editar Especialidad -->
@@ -191,10 +207,20 @@
                                     <div class="modal-body text-center">
                                         <div class="icon-container">
                                             <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
+                                            @if($especialidad->condicion == 1)
+                                                <i class="bi bi-exclamation-circle"></i>
+                                            @else
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            @endif
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea Eliminar la Especialidad?</p>
+                                        <p class="modal-text">
+                                            @if($especialidad->condicion == 1)
+                                                ¿Desea eliminar la Especialidad?
+                                            @else
+                                                ¿Desea restaurar la Especialidad?
+                                            @endif
+                                        </p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('especialidad.destroy', $especialidad->id) }}" method="post">
                                                 @method('DELETE')
