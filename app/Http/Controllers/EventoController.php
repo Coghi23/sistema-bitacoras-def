@@ -60,6 +60,7 @@ class EventoController extends Controller
             'subarea.especialidad',
             'horario.recinto.institucion'
         ])
+            ->where('condicion', 1)
             ->orderBy('created_at', 'desc')
             ->get();
 
