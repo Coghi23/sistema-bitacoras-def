@@ -13,8 +13,16 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $query = Role::query();
+
+        if ($request->has('inactivos')) {
+            $query->where('activo', 0); // O el campo que uses para estado
+        } else {
+            $query->where('activo', 1);
+        }
+
         $roles = Role::with('permissions')->get();
         $permisos = Permission::all();
         return view('Role.index', compact('roles', 'permisos'));
@@ -102,14 +110,11 @@ class RoleController extends Controller
     public function destroy(string $id)
     {
         $role = Role::findOrFail($id);
-        try {
-            DB::beginTransaction();
-            $role->delete();
-            DB::commit();
-            return redirect()->route('role.index')->with('success', 'Rol eliminado correctamente');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->with('error', 'Error al eliminar el rol.');
-        }
+        //Alternar estado
+        $role->condicion = $role->condicion ? 0 : 1;
+        $role->save();
+
+        $message = $role->condicion ? 'Rol reactivado correctamente!' : 'Rol desactivado correctamente!';
+        return redirect()->route('role.index')->with('success', $message);
     }
 }

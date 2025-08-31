@@ -1,3 +1,4 @@
+
 const btn = document.getElementById('personal-btn');
 const submenu = document.getElementById('submenu');
 let visible = false;
@@ -6,13 +7,29 @@ const recintoBtn = document.getElementById('recinto-btn');
 const recintoSubmenu = document.getElementById('recinto-submenu');
 let recintoVisible = false;
 
-btn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  // Cerrar el submenú de recinto si está abierto
-  if (recintoVisible) {
+const rolesBtn = document.getElementById('roles-btn');
+const rolesSubmenu = document.getElementById('roles-submenu');
+let rolesVisible = false;
+
+// Cerrar otros submenús al abrir uno
+function closeAllSubmenus(except) {
+  if (except !== 'personal' && visible) {
+    submenu.style.display = 'none';
+    visible = false;
+  }
+  if (except !== 'recinto' && recintoVisible) {
     recintoSubmenu.style.display = 'none';
     recintoVisible = false;
   }
+  if (except !== 'roles' && rolesVisible) {
+    rolesSubmenu.style.display = 'none';
+    rolesVisible = false;
+  }
+}
+
+btn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  closeAllSubmenus('personal');
   visible = !visible;
   submenu.style.display = visible ? 'block' : 'none';
   if (visible) {
@@ -22,11 +39,7 @@ btn.addEventListener('click', (e) => {
 
 recintoBtn.addEventListener('click', (e) => {
   e.stopPropagation();
-  // Cerrar el submenú de personal si está abierto
-  if (visible) {
-    submenu.style.display = 'none';
-    visible = false;
-  }
+  closeAllSubmenus('recinto');
   recintoVisible = !recintoVisible;
   recintoSubmenu.style.display = recintoVisible ? 'block' : 'none';
   if (recintoVisible) {
@@ -34,16 +47,28 @@ recintoBtn.addEventListener('click', (e) => {
   }
 });
 
+rolesBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  closeAllSubmenus('roles');
+  rolesVisible = !rolesVisible;
+  rolesSubmenu.style.display = rolesVisible ? 'block' : 'none';
+  if (rolesVisible) {
+    rolesSubmenu.style.top = `${rolesBtn.offsetTop}px`;
+  }
+});
+
 document.addEventListener('click', function (event) {
-  // Cerrar submenú de personal
   if (!btn.contains(event.target) && !submenu.contains(event.target)) {
     submenu.style.display = 'none';
     visible = false;
   }
-  // Cerrar submenú de recinto
   if (!recintoBtn.contains(event.target) && !recintoSubmenu.contains(event.target)) {
     recintoSubmenu.style.display = 'none';
     recintoVisible = false;
+  }
+  if (!rolesBtn.contains(event.target) && !rolesSubmenu.contains(event.target)) {
+    rolesSubmenu.style.display = 'none';
+    rolesVisible = false;
   }
 });
 

@@ -16,9 +16,7 @@ return new class extends Migration
             $table->string('tipoLeccion');
             $table->string('leccion');
             $table->string('hora_inicio');
-            $table->string('hora_inicio_periodo')->default('AM');
             $table->string('hora_final');
-            $table->string('hora_final_periodo')->default('AM');
             $table->timestamps();
         });
     }
