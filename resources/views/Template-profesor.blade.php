@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/inicio.css') }}">
     @stack('styles')
 </head>
 
@@ -35,7 +36,7 @@
             <div class="sidebar-logo">
                 <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" />
             </div>
-            <a href="{{route('dashboard')}}" class="sidebar-item">
+            <a href="{{ route('Dashboard.indexDocente') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>

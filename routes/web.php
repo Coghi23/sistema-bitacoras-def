@@ -152,6 +152,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    
+    // Ruta para el dashboard del administrador
+    Route::get('/dashboard/admin', function () {
+        return view('Dashboard.indexAdmin');
+    })->name('Dashboard.indexAdmin');
+    
+    Route::get('/dashboard/docente', function () {
+        return view('Dashboard.indexDocente');
+    })->name('Dashboard.indexDocente');
+    
+    Route::get('/dashboard/soporte', function () {
+        return view('Dashboard.indexSoporte');
+    })->name('Dashboard.indexSoporte');
 });
 
 // Ruta temporal para limpiar caché desde el navegador (eliminar después de usar por seguridad)
