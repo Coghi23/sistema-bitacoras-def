@@ -335,27 +335,26 @@ class EventoController extends Controller
                 'headers' => $request->headers->all()
             ]);
 
-            // Buscar el evento por ID de la ruta
             $evento = Evento::findOrFail($id);
 
+            // Validar estado obligatorio y correcto
             $rules = [
-                'observacion' => 'sometimes|required|string',
-                'prioridad' => 'sometimes|required|in:alta,media,regular,baja',
-                'estado' => 'sometimes|required|in:en_espera,en_proceso,completado'
+                'estado' => 'required|in:en_espera,en_proceso,completado',
+                'observacion' => 'sometimes|nullable|string',
+                'prioridad' => 'sometimes|nullable|in:alta,media,regular,baja'
             ];
             $validated = $request->validate($rules);
 
             Log::info('Datos validados para update', $validated);
 
-            if (isset($validated['prioridad'])) {
+            $evento->estado = $validated['estado'];
+            if (array_key_exists('prioridad', $validated)) {
                 $evento->prioridad = $validated['prioridad'];
             }
-            if (isset($validated['observacion'])) {
+            if (array_key_exists('observacion', $validated)) {
                 $evento->observacion = $validated['observacion'];
             }
-            if (isset($validated['estado'])) {
-                $evento->estado = $validated['estado'];
-            }
+
             $evento->save();
 
             Log::info('Evento actualizado correctamente', [
@@ -365,8 +364,19 @@ class EventoController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Evento actualizado correctamente.'
+                'message' => 'Evento actualizado correctamente.',
+                'estado' => $evento->estado
             ]);
+        } catch (\Illuminate\Validation\ValidationException $ve) {
+            Log::warning('Validación fallida al actualizar evento', [
+                'id' => $id,
+                'errors' => $ve->errors()
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Datos inválidos para actualizar el evento.',
+                'errors' => $ve->errors()
+            ], 422);
         } catch (\Exception $e) {
             Log::error('Error al actualizar evento', [
                 'id' => $id,
