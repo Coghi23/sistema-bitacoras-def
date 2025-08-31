@@ -47,7 +47,17 @@
                                 </span>
                             </div>
                             <div data-label="Estado">
-                                <span class="badge bg-secondary">En espera</span>
+                                <span class="badge bg-secondary">
+                                    @if($evento->estado == 'en_espera')
+                                        En espera
+                                    @elseif($evento->estado == 'en_proceso')
+                                        En proceso
+                                    @elseif($evento->estado == 'completado')
+                                        Completado
+                                    @else
+                                        {{ ucfirst($evento->estado) }}
+                                    @endif
+                                </span>
                             </div>
                             <div data-label="Detalles" class="d-flex gap-2 justify-content-center">
                                 <button class="btn btn-sm btn-primary rounded-pill px-3" style="background-color: #134496;"
@@ -291,6 +301,190 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const eventosContainer = document.getElementById('eventos-container');
+        let currentTimestamp = '{{ $eventos->max('updated_at') }}';
+
+        async function cargarEventos() {
+            try {
+                const response = await fetch(`{{ route('eventos.soporte.load') }}?timestamp=${currentTimestamp}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) throw new Error('Error en la red');
+
+                const data = await response.json();
+
+                if (data.success && data.hasNewData) {
+                    loadingSpinner.classList.remove('d-none');
+                    eventosContainer.style.opacity = '0.6';
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = data.html;
+
+                    const newEventosContainer = tempDiv.querySelector('#eventos-container');
+                    if (newEventosContainer) {
+                        eventosContainer.innerHTML = newEventosContainer.innerHTML;
+                        currentTimestamp = data.timestamp;
+                    }
+
+                    eventosContainer.style.opacity = '1';
+                    loadingSpinner.classList.add('d-none');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Comprobar cambios cada 3 segundos
+        const intervalId = setInterval(cargarEventos, 3000);
+
+        // Función para abrir modal
+        // Función para abrir modal
+        function abrirModal(evento) {
+            Swal.fire({
+                title: 'Detalles del Evento',
+                html: `
+                <div>
+                    <label>Docente:</label>
+                    <input type="text" class="form-control" value="${evento.usuario.name ?? 'N/A'}" disabled>
+
+                    <label>Institución:</label>
+                    <input type="text" class="form-control" value="${evento.horario.recinto.institucion?.nombre ?? ''}" disabled>
+
+                    <label>SubÁrea:</label>
+                    <input type="text" class="form-control" value="${evento.subarea?.nombre ?? ''}" disabled>
+
+                    <label>Sección:</label>
+                    <input type="text" class="form-control" value="${evento.seccion?.nombre ?? ''}" disabled>
+
+                    <label>Especialidad:</label>
+                    <input type="text" class="form-control" value="${evento.subarea?.especialidad?.nombre ?? ''}" disabled>
+
+                    <label>Fecha:</label>
+                    <input type="text" class="form-control" value="${evento.fecha_formateada}" disabled>
+
+                    <label>Hora:</label>
+                    <input type="text" class="form-control" value="${evento.hora_formateada}" disabled>
+
+                    <label>Recinto:</label>
+                    <input type="text" class="form-control" value="${evento.horario.recinto.nombre ?? ''}" disabled>
+
+                    <label>Prioridad:</label>
+                    <select class="form-select" id="prioridadInput">
+                        <option value="alta" ${evento.prioridad == 'alta' ? 'selected' : ''}>Alta</option>
+                        <option value="media" ${evento.prioridad == 'media' ? 'selected' : ''}>Media</option>
+                        <option value="regular" ${evento.prioridad == 'regular' ? 'selected' : ''}>Regular</option>
+                        <option value="baja" ${evento.prioridad == 'baja' ? 'selected' : ''}>Baja</option>
+                    </select>
+
+                    <label>Observaciones:</label>
+                    <textarea id="observacionInput" class="form-control">${evento.observacion}</textarea>
+                </div>
+            `,
+                showCancelButton: true,
+                confirmButtonText: 'Guardar Cambios',
+                cancelButtonText: 'Cerrar',
+                customClass: {
+                    popup: 'swal2-custom-popup'
+                },
+                preConfirm: () => {
+                    // Retornar datos a enviar
+                    return {
+                        prioridad: document.getElementById('prioridadInput').value,
+                        observacion: document.getElementById('observacionInput').value
+                    };
+                }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    // Llamar a la función de guardado
+                    await guardarCambios(evento.id, result.value);
+                }
+            });
+        }
+
+
+
+        function cerrarModal(id) {
+            Swal.close();
+        }
+
+        // Add to your existing scripts section
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: '¿Desea desactivar este evento?',
+                html: '<div class="text-muted">Esta acción no se puede deshacer</div>',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#134496',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="bi bi-check-lg me-1"></i>Sí, desactivar',
+                cancelButtonText: '<i class="bi bi-x-lg me-1"></i>Cancelar',
+                customClass: {
+                    container: 'delete-modal-container',
+                    popup: 'delete-modal-popup',
+                    title: 'delete-modal-title',
+                    htmlContainer: 'delete-modal-content',
+                    confirmButton: 'btn btn-primary px-4',
+                    cancelButton: 'btn btn-secondary px-4'
+                },
+                buttonsStyling: false
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    eliminarEvento(id);
+                }
+            });
+        }
+
+
+
+        async function guardarCambios(id, data) {
+            try {
+                const formData = new FormData();
+                formData.append('prioridad', data.prioridad);
+                formData.append('observacion', data.observacion);
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+
+                const response = await fetch(`/evento/${id}/update`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Cambios guardados',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 2500
+                    });
+                    location.reload(); // recarga la página para reflejar cambios
+                } else {
+                    throw new Error(result.message || 'Error al guardar cambios');
+                }
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: error.message
+                });
+            }
+        }
+
+
+        // Limpiar intervalo cuando se abandona la página
+        window.addEventListener('beforeunload', () => {
+            clearInterval(intervalId);
+        });
+
+        // Cargar datos iniciales
+        document.addEventListener('DOMContentLoaded', cargarEventos);
     </script>
 @endpush

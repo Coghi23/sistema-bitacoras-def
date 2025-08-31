@@ -33,5 +33,10 @@ class UpdateEventoRequest extends FormRequest
             'descripcion' => 'required|string|max:255',
             'condicion' => 'required|boolean',
         ];
+    
+        $messages = [
+            'id_prioridad' => 'La prioridad debe ser baja, regular, media o alta'
+            'id_observacion' => 'La observacion es obligatoria',
+        ];
     }
 }

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="{{ asset('Css/reporte.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 </head>
+
+<!-- ================= TABLA PRINCIPAL DE EVENTOS ================= -->
 <div class="wrapper">
     <div class="main-content">
         <!-- Loading spinner -->
@@ -16,9 +18,9 @@
             </div>
         </div>
 
-        <!-- Tabla de eventos -->
+        <!-- Tabla de eventos (listado principal) -->
         <div id="tabla-reportes" class="tabla-contenedor shadow-sm rounded">
-            <!-- Encabezados -->
+            <!-- Encabezados de la tabla -->
             <div class="header-row text-white" style="background-color: #134496;">
                 <div class="col-docente">Docente</div>
                 <div class="col-recinto">Recinto</div>
@@ -45,7 +47,17 @@
                             </span>
                         </div>
                         <div data-label="Estado">
-                            <span class="badge bg-secondary">En espera</span>
+                            <span class="badge bg-secondary">
+                                @if($evento->estado == 'en_espera')
+                                    En espera
+                                @elseif($evento->estado == 'en_proceso')
+                                    En proceso
+                                @elseif($evento->estado == 'completado')
+                                    Completado
+                                @else
+                                    {{ ucfirst($evento->estado) }}
+                                @endif
+                            </span>
                         </div>
                         <div data-label="Detalles">
                             <button class="btn btn-sm rounded-pill px-3" 
@@ -61,8 +73,10 @@
     </div>
 </div>
 
-<!-- Modales existentes sin cambios -->
+
+<!-- ================= MODALES DE DETALLE Y EDICIÓN ================= -->
 @foreach ($eventos as $evento)
+    <!-- Modal de edición para cada evento -->
     <div id="modalDetalles-{{ $evento->id }}" class="modal">
         <div class="modal-contenido">
             <div class="modal-encabezado">
@@ -77,6 +91,7 @@
             <div class="modal-cuerpo">
                 <div class="row">
                     <div class="col">
+                        <!-- Datos del docente y evento -->
                         <label>Docente:</label>
                         <input type="text" value="{{ $evento->usuario->name ?? 'N/A' }}" disabled>
 
@@ -94,6 +109,7 @@
                     </div>
 
                     <div class="col">
+                        <!-- Datos de fecha, hora, prioridad y estado -->
                         <label>Fecha:</label>
                         <input type="text" value="{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}" disabled>
                         
@@ -108,9 +124,9 @@
 
                         <label>Estado:</label>
                         <select class="form-select mb-3" id="estado-{{ $evento->id }}">
-                            <option value="en_espera" selected>En espera</option>
-                            <option value="en_proceso">En proceso</option>
-                            <option value="completado">Completado</option>
+                            <option value="en_espera" @if($evento->estado == 'en_espera') selected @endif>En espera</option>
+                            <option value="en_proceso" @if($evento->estado == 'en_proceso') selected @endif>En proceso</option>
+                            <option value="completado" @if($evento->estado == 'completado') selected @endif>Completado</option>
                         </select>
                     </div>
                 </div>
@@ -257,6 +273,7 @@
 @endpush
 
 @push('scripts')
+<!-- ================= SCRIPTS PARA MODAL Y AJAX ================= -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 const loadingSpinner = document.getElementById('loadingSpinner');
@@ -329,5 +346,46 @@ window.addEventListener('beforeunload', () => {
 
 // Cargar datos iniciales
 document.addEventListener('DOMContentLoaded', cargarEventos);
+    // Función para guardar el estado del evento (modal soporte)
+    async function guardarEstado(id) {
+        // Buscar el select dentro del modal abierto
+        const modalContainer = Swal.getHtmlContainer();
+        const selectEstado = modalContainer ? modalContainer.querySelector('#estado-' + id) : null;
+        if (!selectEstado) {
+            Swal.fire('Error', 'No se encontró el selector de estado en el modal.', 'error');
+            return;
+        }
+        const nuevoEstado = selectEstado.value;
+        console.log('Estado seleccionado (modal):', nuevoEstado); // Depuración
+
+        try {
+            const response = await fetch(`/evento/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ estado: nuevoEstado })
+            });
+            if (!response.ok) throw new Error('No se pudo guardar el estado');
+            const data = await response.json();
+            console.log('Respuesta backend:', data); // <-- Depuración
+            if (data.success) {
+                Swal.fire({
+                    title: '¡Guardado!',
+                    text: 'El estado del evento se actualizó correctamente.',
+                    icon: 'success',
+                }).then(() => {
+                    window.location.reload(); // Recarga toda la página
+                });
+            } else {
+                Swal.fire('Error', data.message || 'No se pudo guardar el estado.', 'error');
+            }
+        } catch (error) {
+            console.log('Error en fetch:', error); // <-- Depuración
+            Swal.fire('Error', error.message, 'error');
+        }
+    }
 </script>
 @endpush

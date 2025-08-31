@@ -319,21 +319,29 @@ class EventoController extends Controller
     public function update(Request $request, Evento $evento)
     {
         try {
-            $validated = $request->validate([
-                'observacion' => 'required|string',
-                'prioridad' => 'required|in:alta,media,regular,baja'
-            ]);
-
-            $evento->update($validated);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Evento actualizado correctamente'
-            ]);
+            $rules = [
+                'observacion' => 'sometimes|required|string',
+                'prioridad' => 'sometimes|required|in:alta,media,regular,baja',
+                'estado' => 'sometimes|required|in:en_espera,en_proceso,completado'
+            ];
+            $validated = $request->validate($rules);
+            if (isset($validated['estado'])) {
+                $evento->estado = $validated['estado'];
+                $evento->save();
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Estado actualizado a: ' . $validated['estado']
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No se recibió el campo estado para actualizar.'
+                ], 400);
+            }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error al actualizar el evento'
+                'message' => 'Error al actualizar el evento: ' . $e->getMessage()
             ], 500);
         }
     }

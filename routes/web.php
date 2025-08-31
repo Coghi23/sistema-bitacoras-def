@@ -175,8 +175,8 @@ Route::get('/eventos/soporte/load', [EventoController::class, 'loadEventosSoport
 
 // Rutas para actualizar y desactivar eventos
 Route::post('/evento/update', [EventoController::class, 'update'])->name('evento.update');
-Route::post('/evento/destroy', [EventoController::class, 'destroy'])->name('evento.destroy');
 Route::get('/evento', [EventoController::class, 'index'])->name('evento.index');
+
 
 
 
@@ -189,7 +189,6 @@ Route::middleware(['auth', 'role:profesor'])->group(function () {
 Route::middleware(['auth', 'role:soporte'])->group(function () {
     Route::get('/evento/soporte', [EventoController::class, 'index_soporte'])->name('evento.index_soporte');
 });
-
 Route::delete('/evento/{evento}', [EventoController::class, 'destroy'])->name('evento.destroy');
 
 require __DIR__.'/auth.php';
