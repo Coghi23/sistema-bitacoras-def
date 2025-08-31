@@ -77,43 +77,45 @@ class EventoController extends Controller
     }
 
     public function store(StoreEventoRequest $request)
-    {
-        DB::beginTransaction();
-        try {
-            $evento = new Evento();
-            
-            // Obtener la bitácora basada en el recinto
-            $horario = Horario::with('recinto')->findOrFail($request->id_horario);
-            $bitacora = Bitacora::where('recinto_id', $horario->recinto->id)->first();
-            
-            if (!$bitacora) {
-                throw new Exception('No se encontró una bitácora para el recinto seleccionado.');
-            }
-            
-            $evento->id_bitacora = $bitacora->id;
-            $evento->id_seccion = $request->id_seccion;
-            $evento->id_subarea = $request->id_subarea;
-            $evento->id_horario = $request->id_horario;
-            $evento->id_horario_leccion = $request->id_horario;
-            $evento->user_id = auth()->id();
-            $evento->hora_envio = now()->format('H:i:s'); // Asignar hora actual del sistema
-            $evento->fecha = now();
-            $evento->observacion = $request->observacion;
-            $evento->prioridad = $request->prioridad;
-            $evento->confirmacion = false;
-            $evento->condicion = 1;
+{
+    DB::beginTransaction();
+    try {
+        $evento = new Evento();
 
-            $evento->save();
-            
-            DB::commit();
-            return redirect()->route('evento.index')
-                ->with('success', 'Evento guardado correctamente.');
-        } catch (Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Hubo un problema al guardar el evento. ' . $e->getMessage()]);
+        // Buscar el horario con su recinto
+        $horario = Horario::with('recinto')->findOrFail($request->id_horario);
+
+        // Buscar la bitácora ligada al recinto de ese horario
+        $bitacora = Bitacora::where('id_recinto', $horario->recinto->id)->first();
+
+        if (!$bitacora) {
+            throw new Exception('No se encontró una bitácora para el recinto de este horario.');
         }
 
+        $evento->id_bitacora = $bitacora->id;
+        $evento->id_seccion = $request->id_seccion;
+        $evento->id_subarea = $request->id_subarea;
+        $evento->id_horario = $request->id_horario;
+        $evento->id_horario_leccion = $request->id_horario;
+        $evento->user_id = auth()->id();
+        $evento->hora_envio = now()->format('H:i:s');
+        $evento->fecha = now();
+        $evento->observacion = $request->observacion;
+        $evento->prioridad = $request->prioridad;
+        $evento->confirmacion = false;
+        $evento->condicion = 1;
+
+        $evento->save();
+
+        DB::commit();
+        return redirect()->route('evento.index')
+            ->with('success', 'Evento guardado correctamente.');
+    } catch (Exception $e) {
+        DB::rollBack();
+        return back()->withErrors(['error' => 'Hubo un problema al guardar el evento. ' . $e->getMessage()]);
     }
+}
+
 
     //metodo editar
     public function edit(Evento $evento)

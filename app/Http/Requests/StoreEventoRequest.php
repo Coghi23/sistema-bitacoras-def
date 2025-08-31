@@ -20,17 +20,17 @@ class StoreEventoRequest extends FormRequest
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
-    {
-        return [
-            'id_bitacora' => 'required|exists:bitacora,id',
-            'id_seccion' => 'required|exists:seccione,id',
-            'id_subarea' => 'required|exists:subarea,id',
-            'id_horario' => 'required|exists:horarios,id',
-            'observacion' => 'required|string|max:500',
-            'prioridad' => 'required|in:alta,media,regular,baja'
-            // hora_envio removed since it's now automatic
-        ];
-    }
+{
+    return [
+       
+        'id_seccion' => 'required|exists:seccione,id',   
+        'id_subarea' => 'required|exists:subarea,id',    
+        'id_horario' => 'required|exists:horarios,id',
+        'observacion' => 'required|string|max:500',
+        'prioridad' => 'required|in:alta,media,regular,baja',
+    ];
+}
+
 
     public function messages(): array
     {
