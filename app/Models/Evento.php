@@ -43,6 +43,11 @@ class Evento extends Model
     
     }
 
+    public function horarioLeccion()
+    {
+        return $this->belongsTo(HorarioLeccion::class, 'id_horario_leccion');
+    }
+    
     public function horario()
     {
     

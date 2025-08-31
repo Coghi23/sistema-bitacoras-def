@@ -31,6 +31,7 @@
                         <input type="hidden" name="id_bitacora" id="id_bitacora">
                         <input type="hidden" name="id_seccion" id="id_seccion">
                         <input type="hidden" name="id_subarea" id="id_subarea">
+                        <input type="hidden" name="id_leccion" id="id_leccion">
                         <input type="hidden" name="id_horario" id="id_horario">
 
                         <div class="row g-4">
@@ -46,19 +47,20 @@
                             <div class="col-md-6">
                                 <div class="form-floating">
                                     <select name="leccion" id="leccionSelect" class="form-select" required>
-    <option value="">Seleccione una lección</option>
-    @foreach($lecciones as $leccion)
-        <option value="{{ $leccion->id }}"
-            data-recinto="{{ optional($leccion->horario_data->recinto)->nombre ?? '' }}"
-            data-recinto-id="{{ optional($leccion->horario_data->recinto)->id ?? '' }}"
-            data-seccion="{{ optional($leccion->horario_data->seccion)->nombre ?? '' }}"
-            data-seccion-id="{{ optional($leccion->horario_data->seccion)->id ?? '' }}"
-            data-subarea="{{ optional($leccion->horario_data->subarea)->nombre ?? '' }}"
-            data-subarea-id="{{ optional($leccion->horario_data->subarea)->id ?? '' }}">
-            {{ $leccion->leccion }} - {{ $leccion->horario_data->fecha }}
-        </option>
-    @endforeach
-</select>
+                                        <option value="">Seleccione una lección</option>
+                                        @foreach($lecciones as $leccion)
+                                            <option value="{{ $leccion->id }}"
+                                                data-horario-id="{{ $leccion->horario_data->id ?? '' }}"
+                                                data-recinto="{{ optional($leccion->horario_data->recinto)->nombre ?? '' }}"
+                                                data-recinto-id="{{ optional($leccion->horario_data->recinto)->id ?? '' }}"
+                                                data-seccion="{{ optional($leccion->horario_data->seccion)->nombre ?? '' }}"
+                                                data-seccion-id="{{ optional($leccion->horario_data->seccion)->id ?? '' }}"
+                                                data-subarea="{{ optional($leccion->horario_data->subarea)->nombre ?? '' }}"
+                                                data-subarea-id="{{ optional($leccion->horario_data->subarea)->id ?? '' }}">
+                                                {{ $leccion->leccion }} - {{ $leccion->horario_data->fecha }}
+                                            </option>
+                                        @endforeach
+                                    </select>
 
                                     <label for="leccionSelect"><i class="bi bi-clock me-2"></i>Lección</label>
                                 </div>
@@ -176,7 +178,8 @@ function mostrarCampos() {
     document.getElementById('subareaInput').value = select.getAttribute('data-subarea');
 
     // Actualizar campos ocultos
-    document.getElementById('id_horario').value = select.value;
+    document.getElementById('id_leccion').value = select.value;
+    document.getElementById('id_horario').value = select.getAttribute('data-horario-id') || '';
     document.getElementById('id_bitacora').value = bitacoras.find(b => b.recinto_id == select.getAttribute('data-recinto-id'))?.id || '';
     document.getElementById('id_seccion').value = select.getAttribute('data-seccion-id') || '';
     document.getElementById('id_subarea').value = select.getAttribute('data-subarea-id') || '';
@@ -187,6 +190,7 @@ function limpiarCampos() {
     document.getElementById('id_bitacora').value = '';
     document.getElementById('id_seccion').value = '';
     document.getElementById('id_subarea').value = '';
+    document.getElementById('id_leccion').value = '';
     document.getElementById('id_horario').value = '';
 }
 

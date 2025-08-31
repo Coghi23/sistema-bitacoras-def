@@ -34,13 +34,14 @@
                 <div class="header-row text-white" style="background-color: #134496;">
                     <div class="col-docente">Docente</div>
                     <div class="col-recinto">Recinto</div>
+                    <div class="col-leccion">Lección</div>
                     <div class="col-fecha">Fecha</div>
                     <div class="col-hora">Hora</div>
                     <div class="col-institucion">Institución</div>
                     <div class="col-condicion_evento">Condición</div>
                     <div class="col-prioridad">Prioridad</div>
                     <div class="col-estado">Estado</div>
-                    <div class="col-detalles">Detalles</div>
+                    <div class="col-detalles">Acciones</div>
                 </div>
 
                 <!-- Contenedor para datos asíncronos -->
@@ -49,10 +50,12 @@
                         $verInactivos = request('ver_inactivos');
                     @endphp
                     @foreach ($eventos as $evento)
+                    @can('view_eventos')
                         @if(($verInactivos && $evento->condicion == 0) || (!$verInactivos && $evento->condicion == 1))
                         <div class="record-row hover-effect">
                             <div data-label="Docente">{{ $evento->usuario->name ?? 'N/A' }}</div>
                             <div data-label="Recinto">{{ $evento->horario->recinto->nombre ?? '' }}</div>
+                            <div data-label="Lección">{{ $evento->horarioLeccion->leccion->leccion ?? '' }}</div>
                             <div data-label="Fecha">{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</div>
                             <div data-label="Hora">{{ \Carbon\Carbon::parse($evento->hora_envio)->format('H:i') }}</div>
                             <div data-label="Institución">{{ $evento->horario->recinto->institucion->nombre ?? '' }}</div>
@@ -77,23 +80,29 @@
                             </div>
                             <div data-label="Detalles" class="d-flex gap-2 justify-content-center">
                             @if($evento->condicion == 1)
-                                <button class="btn btn-sm btn-primary rounded-pill px-3" style="background-color: #134496;"
-                                    onclick='abrirModal(@json($evento))'>
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-
+                                @can('edit_eventos')
+                                    <button class="btn btn-sm btn-primary rounded-pill px-3" style="background-color: #134496;"
+                                        onclick='abrirModal(@json($evento))'>
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                @endcan
+                                @can('delete_eventos')
                                 <button type="button" class="btn btn-sm btn-danger rounded-pill px-3" data-bs-toggle="modal"
                                     data-bs-target="#modalConfirmacionEliminar-{{ $evento->id }}" aria-label="Eliminar Evento">
                                     <i class="bi bi-trash"></i>
                                 </button>
+                                @endcan
                                 @else
+                                @can('delete_eventos')
                                 <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-toggle="modal"
                                     data-bs-target="#modalConfirmacionEliminar-{{ $evento->id }}" aria-label="Eliminar Evento">
                                     <i class="bi bi-arrow-counterclockwise"></i>
                                 </button>
+                                @endcan
                                 @endif
                             </div>
                         </div>
+                    @endcan
                         <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $evento->id }}" tabindex="-1"
                             aria-hidden="true">

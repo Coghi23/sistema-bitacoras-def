@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\UpdateEventoRequest;
 use App\Models\Profesor;
 use App\Models\Bitacora;
@@ -14,7 +15,7 @@ use App\Models\Horario;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Exception;
-
+use Illuminate\Support\Facades\Log;
 
 class EventoController extends Controller
 {
@@ -162,10 +163,8 @@ class EventoController extends Controller
         $seccione = Seccione::all();
         $subareas = Subarea::all();
 
-        // Filtrar solo los horarios del profesor logueado con relaciones
-        $horarios = Horario::with(['recinto', 'subarea', 'seccion', 'leccion'])
-            ->where('user_id', auth()->id())
-            ->get();
+    // Mostrar todos los horarios (sin filtrar por usuario) para depuración
+    $horarios = Horario::with(['recinto', 'subarea', 'seccion', 'leccion'])->get();
 
         // Obtener todas las lecciones disponibles
         $lecciones = $horarios->flatMap(function ($horario) {
@@ -218,25 +217,37 @@ class EventoController extends Controller
 
     public function store(StoreEventoRequest $request)
     {
+        // Recibimos el id de lección y el id de horario seleccionados
+        $idLeccion = $request->id_leccion;
+        $idHorario = $request->id_horario;
+        $leccion = \App\Models\Leccion::find($idLeccion);
+        $horario = Horario::with('recinto')->find($idHorario);
+        if (!$leccion) {
+            return back()->withErrors(['error' => 'La lección seleccionada no existe.']);
+        }
+        if (!$horario) {
+            return back()->withErrors(['error' => 'El horario seleccionado no existe.']);
+        }
+        // Buscar el id de la fila pivote horario_leccion
+        $idHorarioLeccion = \DB::table('horario_leccion')
+            ->where('idHorario', $idHorario)
+            ->where('idLeccion', $idLeccion)
+            ->value('id');
+        if (!$idHorarioLeccion) {
+            return back()->withErrors(['error' => 'No existe relación entre el horario y la lección seleccionados.']);
+        }
         DB::beginTransaction();
         try {
             $evento = new Evento();
-
-            // Buscar el horario con su recinto
-            $horario = Horario::with('recinto')->findOrFail($request->id_horario);
-
-            // Buscar la bitácora ligada al recinto de ese horario
             $bitacora = Bitacora::where('id_recinto', $horario->recinto->id)->first();
-
             if (!$bitacora) {
                 throw new Exception('No se encontró una bitácora para el recinto de este horario.');
             }
-
             $evento->id_bitacora = $bitacora->id;
             $evento->id_seccion = $request->id_seccion;
             $evento->id_subarea = $request->id_subarea;
-            $evento->id_horario = $request->id_horario;
-            $evento->id_horario_leccion = $request->id_horario;
+            $evento->id_horario = $horario->id;
+            $evento->id_horario_leccion = $idHorarioLeccion;
             $evento->user_id = auth()->id();
             $evento->hora_envio = now()->format('H:i:s');
             $evento->fecha = now();
@@ -244,9 +255,7 @@ class EventoController extends Controller
             $evento->prioridad = $request->prioridad;
             $evento->confirmacion = false;
             $evento->condicion = 1;
-
             $evento->save();
-
             DB::commit();
             return redirect()->route('evento.index_profesor')
                 ->with('success', 'Evento guardado correctamente.');
@@ -319,6 +328,13 @@ class EventoController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            Log::info('Intentando actualizar evento', [
+                'id' => $id,
+                'request_all' => $request->all(),
+                'raw_input' => file_get_contents('php://input'),
+                'headers' => $request->headers->all()
+            ]);
+
             // Buscar el evento por ID de la ruta
             $evento = Evento::findOrFail($id);
 
@@ -328,6 +344,8 @@ class EventoController extends Controller
                 'estado' => 'sometimes|required|in:en_espera,en_proceso,completado'
             ];
             $validated = $request->validate($rules);
+
+            Log::info('Datos validados para update', $validated);
 
             if (isset($validated['prioridad'])) {
                 $evento->prioridad = $validated['prioridad'];
@@ -340,11 +358,21 @@ class EventoController extends Controller
             }
             $evento->save();
 
+            Log::info('Evento actualizado correctamente', [
+                'evento_id' => $evento->id,
+                'nuevo_estado' => $evento->estado
+            ]);
+
             return response()->json([
                 'success' => true,
                 'message' => 'Evento actualizado correctamente.'
             ]);
         } catch (\Exception $e) {
+            Log::error('Error al actualizar evento', [
+                'id' => $id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response()->json([
                 'success' => false,
                 'message' => 'Error al actualizar el evento: ' . $e->getMessage()

@@ -12,7 +12,7 @@
     'url' => 'http://sistema-bitacoras-def.test',
     'frontend_url' => 'http://localhost:3000',
     'asset_url' => NULL,
-    'timezone' => 'UTC',
+    'timezone' => 'America/Costa_Rica',
     'locale' => 'en',
     'fallback_locale' => 'en',
     'faker_locale' => 'en_US',
