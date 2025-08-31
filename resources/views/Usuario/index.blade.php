@@ -170,7 +170,7 @@
                             <label class="fw-bold me-3 w-50 text-start">
                                 <i class="fas fa-user text-primary me-2"></i>Nombre Completo:
                             </label>
-                            <input type="text" name="name" class="form-control rounded-4 w-50" placeholder="Nombre Completo" required>
+                            <input type="text" name="name" class="form-control rounded-4 w-50" placeholder="Mauricio Vargas" required>
                         </div>
                         
                         {{-- Cédula --}}
@@ -178,7 +178,7 @@
                             <label class="fw-bold me-3 w-50 text-start">
                                 <i class="fas fa-id-card text-info me-2"></i>Cédula:
                             </label>
-                            <input type="text" name="cedula" class="form-control rounded-4 w-50" placeholder="00000000" required>
+                            <input type="text" name="cedula" class="form-control rounded-4 w-50" placeholder="30458065" required>
                         </div>
                         
                         {{-- Correo Electrónico --}}
@@ -186,7 +186,7 @@
                             <label class="fw-bold me-3 w-50 text-start">
                                 <i class="fas fa-envelope text-warning me-2"></i>Correo Electrónico:
                             </label>
-                            <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="ejemplo@gmail.com" required>
+                            <input type="email" name="email" class="form-control rounded-4 w-50" placeholder="MauriVargas17@gmail.com" required>
                         </div>
                         
                         {{-- Información sobre configuración de contraseña --}}
@@ -354,57 +354,32 @@
     </div>
 
     {{-- Modal Eliminar Usuario --}}
-    @if($usuario->condicion == 1)
-    <div class="modal fade" id="modalEliminarUsuario{{ $usuario->id }}" tabindex="-1" aria-labelledby="modalEliminarUsuarioLabel{{ $usuario->id }}" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content custom-modal">
-                <div class="modal-body text-center">
-                    <div class="icon-container">
-                        <div class="circle-icon">
-                            <i class="bi bi-exclamation-circle"></i>
-                        </div>
-                    </div>
-                    <p class="modal-text">¿Está usted seguro de eliminar este usuario?</p>
-                    <p class="text-muted small mb-0">{{ $usuario->name }}</p>
-                    <p class="text-muted small mb-0">{{ $usuario->email }}</p>
-                    <p class="text-muted small mb-3">{{ ucfirst($usuario->getRoleNames()->first() ?? 'Sin rol') }}</p>
-                    <div class="btn-group-custom">
-                        <form method="POST" action="{{ route('usuario.destroy', $usuario->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-custom">Sí</button>
-                            <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-    
+    <div class="modal fade" id="modalEliminarUsuario{{ $usuario->id }}"
+                            
+
     {{-- Modal Reactivar Usuario --}}
     <div class="modal fade" id="modalReactivarUsuario{{ $usuario->id }}" tabindex="-1" aria-labelledby="modalReactivarUsuarioLabel{{ $usuario->id }}" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content custom-modal">
-                <div class="modal-body text-center">
-                    <div class="icon-container">
-                        <div class="circle-icon" style="background-color: #28a745; color: #fff;">
-                            <i class="bi bi-arrow-counterclockwise" style="color: #fff;"></i>
-                        </div>
+            <div class="modal-content text-center">
+                <form method="POST" action="{{ route('usuario.destroy', $usuario->id) }}">
+                    @csrf
+                    @method('DELETE')
+                    <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="#efc737" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.496 6.033h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286a.237.237 0 0 0 .241.247m2.325 6.443c.61 0 1.029-.394 1.029-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94 0 .533.425.927 1.01.927z"/>
+                        </svg>
+                        <p>¿Está usted seguro de reactivar este usuario?</p>
+                        <p class="text-muted small">{{ $usuario->name }}</p>
+                        <p class="text-muted small">{{ $usuario->email }}</p>
+                        <p class="text-muted small">
+                            {{ ucfirst($usuario->getRoleNames()->first() ?? 'Sin rol') }}
+                        </p>
                     </div>
-                    <p class="modal-text">¿Está usted seguro de reactivar este usuario?</p>
-                    <p class="text-muted small mb-0">{{ $usuario->name }}</p>
-                    <p class="text-muted small mb-0">{{ $usuario->email }}</p>
-                    <p class="text-muted small mb-3">{{ ucfirst($usuario->getRoleNames()->first() ?? 'Sin rol') }}</p>
-                    <div class="btn-group-custom">
-                        <form method="POST" action="{{ route('usuario.destroy', $usuario->id) }}">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-custom" style="background-color: #28a745; color: #fff;">Sí</button>
-                            <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                        </form>
+                    <div class="modal-footer d-flex justify-content-center gap-2 pb-3">
+                        <button type="submit" class="btn btn-primary">Sí</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
     </div>

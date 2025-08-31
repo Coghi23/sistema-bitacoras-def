@@ -27,7 +27,6 @@ class StoreRecintoRequest extends FormRequest
             'llave_id' => 'required|exists:llave,id',
             'estadoRecinto_id' => 'required|exists:estadorecinto,id',
             'tipoRecinto_id' => 'required|exists:tiporecinto,id',
-            'llave_id' => 'required|exists:llave,id',
         ];
     }
 }

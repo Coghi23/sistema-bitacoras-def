@@ -125,21 +125,21 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                    <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarSeccion-{{ $seccion->id }}">
-                                        <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
-                                    </button>
+                                @can('edit_seccion')
                                     @if($seccion->condicion == 1)
+                                        <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarSeccion-{{ $seccion->id }}">
+                                            <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
+                                        </button>
+                                @endcan
+                                @can('delete_seccion')
                                         <button class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarSeccion-{{ $seccion->id }}">
                                             <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
                                         </button>
-                                    @else
-                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarSeccion-{{ $seccion->id }}" title="Reactivar sección">
-                                            <i class="bi bi-arrow-counterclockwise icon-eliminar" style="font-size: 1.5rem; color: #28a745;"></i>
-                                        </button>
-                                    @endif
+                                    @endcan
                                 @else
-                                    <span class="text-muted">Solo vista</span>
+                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarSeccion-{{ $seccion->id }}" title="Reactivar sección">
+                                        <i class="bi bi-arrow-counterclockwise icon-eliminar" style="font-size: 1.5rem; color: #28a745;"></i>
+                                    </button>
                                 @endif
                             </td>
                         </tr>

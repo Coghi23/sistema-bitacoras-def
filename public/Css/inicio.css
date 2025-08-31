@@ -1,0 +1,93 @@
+
+/* MENSAJE DE BIENVENIDA */
+#mensaje-bienvenida {
+    background-color: #134496;
+    border: 2px solid #DFDFDF; 
+    padding: 20px 25px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 12px;
+    box-shadow: 0 4px 20px rgb(118, 192, 230);
+    max-width: 100%;
+    color: white;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    margin-left: 100px;
+  }
+
+  /* MENSAJE DE SEGURIDAD */
+  #mensaje-seguridad {
+    background-color: #76C0E6;
+    color: white;
+    border: 2px solid #DFDFDF;
+    padding: 20px 25px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 0px;
+    box-shadow: 0 4px 20px rgb(19, 68, 150);
+    max-width: 100%;
+    margin-bottom: 30px;
+    margin-left: 200px;
+
+  }
+  
+  @media (max-width: 767.98px) {
+    #mensaje-seguridad, #mensaje-bienvenida{
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 30px;
+      width: 90%; 
+    }
+  }
+
+  /* IMAGEN DE OFICINA */
+  #Img-Oficina {
+    background-image: url("../img/Img-elementOfic.png"); 
+    background-size: cover;      
+    background-position: center; 
+    background-repeat: no-repeat;
+    height: 300px; 
+    width: 100%;
+  }
+  
+  /* CONTENEDOR IMAGEN  
+  #container-imagen {
+    background-color: #6fc3e0;
+    width: 100%;
+  }*/
+  
+  /* DISTRIBUCIÓN RESPONSIVE */
+  @media (min-width: 768px) {
+    #mensaje-bienvenida,
+    #mensaje-seguridad {
+      max-width: auto
+    }
+  
+    #Img-Oficina {
+      height: 100vh;
+    }
+  }
+  
+  /* Layout general */
+  @media (min-width: 992px) {
+    .flex-desktop {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 30px;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    #texto-contenido {
+      background-color: #134496; /* O el color que quieras para fondo en móviles */
+      padding: 2rem 1rem;
+    }
+
+    #Img-Oficina {
+        display: none !important;
+      }
+ }
+  

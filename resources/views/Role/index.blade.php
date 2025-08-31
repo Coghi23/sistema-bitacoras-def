@@ -1,5 +1,7 @@
 @extends('Template-administrador')
 
+
+
 @section('content')
 <div class="wrapper">
     <div class="main-content p-4" style="margin-left: 90px;">
@@ -103,20 +105,23 @@
                             </td>
                             <td>
                                 @can('edit_roles')
-                                <button 
-                                    class="btn p-0 me-2" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#editRoleModal"
-                                    title="Editar rol"
-                                    onclick="loadEditModal({{ $role->id }}, '{{ addslashes($role->name) }}', @json($role->permissions->pluck('id')))">
-                                    <i class="bi bi-pencil icon-editar"></i>
-                                </button>
+
                                 @endcan
                                 @if($role->condicion == 1)
                                     @can('delete_roles')
-                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#eliminarRoleModal{{ $role->id }}" title="Desactivar rol">
-                                        <i class="bi bi-trash icon-eliminar"></i>
-                                    </button>
+                                        <button 
+                                            class="btn p-0 me-2" 
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#editRoleModal"
+                                            title="Editar rol"
+                                            onclick="loadEditModal({{ $role->id }}, '{{ addslashes($role->name) }}', @json($role->permissions->pluck('id')))">
+                                            <i class="bi bi-pencil icon-editar"></i>
+                                        </button>
+                                    @endcan
+                                    @can('delete_roles')
+                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#eliminarRoleModal{{ $role->id }}" title="Desactivar rol">
+                                            <i class="bi bi-trash icon-eliminar"></i>
+                                        </button>
                                     @endcan
                                 @else
                                     @can('delete_roles')

@@ -11,14 +11,13 @@
     <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/delete-alerts.css') }}">
-    
+    <link rel="stylesheet" href="{{ asset('Css/Inicio.css') }}">
+
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
 </head>
 
+
 <body>
-
-
-
 
     <div id="sidebar-navbar">
         <div class="topbar">
@@ -93,16 +92,11 @@
                 <a href="{{ asset('estadoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
                 <a href="{{ asset('recinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
             </div>
-            
-
-            
 
             <a href="{{ asset('horario') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
             </a>
-            
-
             
             <a href="{{ route('admin.qr.index') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-qr-code-scan"></i></div>
@@ -114,10 +108,6 @@
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
             </a>
-
-            
-
-            
 
             <div class="mt-auto mb-3" style="width:100%;">
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">

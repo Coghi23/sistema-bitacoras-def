@@ -19,6 +19,7 @@ class RolePermissions extends Seeder
     {
         // Crear roles básicos
         $roles = [
+            'superadmin',
             'administrador',
             'profesor',
             'soporte',
@@ -38,7 +39,7 @@ class RolePermissions extends Seeder
             'view_instituciones',
             'view_profesores',
             'view_secciones',
-            'view_dashboard'
+            'view_dashboard',
         ];
 
         foreach ($permissions as $permission) {
@@ -54,24 +55,13 @@ class RolePermissions extends Seeder
         // El administrador tiene todos los permisos
         $admin = \Spatie\Permission\Models\Role::where('name', 'administrador')->first();
         if ($admin) {
-            // Crear permisos completos para administrador
-            $adminPermissions = [
-                'create_roles', 'edit_roles', 'delete_roles', 'view_roles',
-                'create_usuarios', 'edit_usuarios', 'delete_usuarios', 'view_usuarios',
-                'create_bitacoras', 'edit_bitacoras', 'delete_bitacoras', 'view_bitacoras',
-                'create_eventos', 'edit_eventos', 'delete_eventos', 'view_eventos',
-                'create_reportes', 'edit_reportes', 'delete_reportes', 'view_reportes',
-                'create_instituciones', 'edit_instituciones', 'delete_instituciones', 'view_instituciones',
-                'create_profesores', 'edit_profesores', 'delete_profesores', 'view_profesores',
-                'create_secciones', 'edit_secciones', 'delete_secciones', 'view_secciones',
-                'view_dashboard'
-            ];
-
-            foreach ($adminPermissions as $permission) {
-                \Spatie\Permission\Models\Permission::firstOrCreate(['name' => $permission]);
-            }
-
-            $admin->syncPermissions($adminPermissions);
+            // Asignar todos los permisos existentes al administrador
+            $admin->syncPermissions(Permission::all());
         }
+
+        $superadmin = \Spatie\Permission\Models\Role::where('name', 'superadmin')->first();
+        if($superadmin) {
+            $superadmin->syncPermissions(Permission::all());
+        };
     }
 }

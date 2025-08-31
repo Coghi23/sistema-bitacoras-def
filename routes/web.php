@@ -112,7 +112,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
         // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
-        Route::middleware(['role:administrador|director'])->group(function () {
+        Route::middleware(['role:superadmin|administrador|director'])->group(function () {
             Route::get('/template-administrador', function () {
                 return view('Template-administrador');
             })->name('template-administrador');
@@ -139,6 +139,8 @@ Route::get('/dashboard', function () {
     if ($user->hasRole('administrador')) {
         return redirect('/template-administrador');
     } elseif ($user->hasRole('director')) {
+        return redirect('/template-administrador');
+    } elseif ($user->hasRole('superadmin')) {
         return redirect('/template-administrador');
     } elseif ($user->hasRole('profesor')) {
         return redirect('/template-profesor');

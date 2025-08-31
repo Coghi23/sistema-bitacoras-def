@@ -14,7 +14,20 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Crear usuario administrador por defecto
+        // Crear superadministrador inborrable con id 1
+        $superAdmin = User::firstOrCreate(
+            ['id' => 1],
+            [
+                'name' => 'Super Administrador',
+                'email' => 'superadmin@sistema.com',
+                'cedula' => '00000001',
+                'password' => Hash::make('superadmin123'),
+                'condicion' => true,
+            ]
+        );
+        $superAdmin->assignRole('superadmin');
+
+        // Crear usuario administrador normal si no existe
         $admin = User::firstOrCreate(
             ['email' => 'admin@sistema.com'],
             [
@@ -24,8 +37,6 @@ class AdminUserSeeder extends Seeder
                 'condicion' => true,
             ]
         );
-
-        // Asignar rol de administrador
         $admin->assignRole('administrador');
     }
 }

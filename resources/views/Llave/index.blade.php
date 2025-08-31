@@ -1,22 +1,15 @@
 @extends('Template-administrador')
 
-
 @section('title', 'Sistema de Bitácoras')
 
-
 @section('content')
-
-
-
-
-
 
 <div class="wrapper">
     <div class="main-content">
         {{-- Búsqueda + botón agregar --}}
         <div class="search-bar-wrapper mb-4">
-            <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('llave.index') }}" class="w-100 position-relative">
+            <div class="search-bar d-flex align-items-center">
+                <form id="busquedaForm" method="GET" action="{{ route('llave.index') }}" class="w-100 position-relative me-2">
                     <span class="search-icon">
                         <i class="bi bi-search"></i>
                     </span>
@@ -29,18 +22,26 @@
                     </button>
                     @endif
                 </form>
+
+                <form method="GET" action="{{ route('llave.index') }}" class="d-inline">
+                    <input type="hidden" name="inactivos" value="{{ request('inactivos') ? '' : '1' }}">
+                    <button type="submit" class="btn btn-outline-secondary rounded-pill px-3 me-2">
+                        @if(request('inactivos'))
+                            Mostrar Activos
+                        @else
+                            Mostrar Inactivos
+                        @endif
+                    </button>
+                </form>
+                @can('create_llaves')
+                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                        data-bs-toggle="modal" data-bs-target="#modalAgregarLlave"
+                        title="Agregar Llave" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
+                    </button>
+                @endcan
             </div>
-
-
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalAgregarLlave"
-                title="Agregar Llave" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
         </div>
-
-
-
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaLlave'))
@@ -52,7 +53,6 @@
                 </span>
             </div>
         @endif
-
 
         <!-- Modal Crear Llave -->
         <div class="modal fade" id="modalAgregarLlave" tabindex="-1" aria-labelledby="modalAgregarLlaveLabel" aria-hidden="true">
@@ -86,24 +86,58 @@
         </div>
    
         {{-- Apartado resumen de llaves --}}
-@php
-    $llavesActivas = $llaves->where('condicion', 1);
-    $totalLlaves = $llavesActivas->count();
-    $disponibles = $llavesActivas->where('estado', 0)->count(); // Ajusta el valor según tu lógica de estado disponible
-    $entregadas = $llavesActivas->where('estado', 1)->count();  // Ajusta el valor según tu lógica de estado entregada
-@endphp
+        @php
+            if (request('inactivos')) {
+                // Solo mostrar total de llaves inactivas
+                $llavesInactivas = $llaves->where('condicion', 0);
+                $totalLlaves = $llavesInactivas->count();
+                $disponibles = null;
+                $entregadas = null;
+            } else {
+                // Mostrar totales y subtotales de activas
+                $llavesActivas = $llaves->where('condicion', 1);
+                $totalLlaves = $llavesActivas->count();
+                $disponibles = $llavesActivas->where('estado', 0)->count();
+                $entregadas = $llavesActivas->where('estado', 1)->count();
+            }
+        @endphp
 
 
 <div class="row mb-4">
-    <div class="col-md-4">
-        <div class="card text-center">
-            <div class="card-body">
-                <i class="bi bi-key" style="font-size: 2rem; color: #134496;"></i>
-                <h3 class="mt-2">{{ $totalLlaves }}</h3>
-                <p class="mb-0 text-muted">Total Llaves Activas</p>
+    @if(request('inactivos'))
+        <div class="col-md-12">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-key" style="font-size: 2rem; color: #134496;"></i>
+                    <h3 class="mt-2">{{ $totalLlaves }}</h3>
+                    <p class="mb-0 text-muted">
+                        @if(request('inactivos'))
+                            Total Llaves Inactivas
+                        @else
+                            Total Llaves Activas
+                        @endif
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
+    @else 
+        <div class="col-md-4">
+            <div class="card text-center">
+                <div class="card-body">
+                    <i class="bi bi-key" style="font-size: 2rem; color: #134496;"></i>
+                    <h3 class="mt-2">{{ $totalLlaves }}</h3>
+                    <p class="mb-0 text-muted">
+                        @if(request('inactivos'))
+                            Total Llaves Inactivas
+                        @else
+                            Total Llaves Activas
+                        @endif
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+    @if(!request('inactivos'))
     <div class="col-md-4">
         <div class="card text-center">
             <div class="card-body">
@@ -122,8 +156,8 @@
             </div>
         </div>
     </div>
+    @endif
 </div>
-
 
         <!-- Tabla -->
         <div class="table-responsive">
@@ -139,79 +173,100 @@
                 <tbody id="llaves-table-body">
                     @foreach ($llaves as $llave)
                         <tr id="llave-row-{{ $llave->id }}" data-llave-id="{{ $llave->id }}">
-                            @if ($llave->condicion == 1)
-                                <td class="text-center">{{ $llave->nombre }}</td>
-                                <td class="text-center">
-                                    <span class="badge estado-badge {{ $llave->estadoBadgeClass }}" data-estado="{{ $llave->estado }}">
-                                        {{ $llave->estadoEntregaText }}
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    <small class="text-muted ultima-actualizacion">
-                                        {{ $llave->updated_at->format('d/m/Y H:i:s') }}
-                                    </small>
-                                </td>
-                                <td class="text-center">
-                                    @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                    <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modalEditarLlave-{{ $llave->id }}">
-                                        <i class="bi bi-pencil"></i>
-                                    </button>
-                                   
-                                    <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $llave->id }}" aria-label="Eliminar Llave">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                    @else
-                                    <span class="text-muted">Solo vista</span>
+                            @can('view_llaves')
+                                @if (request('inactivos'))
+                                    @if ($llave->condicion == 0)
+                                        <td class="text-center">{{ $llave->nombre }}</td>
+                                        <td class="text-center">
+                                            <span class="badge estado-badge {{ $llave->estadoBadgeClass }}" data-estado="{{ $llave->estado }}">
+                                                {{ $llave->estadoEntregaText }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <small class="text-muted ultima-actualizacion">
+                                                {{ $llave->updated_at->format('d/m/Y H:i:s') }}
+                                            </small>
+                                        </td>
+                                        <td class="text-center">
+                                        @can('delete_llaves')
+                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $llave->id }}" aria-label="Restaurar Llave">
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            </button>
+                                        @endcan
+                                        </td>
                                     @endif
-                                </td>
-                            @endif
-                        </tr>
+                                @else
+                                    @if ($llave->condicion == 1)
+                                        <td class="text-center">{{ $llave->nombre }}</td>
+                                        <td class="text-center">
+                                            <span class="badge estado-badge {{ $llave->estadoBadgeClass }}" data-estado="{{ $llave->estado }}">
+                                                {{ $llave->estadoEntregaText }}
+                                            </span>
+                                        </td>
+                                        <td class="text-center">
+                                            <small class="text-muted ultima-actualizacion">
+                                                {{ $llave->updated_at->format('d/m/Y H:i:s') }}
+                                            </small>
+                                        </td>
+                                        <td class="text-center">
+                                        @can('edit_llaves')
+                                            <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditarLlave-{{ $llave->id }}">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        @endcan
+                                        @can('delete_llaves')
+                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionRestaurar-{{ $llave->id }}" aria-label="Restaurar Llave">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        @endcan
+                                        </td>
+                                    @endif
+                                @endif
+                            </tr>
+                        @endcan
 
-
-                        @if(Auth::user() && !Auth::user()->hasRole('director'))
                         <!-- Modal Editar Llave -->
-                       
-<div class="modal fade" id="modalEditarLlave-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalEditarLlaveLabel-{{ $llave->id }}" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content">
-            <div class="modal-header modal-header-custom">
-                <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                    <i class="bi bi-arrow-left"></i>
-                </button>
-                <h5 class="modal-title">Editar Llave</h5>
-            </div>
-            <div class="modal-body px-4 py-4">
-                {{-- Muestra errores de validación si existen --}}
-                @if (session('modal_editar_id') && session('modal_editar_id') == $llave->id && $errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <form action="{{ route('llave.update',['llave'=>$llave]) }}" method="post">
-                    @csrf
-                    @method('PATCH')
-                    <input type="hidden" name="id" id="editarIdLlave">
-                    <div class="mb-3">
-                        <label for="editarNombreLlave" class="form-label fw-bold">Nombre de la Llave</label>
-                        <input type="text" name="nombre" id="nombre" class="form-control @error('nombre') is-invalid @enderror" value="{{old('nombre',$llave->nombre)}}" required>
-                        @error('nombre')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-                    <div class="text-center mt-4">
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
+                        <div class="modal fade" id="modalEditarLlave-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalEditarLlaveLabel-{{ $llave->id }}" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header modal-header-custom">
+                                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <h5 class="modal-title">Editar Llave</h5>
+                                    </div>
+                                    <div class="modal-body px-4 py-4">
+                                        {{-- Muestra errores de validación si existen --}}
+                                        @if (session('modal_editar_id') && session('modal_editar_id') == $llave->id && $errors->any())
+                                            <div class="alert alert-danger">
+                                                <ul class="mb-0">
+                                                    @foreach ($errors->all() as $error)
+                                                        <li>{{ $error }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+                                        @endif
+                                        <form action="{{ route('llave.update',['llave'=>$llave]) }}" method="post">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="id" id="editarIdLlave">
+                                            <div class="mb-3">
+                                                <label for="editarNombreLlave" class="form-label fw-bold">Nombre de la Llave</label>
+                                                <input type="text" name="nombre" id="nombre" class="form-control @error('nombre') is-invalid @enderror" value="{{old('nombre',$llave->nombre)}}" required>
+                                                @error('nombre')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Modal eliminar -->
                         <div class="modal fade" id="modalConfirmacionEliminar-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalLlaveEliminarLabel-{{ $llave->id }}"
                         aria-hidden="true">
@@ -224,6 +279,31 @@
                                             </div>
                                         </div>
                                         <p class="modal-text">¿Desea Eliminar la Llave?</p>
+                                        <div class="btn-group-custom">
+                                            <form action="{{ route('llave.destroy', ['llave' => $llave->id]) }}" method="post">
+                                                @method('DELETE')
+                                                @csrf
+                                                <button type="submit" class="btn btn-custom {{ $llave->condicion == 0 }}">Sí</button>
+                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal restaurar -->
+                        <div class="modal fade" id="modalConfirmacionRestaurar-{{ $llave->id }}" tabindex="-1" aria-labelledby="modalLlaveRestaurarLabel-{{ $llave->id }}"
+                        aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content custom-modal">
+                                    <div class="modal-body text-center">
+                                        <div class="icon-container">
+                                            <div class="circle-icon">
+                                            <i class="bi bi-exclamation-circle"></i>
+                                            </div>
+                                        </div>
+                                        <p class="modal-text">¿Desea Restaurar la Llave?</p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('llave.destroy', ['llave' => $llave->id]) }}" method="post">
                                                 @method('DELETE')
@@ -254,7 +334,6 @@
                                 </div>
                             </div>
                         </div>
-                        @endif
                     @endforeach
                 </tbody>
             </table>

@@ -7,28 +7,63 @@
 @section('content')
 <div class="wrapper">
     <div class="main-content">
-        {{-- Búsqueda + botón agregar --}}
-        <div class="search-bar-wrapper mb-4">
-            <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('recinto.index') }}" class="w-100 position-relative">
-                    <span class="search-icon">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input type="text" class="form-control"
-                        placeholder="Buscar recinto..." name="busquedaRecinto"
-                        value="{{ request('busquedaRecinto') }}" id="inputBusqueda" autocomplete="off">
-                    @if(request('busquedaRecinto'))
-                    <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
-                        <i class="bi bi-x-circle"></i>
+        {{-- Búsqueda + botón agregar + filtros activos/inactivos --}}
+        <div class="row align-items-end mb-4">
+            <div class="search-bar-wrapper mb-4 d-flex align-items-center">
+                <div class="search-bar flex-grow-1">
+                    <form id="busquedaForm" method="GET" action="{{ route('recinto.index') }}" class="w-100 position-relative">
+                        <span class="search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" class="form-control" placeholder="Buscar recinto..." name="busquedaRecinto" value="{{ request('busquedaRecinto') }}" id="inputBusqueda" autocomplete="off">
+                        @if(request('busquedaRecinto'))
+                        <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                        @endif
+                        @if(request('inactivos'))
+                            <input type="hidden" name="inactivos" value="1">
+                        @endif
+                    </form>
+                </div>
+                @can('create_recintos')
+                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                        data-bs-toggle="modal" data-bs-target="#modalAgregarRecinto"
+                        title="Agregar Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
                     </button>
-                    @endif
-                </form>
+                @endcan
             </div>
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                data-bs-toggle="modal" data-bs-target="#modalAgregarRecinto"
-                title="Agregar Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
+        </div>
+        @if(session('success'))
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ session('success') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ session('error') }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <ul class="mb-0">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+        <div class="mb-3">
+            <a href="{{ route('recinto.index', ['inactivos' => 1]) }}" class="btn btn-warning me-2">
+                Mostrar inactivos
+            </a>
+            <a href="{{ route('recinto.index') }}" class="btn btn-primary me-2">
+                Mostrar activos
+            </a>
         </div>
      
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
@@ -45,6 +80,10 @@
                                 <span class="badge px-2 py-1 rounded-pill text-dark"
                                         style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
                                         {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
+                                </span>
+                                <span class="badge px-2 py-1 rounded-pill text-white {{ $recinto->condicion == 1 ? 'bg-success' : 'bg-danger' }}" style="font-size:0.9em;">
+                                    {{ $recinto->condicion == 1 ? 'Activo' : 'Inactivo' }}
+                                </span>
                                 </div>
                                 <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
@@ -56,10 +95,6 @@
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
                                 <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto ? $recinto->tipoRecinto->nombre : 'Sin tipo' }}                                
                                 </div>
-
-
-
-
                                 </div>
                                 <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
                                 <!--<button class="btn btn-outline-info btn-sm rounded-5 d-flex align-items-center justify-content-center"
@@ -81,39 +116,96 @@
                         </div>
                     </div>
                 @endif
+            @else
+                <div class="col d-flex">
+                    <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
+                        <div class="card-body pb-2 p-2">
+                            <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
+                            <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
+                            {{ ucfirst($recinto->tipo) }}
+                            </span>
+                            <span class="badge px-2 py-1 rounded-pill text-dark"
+                                    style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
+                                    {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
+                            </div>
+                            <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
+                            <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                            <i class="fas fa-key me-1"></i>Número de llave: {{ $recinto->llave->nombre}}
+                            </div>
+                            <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                            <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
+                            </div>
+                            <div class="mb-1 text-secondary" style="font-size:0.93em;">
+                            <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto ? $recinto->tipoRecinto->nombre : 'Sin tipo' }}                                
+                            </div>
+                            </div>
+                            <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
+                            <!--<button class="btn btn-outline-info btn-sm rounded-5 d-flex align-items-center justify-content-center"
+                            data-bs-toggle="modal" data-bs-target="#modalDevolucionLlave-{{ $recinto->id }}">
+                            <i class="bi bi-key"></i>
+                            </button>-->
+
+                            <form action="{{ route('recinto.destroy', $recinto->id) }}" method="POST" >
+                                @csrf
+                                @method('DELETE')
+                                <button type="button" class="btn btn-outline-danger btn-sm rounded-5 ms-2" data-bs-toggle="modal" data-bs-target="#modalConfirmacionReactivar-{{ $recinto->id }}">
+                                    <i class="bi bi-arrow-counterclockwise"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             @endif
 
-
-     
-
-
+            {{-- Modal de eliminacion de recinto --}}
             <div class="modal fade" id="modalConfirmacionEliminar-{{ $recinto->id }}" tabindex="-1" aria-labelledby="modalRecintoEliminarLabel-{{ $recinto->id }}"
-                        aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content custom-modal">
-                                    <div class="modal-body text-center">
-                                        <div class="icon-container">
-                                            <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
-                                            </div>
-                                        </div>
-                                        <p class="modal-text">¿Desea Eliminar el Recinto?</p>
-                                        <div class="btn-group-custom">
-                                            <form action="{{ route('recinto.destroy', ['recinto' => $recinto->id]) }}" method="post">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="submit" class="btn btn-custom {{ $recinto->condicion == 1 }}">Sí</button>
-                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                                            </form>
-                                        </div>
-                                    </div>
+            aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content custom-modal">
+                        <div class="modal-body text-center">
+                            <div class="icon-container">
+                                <div class="circle-icon">
+                                <i class="bi bi-exclamation-circle"></i>
                                 </div>
                             </div>
+                            <p class="modal-text">¿Desea Eliminar el Recinto?</p>
+                            <div class="btn-group-custom">
+                                <form action="{{ route('recinto.destroy', ['recinto' => $recinto->id]) }}" method="post">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit" class="btn btn-custom {{ $recinto->condicion == 1 }}">Sí</button>
+                                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                </form>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-
-               
-
+            {{-- Modal de reactivacion de recinto --}}
+            <div class="modal fade" id="modalConfirmacionReactivar-{{ $recinto->id }}" tabindex="-1" aria-labelledby="modalRecintoReactivarLabel-{{ $recinto->id }}"
+            aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content custom-modal">
+                        <div class="modal-body text-center">
+                            <div class="icon-container">
+                                <div class="circle-icon">
+                                <i class="bi bi-exclamation-circle"></i>
+                                </div>
+                            </div>
+                            <p class="modal-text">¿Desea reactivar el Recinto?</p>
+                            <div class="btn-group-custom">
+                                <form action="{{ route('recinto.destroy', ['recinto' => $recinto->id]) }}" method="post">
+                                    @method('DELETE')
+                                    @csrf
+                                    <button type="submit" class="btn btn-custom {{ $recinto->condicion == 1 }}">Sí</button>
+                                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Modal Editar Recinto -->
            
@@ -275,7 +367,6 @@
                 </div>
             </div>
             </div>
-           
         </div>
     </div>
 </div>
@@ -362,8 +453,8 @@ if (btnLimpiar && inputBusqueda && recintosList) {
 
 
 function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
-    const qrContainer = document.getElementById(qrCodeContainer-${recintoId});
-    const qrDiv = document.getElementById(qrCode-${recintoId});
+    const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
+    const qrDiv = document.getElementById(`qrCode-${recintoId}`);
    
     // Limpiar contenedor previo
     qrContainer.innerHTML = '';
@@ -378,7 +469,7 @@ function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
     };
    
     // Generar QR
-    QRCode.toCanvas(datosDevolucion.JSON.stringify(datosDevolucion), {
+    QRCode.toCanvas(JSON.stringify(datosDevolucion), {
         width: 200,
         height: 200,
         margin: 2,

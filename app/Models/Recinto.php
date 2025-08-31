@@ -20,8 +20,8 @@ class Recinto extends Model
         'institucion_id',
         'llave_id',
         'nombre',
-        'tipoRecinto_id',
-        'estadoRecinto_id',
+        'tiporecinto_id',
+        'estadorecinto_id',
         'condicion',
     ];
 

@@ -59,9 +59,12 @@ class UsuarioController extends Controller
     {
         $request->validate([
             'name' => 'required',
-            'cedula' => 'required',
+            'cedula' => 'required|unique:users,cedula',
             'email' => 'required|email|unique:users,email',
             'role' => 'required|exists:roles,name',
+        ], [
+            'cedula.unique' => 'La cédula ya está registrada.',
+            'email.unique' => 'El correo ya está registrado.',
         ]);
         
         try {
@@ -103,6 +106,16 @@ class UsuarioController extends Controller
      */
     public function update(Request $request, User $usuario)
     {
+        $request->validate([
+            'name' => 'required',
+            'cedula' => 'required|unique:users,cedula,' . $usuario->id,
+            'email' => 'required|email|unique:users,email,' . $usuario->id,
+            'role' => 'required|exists:roles,name',
+        ], [
+            'cedula.unique' => 'La cédula ya está registrada.',
+            'email.unique' => 'El correo ya está registrado.',
+        ]);
+
         try {
             DB::beginTransaction();
             //Comprueba la contraseña y aplica el hash
@@ -119,7 +132,7 @@ class UsuarioController extends Controller
             $usuario->syncRoles($request->role);
             DB::commit();
         }
-        catch (Exception $e) {
+        catch (\Exception $e) {
             DB::rollBack();
             return redirect()->route('usuario.index')
                 ->with('error', 'Error al actualizar el usuario: ' . $e->getMessage());
@@ -162,6 +175,11 @@ class UsuarioController extends Controller
      */
     public function destroy(User $usuario)
     {
+        // Proteger al superadmin inborrable
+        if ($usuario->name === 'Super Administrador') {
+            return redirect()->route('usuario.index')->with('error', 'No puedes eliminar ni inactivar el usuario principal del sistema.');
+        }
+
         // Cambia el estado de condicion (activo/inactivo)
         $usuario->condicion = !$usuario->condicion;
         $usuario->save();

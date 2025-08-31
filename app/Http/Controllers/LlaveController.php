@@ -18,16 +18,19 @@ class LlaveController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Llave::with('recinto');
+        $condicion = 1;
+        if ($request->filled('inactivos')) {
+            $condicion = 0;
+        }
+        $query = Llave::with('recinto')->where('condicion', $condicion);
 
-        // Aplicar filtro de bÃºsqueda si existe
+        // Aplicar filtro de búsqueda si existe
         if ($request->filled('busquedaLlave')) {
             $busqueda = $request->get('busquedaLlave');
             $query->where('nombre', 'LIKE', '%' . $busqueda . '%');
         }
 
         $llaves = $query->get();
-        
         return view('Llave.index', compact('llaves'));
     }
 

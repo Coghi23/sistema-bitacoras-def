@@ -27,10 +27,13 @@ class RecintoController extends Controller
     public function index()
     {
        
+        $condicion = 1;
+        if (request('inactivos')) {
+            $condicion = 0;
+        }
         $query = Recinto::with(['institucion', 'tipoRecinto', 'estadoRecinto', 'llave'])
-            ->where('condicion', 1)
+            ->where('condicion', $condicion)
             ->orderBy('nombre');
-
 
         if (request('busquedaRecinto')) {
             $busqueda = request('busquedaRecinto');
@@ -42,13 +45,11 @@ class RecintoController extends Controller
             });
         }
 
-
         $recintos = $query->get();
         $instituciones = Institucione::all();
         $tiposRecinto = TipoRecinto::all();
         $estadosRecinto = EstadoRecinto::all();
         $llaves = Llave::all();
-
 
         return view('Recinto.index', compact('recintos', 'instituciones', 'tiposRecinto', 'estadosRecinto', 'llaves'));
     }
@@ -70,15 +71,25 @@ class RecintoController extends Controller
      */
     public function store(StoreRecintoRequest $request)
     {
-        //dd($request->validated());
         try {
             DB::beginTransaction();
-            Recinto::create($request->validated());
+            $data = $request->validated();
+            // Mapear nombres correctos si vienen con mayúsculas
+            if (isset($data['tipoRecinto_id'])) {
+                $data['tiporecinto_id'] = $data['tipoRecinto_id'];
+                unset($data['tipoRecinto_id']);
+            }
+            if (isset($data['estadoRecinto_id'])) {
+                $data['estadorecinto_id'] = $data['estadoRecinto_id'];
+                unset($data['estadoRecinto_id']);
+            }
+            Recinto::create($data);
             DB::commit();
+            return redirect()->route('recinto.index')->with('success', 'Recinto creado correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
+            return redirect()->back()->withInput()->with('error', 'Error al crear recinto: ' . $e->getMessage());
         }
-        return redirect()->route('recinto.index')->with('success', 'Recinto creado correctamente.');
     }
 
 
@@ -106,8 +117,17 @@ class RecintoController extends Controller
      */
     public function update(UpdateRecintoRequest $request, Recinto $recinto)
     {
+        $data = $request->validated();
+        if (isset($data['tipoRecinto_id'])) {
+            $data['tiporecinto_id'] = $data['tipoRecinto_id'];
+            unset($data['tipoRecinto_id']);
+        }
+        if (isset($data['estadoRecinto_id'])) {
+            $data['estadorecinto_id'] = $data['estadoRecinto_id'];
+            unset($data['estadoRecinto_id']);
+        }
         Recinto::where('id', $recinto->id)
-            ->update($request->validated());
+            ->update($data);
         return redirect()->route('recinto.index')->with('success', 'Recinto actualizada correctamente.');
     }
 
