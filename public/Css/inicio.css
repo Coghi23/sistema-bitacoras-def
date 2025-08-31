@@ -1,3 +1,10 @@
+body {
+    background-image: url("/img/template/fondoPrincipal.jpg");
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
 
 /* MENSAJE DE BIENVENIDA */
 #mensaje-bienvenida {
@@ -51,6 +58,7 @@
     height: 300px; 
     width: 100%;
   }
+
   
   /* CONTENEDOR IMAGEN  
   #container-imagen {

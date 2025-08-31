@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 
@@ -13,19 +12,13 @@
     <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/delete-alerts.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/inicio.css') }}">
    
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
 </head>
 
 
 <body>
-
-
-
-
-
-
-
 
     <div id="sidebar-navbar">
 
@@ -53,10 +46,11 @@
             <div class="sidebar-logo">
                 <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
             </div>
-            <a href="{{route('dashboard')}}" class="sidebar-item">
+
+            <a href="{{ route('Dashboard.indexSoporte') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
-
+            </a>
             <a href="{{route('evento.index_soporte')}}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>

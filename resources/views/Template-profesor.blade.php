@@ -8,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
+    <link rel="stylesheet" href="{{ asset('Css/inicio.css') }}">
     @stack('styles')
 </head>
 
@@ -35,13 +36,14 @@
             <div class="sidebar-logo">
                 <img src="https://covao.ed.cr/wp-content/uploads/2024/12/image-removebg-preview-3.png" />
             </div>
-            <a href="{{route('dashboard')}}" class="sidebar-item">
+            <a href="{{ route('Dashboard.indexDocente') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
-            <a href="{{route('evento.create')}}" class="sidebar-item">
+
+            <a href="{{ route('bitacora.index') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Horarios">Bitácora</div>
+                <div class="label" data-bs-toggle="tooltip" title="Bitácora">Bitácora</div>
             </a>
 
             <a href="{{ route('profesor-llave.index') }}" class="sidebar-item" title="Ir a Gestión de Llaves">
@@ -67,7 +69,11 @@
         </div>
     </div>
 
-    @yield('content')
+    <div class="wrapper">
+        <div class="main-content p-4">
+            @yield('content')
+        </div>
+    </div>
 
     <!-- Toast Container -->
     <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1055;"></div>

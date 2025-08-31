@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/delete-alerts.css') }}">
-    <link rel="stylesheet" href="{{ asset('Css/Inicio.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('Css/inicio.css') }}">
+    
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
 </head>
 
@@ -44,7 +44,7 @@
                 <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
             </div>
 
-            <a href="{{ route('dashboard') }}" class="sidebar-item">
+            <a href="{{ route('Dashboard.indexAdmin') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
             </a>
@@ -104,7 +104,13 @@
 
             </a>
 
-            <a href="{{route('evento.index')}}" class="sidebar-item">
+            <a href="{{ route('bitacora.index') }}" class="sidebar-item">
+                <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
+                <div class="label" data-bs-toggle="tooltip" title="Bitácora">Bitácora</div>
+            </a>
+
+
+            <a href="{{ url('reportes.html') }}" class="sidebar-item">
                 <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                 <div class="label" data-bs-toggle="tooltip" title="Reportes">Reporte</div>
             </a>
