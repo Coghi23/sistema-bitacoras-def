@@ -1,18 +1,23 @@
 <?php
 
+
 namespace App\Models;
+
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
+
 class Llave extends Model
 {
     use HasFactory;
 
+
     // Estados de entrega de la llave
     const ESTADO_NO_ENTREGADA = 0;
     const ESTADO_ENTREGADA = 1;
+
 
     protected $fillable = [
         'nombre',
@@ -20,12 +25,15 @@ class Llave extends Model
         'condicion'
     ];
 
+
     public function recinto()
     {
         return $this->hasMany(Recinto::class, 'llave_id');
     }
 
+
     protected $table = 'llave';
+
 
     /**
      * Obtener el estado de entrega en formato legible
@@ -33,14 +41,15 @@ class Llave extends Model
     public function getEstadoEntregaTextAttribute()
     {
         switch ($this->estado) {
-            case self::ESTADO_NO_ENTREGADA:
-                return 'No Entregada';
-            case self::ESTADO_ENTREGADA:
+            case self::ESTADO_NO_ENTREGADA: // 0
                 return 'Entregada';
+            case self::ESTADO_ENTREGADA: // 1
+                return 'No Entregada';
             default:
                 return 'Desconocido';
         }
     }
+
 
     /**
      * Obtener la clase CSS para el badge del estado
@@ -57,6 +66,7 @@ class Llave extends Model
         }
     }
 
+
     /**
      * Verificar si la llave está disponible para entregar
      */
@@ -65,6 +75,7 @@ class Llave extends Model
         return $this->estado === self::ESTADO_NO_ENTREGADA && $this->condicion == 1;
     }
 
+
     /**
      * Verificar si la llave está entregada
      */
@@ -72,6 +83,7 @@ class Llave extends Model
     {
         return $this->estado === self::ESTADO_ENTREGADA;
     }
+
 
     /**
      * Marcar llave como entregada
@@ -82,6 +94,7 @@ class Llave extends Model
         $this->save();
     }
 
+
     /**
      * Marcar llave como devuelta (no entregada)
      */
@@ -91,4 +104,9 @@ class Llave extends Model
         $this->save();
     }
 
+
 }
+
+
+
+

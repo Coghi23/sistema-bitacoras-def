@@ -1,8 +1,10 @@
 <?php
 
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+
 
 return new class extends Migration
 {
@@ -14,16 +16,13 @@ return new class extends Migration
         Schema::create('bitacora', function (Blueprint $table) {
             $table->id();
             $table->foreignId('id_recinto')->constrained('recinto');
-            $table->foreignId('id_seccion')->constrained('seccione');
-            $table->foreignId('id_subarea')->constrained('subarea');
-            $table->foreignId('id_horario')->constrained('horarios');
-            $table->foreignId('id_horario_leccion')->constrained('horario_leccion');
-            $table->timestamp('fecha')->useCurrent();
-            $table->time('hora_envio');
+            $table->foreignId('id_llave')->constrained('llave');
+            $table->tinyInteger('estado')->default(0);
             $table->tinyInteger('condicion')->default(1);
-            $table->timestamps(); 
+            $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

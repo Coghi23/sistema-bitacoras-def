@@ -1,10 +1,13 @@
 @extends('Template-administrador')
 
+
 @section('title', 'Registro de Subárea')
+
 
 @section('content')
 <div class="wrapper">
     <div class="main-content">
+
 
         {{-- Encabezado de búsqueda y botón Agregar --}}
         <div class="search-bar-wrapper mb-4">
@@ -35,15 +38,15 @@
                     @endif
                 </form>
             </div>
-            @can('create_subarea')
+            @if(Auth::user() && !Auth::user()->hasRole('director'))
                 <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                     data-bs-toggle="modal" data-bs-target="#modalAgregarSubArea"
                     title="Agregar Subárea" style="background-color: #134496; font-size: 1.2rem;">
                     Agregar <i class="bi bi-plus-circle ms-2"></i>
                 </button>
-            @endcan
-
+            @endif
         </div>
+
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaSubarea'))
@@ -56,6 +59,15 @@
             </div>
         @endif
 
+
+        <a href="{{ route('subarea.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+            Mostrar inactivos
+        </a>
+        <a href="{{ route('subarea.index', ['activos' => 1]) }}" class="btn btn-primary mb-3">
+            Mostrar activos
+        </a>
+
+
         {{-- Tabla de Subáreas --}}
         <div class="table-responsive">
             <table class="table align-middle table-hover">
@@ -67,27 +79,43 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        $mostrarActivos = request('activos') == 1 || !request('inactivos');
+                        $mostrarInactivos = request('inactivos') == 1;
+                       
+                    @endphp
                     @foreach ($subareas as $subarea)
-                        @if ($subarea->condicion == 1)
+                        @if (
+                            ($mostrarActivos && $subarea->condicion == 1) ||
+                            ($mostrarInactivos && $subarea->condicion == 0)
+
+
+                        )
                         <tr>
                             <td class="text-center">{{ $subarea->nombre }}</td>
                             <td class="text-center">{{ $subarea->especialidad ? $subarea->especialidad->nombre : 'Sin especialidad' }}</td>
                             <td class="text-center">
                                 @if(Auth::user() && !Auth::user()->hasRole('director'))
-                                <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal"
-                                    data-bs-target="#modalEditarSubArea-{{ $subarea->id }}">
-                                    <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
-                                </button>
-                                <button class="btn btn-link text-danger p-0" data-bs-toggle="modal"
-                                    data-bs-target="#modalEliminarSubarea-{{ $subarea->id }}">
-                                    <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
-                                </button>
+                                    <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal"
+                                        data-bs-target="#modalEditarSubArea-{{ $subarea->id }}">
+                                        <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
+                                    </button>
+                                    <button class="btn btn-link {{ $subarea->condicion == 1 ? 'text-danger' : 'text-success' }} p-0"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalEliminarSubarea-{{ $subarea->id }}">
+                                        @if($subarea->condicion == 1)
+                                            <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
+                                        @else
+                                            <i class="bi bi-arrow-counterclockwise" style="font-size: 1.5rem;"></i>
+                                        @endif
+                                    </button>
                                 @else
-                                <span class="text-muted">Solo vista</span>
+                                    <span class="text-muted">Solo vista</span>
                                 @endif
                             </td>
                         </tr>
                         @endif
+
 
                         {{-- Modal Editar Subárea --}}
                         @if(Auth::user() && !Auth::user()->hasRole('director'))
@@ -120,6 +148,7 @@
                                                 <input type="text" name="nombre" class="form-control"
                                                     value="{{ old('nombre', $subarea->nombre) }}" required>
 
+
                                                 <label class="form-label fw-bold mt-3">Especialidad</label>
                                                 <select name="id_especialidad" class="form-select" required>
                                                     @foreach ($especialidades as $especialidad)
@@ -139,23 +168,36 @@
                             </div>
                         </div>
 
-                        {{-- Modal Eliminar Subárea --}}
-                        <div class="modal fade" id="modalEliminarSubarea-{{ $subarea->id }}" tabindex="-1" aria-labelledby="modalSubareaEliminarLabel-{{ $subarea->id }}" 
+
+                        {{-- Modal Eliminar/Restaurar Subárea --}}
+                        <div class="modal fade" id="modalEliminarSubarea-{{ $subarea->id }}" tabindex="-1" aria-labelledby="modalSubareaEliminarLabel-{{ $subarea->id }}"
                         aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content custom-modal">
                                     <div class="modal-body text-center">
                                         <div class="icon-container">
                                             <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
+                                            @if($subarea->condicion == 1)
+                                                <i class="bi bi-exclamation-circle"></i>
+                                            @else
+                                                <i class="bi bi-arrow-counterclockwise"></i>
+                                            @endif
                                             </div>
                                         </div>
-                                        <p class="modal-text">¿Desea Eliminar la Subárea?</p>
+                                        <p class="modal-text">
+                                            @if($subarea->condicion == 1)
+                                                ¿Desea eliminar la Subárea?
+                                            @else
+                                                ¿Desea restaurar la Subárea?
+                                            @endif
+                                        </p>
                                         <div class="btn-group-custom">
                                             <form action="{{ route('subarea.destroy', ['subarea' => $subarea->id]) }}" method="post">
                                                 @method('DELETE')
                                                 @csrf
-                                                <button type="submit" class="btn btn-custom {{ $subarea->condicion == 1 }}">Sí</button>
+                                                <button type="submit" class="btn btn-custom">
+                                                    Sí
+                                                </button>
                                                 <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
                                             </form>
                                         </div>
@@ -170,6 +212,7 @@
         </div>
     </div>
 </div>
+
 
 {{-- Modal Crear Subárea --}}
 <div class="modal fade" id="modalAgregarSubArea" tabindex="-1" aria-hidden="true">
@@ -197,6 +240,7 @@
                         <label class="form-label fw-bold">Nombre de la Subárea</label>
                         <input type="text" name="nombre" class="form-control" value="{{ old('nombre') }}" required>
 
+
                         <label class="form-label fw-bold mt-3">Especialidad</label>
                         <select name="id_especialidad" class="form-select" required>
                             <option value="">Seleccione una Especialidad</option>
@@ -220,6 +264,7 @@ const inputBusqueda = document.getElementById('inputBusqueda');
 const formBusqueda = document.getElementById('busquedaForm');
 const btnLimpiar = document.getElementById('limpiarBusqueda');
 
+
 if (inputBusqueda) {
     inputBusqueda.addEventListener('input', function() {
         clearTimeout(timeoutId);
@@ -235,6 +280,7 @@ if (inputBusqueda) {
     });
 }
 
+
 if (btnLimpiar) {
     btnLimpiar.addEventListener('click', function() {
         inputBusqueda.value = '';
@@ -242,11 +288,13 @@ if (btnLimpiar) {
     });
 }
 
+
 // Mantener modal abierto si hay errores
 @if ($errors->any())
 document.addEventListener('DOMContentLoaded', function() {
     const formType = '{{ old("form_type") }}';
     const subareaId = '{{ old("subarea_id") }}';
+
 
     if (formType === 'create') {
         var modal = new bootstrap.Modal(document.getElementById('modalAgregarSubArea'));
@@ -259,3 +307,5 @@ document.addEventListener('DOMContentLoaded', function() {
 @endif
 </script>
 @endsection
+
+

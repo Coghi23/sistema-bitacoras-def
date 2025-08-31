@@ -1,6 +1,8 @@
 @extends('Template-administrador')
 
+
 @section('title', 'Gestión de Recintos')
+
 
 @section('content')
 <div class="wrapper">
@@ -13,7 +15,7 @@
                         <i class="bi bi-search"></i>
                     </span>
                     <input type="text" class="form-control"
-                        placeholder="Buscar recinto..." name="busquedaRecinto" 
+                        placeholder="Buscar recinto..." name="busquedaRecinto"
                         value="{{ request('busquedaRecinto') }}" id="inputBusqueda" autocomplete="off">
                     @if(request('busquedaRecinto'))
                     <button type="button" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" id="limpiarBusqueda" title="Limpiar búsqueda" style="background: transparent;">
@@ -28,7 +30,7 @@
                 Agregar <i class="bi bi-plus-circle ms-2"></i>
             </button>
         </div>
-      
+     
         <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         @foreach($recintos as $recinto)
             @if ($recinto->condicion == 1)
@@ -56,6 +58,8 @@
                                 </div>
 
 
+
+
                                 </div>
                                 <div class="card-footer bg-white border-0 pt-0 d-flex flex-row justify-content-end align-items-stretch gap-2 p-2">
                                 <!--<button class="btn btn-outline-info btn-sm rounded-5 d-flex align-items-center justify-content-center"
@@ -79,9 +83,11 @@
                 @endif
             @endif
 
+
      
 
-            <div class="modal fade" id="modalConfirmacionEliminar-{{ $recinto->id }}" tabindex="-1" aria-labelledby="modalRecintoEliminarLabel-{{ $recinto->id }}" 
+
+            <div class="modal fade" id="modalConfirmacionEliminar-{{ $recinto->id }}" tabindex="-1" aria-labelledby="modalRecintoEliminarLabel-{{ $recinto->id }}"
                         aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content custom-modal">
@@ -105,10 +111,12 @@
                             </div>
                         </div>
 
-                
+
+               
+
 
             <!-- Modal Editar Recinto -->
-            
+           
             <div class="modal fade" id="modalEditarRecinto-{{ $recinto->id }}" tabindex="-1" aria-labelledby="modalEditarRecintoLabel-{{ $recinto->id }}" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 rounded-0" id="modalEditarRecintoContent">
@@ -124,7 +132,7 @@
                     <form id="formEditarRecinto-{{ $recinto->id }}" action="{{ route('recinto.update', $recinto->id) }}" method="POST">
                     @csrf
                     @method('PATCH')
-                    
+                   
                     <div class="mb-3">
                         <label for="nombreRecinto-{{ $recinto->id }}" class="form-label mb-1">Nombre del Recinto</label>
                         <input type="text" class="form-control" id="nombreRecinto-{{ $recinto->id }}" name="nombre" value="{{ $recinto->nombre }}" required>
@@ -134,7 +142,7 @@
                         <select data-size="4" title="Seleccione un Tipo de Recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick">
                             @if(isset($tiposRecinto))
                                 @foreach ($tiposRecinto as $tipoRecinto)
-                                    <option value="{{$tipoRecinto->id}}" 
+                                    <option value="{{$tipoRecinto->id}}"
                                         {{ (isset($recinto) && $recinto->tipoRecinto_id == $tipoRecinto->id) || old('tipoRecinto_id') == $tipoRecinto->id ? 'selected' : '' }}>
                                         {{$tipoRecinto->nombre}}
                                     </option>
@@ -147,7 +155,7 @@
                         <select data-size="4" title="Seleccione un Estado de Recinto" data-live-search="true" name="estadoRecinto_id" id="editarEstadoRecinto" class="form-control selectpicker show-tick">
                             @if(isset($estadosRecinto))
                                 @foreach ($estadosRecinto as $estadoRecinto)
-                                    <option value="{{$estadoRecinto->id}}" 
+                                    <option value="{{$estadoRecinto->id}}"
                                         {{ (isset($recinto) && $recinto->estadoRecinto_id == $estadoRecinto->id) || old('estadoRecinto_id') == $estadoRecinto->id ? 'selected' : '' }}>
                                         {{$estadoRecinto->nombre}}
                                     </option>
@@ -160,7 +168,7 @@
                         <select data-size="4" title="Seleccione una Llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick">
                             @if(isset($llaves))
                                 @foreach ($llaves as $llave)
-                                    <option value="{{$llave->id}}" 
+                                    <option value="{{$llave->id}}"
                                         {{ (isset($recinto) && $recinto->llave_id == $llave->id) || old('llave_id') == $llave->id ? 'selected' : '' }}>
                                         {{$llave->nombre}}
                                     </option>
@@ -173,7 +181,7 @@
                         <select data-size="4" title="Seleccione una Institución" data-live-search="true" name="institucion_id" id="editarInstitucion" class="form-control selectpicker show-tick">
                             @if(isset($instituciones))
                                 @foreach ($instituciones as $institucion)
-                                    <option value="{{$institucion->id}}" 
+                                    <option value="{{$institucion->id}}"
                                         {{ (isset($recinto) && $recinto->institucion_id == $institucion->id) || old('institucion_id') == $institucion->id ? 'selected' : '' }}>
                                         {{$institucion->nombre}}
                                     </option>
@@ -192,6 +200,7 @@
             </div>
         @endforeach
             <!-- Modal Agregar Recinto -->
+
 
             <div class="modal fade" id="modalAgregarRecinto" tabindex="-1" aria-labelledby="modalAgregarRecintoLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
@@ -214,6 +223,7 @@
                         <div class="mb-3">
                             <label for="tipoRecinto" class="form-label mb-1">Tipo de Recinto</label>
 
+
                             <select data-size="4" title="Seleccione un Tipo de Recinto" data-live-search="true" name="tipoRecinto_id" id="tipoRecinto_id" class="form-control selectpicker show-tick" required>
                                 <option value="">Seleccione un Tipo de Recinto</option>
                                 @foreach ($tiposRecinto as $tipoRecinto)
@@ -221,9 +231,10 @@
                                 @endforeach
                             </select>
                         </div>
-                        
+                       
                         <div class="mb-3">
                             <label for="estadoRecinto" class="form-label mb-1">Estado del Recinto</label>
+
 
                             <select data-size="4" title="Seleccione un Estado de Recinto" data-live-search="true" name="estadoRecinto_id" id="estadoRecinto_id" class="form-control selectpicker show-tick" required>
                                 <option value="">Seleccione un Estado de Recinto</option>
@@ -234,7 +245,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="llaveRecinto" class="form-label mb-1">Número de Llave</label>
-                            
+                           
                             <select data-size="4" title="Seleccione una Llave" data-live-search="true" name="llave_id" id="llave_id" class="form-control selectpicker show-tick" required>
                                 <option value="">Seleccione una Llave</option>
                                 @foreach ($llaves as $llave)
@@ -243,10 +254,11 @@
                             </select>
                         </div>
 
-  
+
+ 
                         <div class="mb-3">
                             <label for="institucionRecinto" class="form-label mb-1">Institución</label>
-                            
+                           
                             <select data-size="4" title="Seleccione una Institución" data-live-search="true" name="institucion_id" id="institucion_id" class="form-control selectpicker show-tick" required>
                                 <option value="">Seleccione una Institución</option>
                                 @foreach ($instituciones as $institucion)
@@ -263,10 +275,11 @@
                 </div>
             </div>
             </div>
-            
+           
         </div>
     </div>
 </div>
+
 
 <!-- Modal Devolución de Llave -->
 @foreach($recintos as $recinto)
@@ -286,13 +299,14 @@
                     <h5>{{ $recinto->nombre }}</h5>
                     <p class="text-secondary">Número de Llave: <strong>{{ $recinto->llave->nombre }}</strong></p>
                 </div>
-                
+               
                 <div id="qrCode-{{ $recinto->id }}" class="mb-4" style="display: none;">
                     <div class="d-flex justify-content-center">
                         <div id="qrCodeContainer-{{ $recinto->id }}"></div>
                     </div>
                     <p class="mt-2 text-success">¡Código QR generado exitosamente!</p>
                 </div>
+
 
                 <div class="d-flex justify-content-center gap-2 mt-4 mb-2">
                     <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
@@ -306,14 +320,19 @@
 </div>
 @endforeach
 
+
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
+
+
+
 
 
 
 const inputBusqueda = document.getElementById('inputBusqueda');
 const recintosList = document.getElementById('recintos-list');
 const btnLimpiar = document.getElementById('limpiarBusqueda');
+
 
 if (inputBusqueda && recintosList) {
     inputBusqueda.addEventListener('input', function() {
@@ -330,6 +349,7 @@ if (inputBusqueda && recintosList) {
     });
 }
 
+
 if (btnLimpiar && inputBusqueda && recintosList) {
     btnLimpiar.addEventListener('click', function() {
         inputBusqueda.value = '';
@@ -340,13 +360,14 @@ if (btnLimpiar && inputBusqueda && recintosList) {
     });
 }
 
+
 function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
-    const qrContainer = document.getElementById(`qrCodeContainer-${recintoId}`);
-    const qrDiv = document.getElementById(`qrCode-${recintoId}`);
-    
+    const qrContainer = document.getElementById(qrCodeContainer-${recintoId});
+    const qrDiv = document.getElementById(qrCode-${recintoId});
+   
     // Limpiar contenedor previo
     qrContainer.innerHTML = '';
-    
+   
     // Datos para el QR
     const datosDevolucion = {
         tipo: 'devolucion_llave',
@@ -355,7 +376,7 @@ function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
         fecha: new Date().toISOString(),
         id: recintoId
     };
-    
+   
     // Generar QR
     QRCode.toCanvas(datosDevolucion.JSON.stringify(datosDevolucion), {
         width: 200,
@@ -367,11 +388,12 @@ function generarQRDevolucion(recintoId, numeroLlave, nombreRecinto) {
             alert('Error al generar el código QR');
             return;
         }
-        
+       
         qrContainer.appendChild(canvas);
         qrDiv.style.display = 'block';
     });
 }
 </script>
 @endsection
+
 

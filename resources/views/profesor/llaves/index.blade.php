@@ -1,6 +1,8 @@
 @extends('Template-profesor')
 
+
 @section('title', 'Gestión de Llaves - Profesor')
+
 
 @section('content')
 <div class="wrapper">
@@ -12,9 +14,10 @@
             </div>
         </div>
 
+
         <div class="alert alert-info">
             <i class="bi bi-info-circle"></i>
-            <strong>Instrucciones:</strong> Aquí aparecen únicamente los recintos asignados a ti según tu horario. 
+            <strong>Instrucciones:</strong> Aquí aparecen únicamente los recintos asignados a ti según tu horario.
             Para cada recinto, puedes generar un código QR temporal que:
             <ul class="mb-0 mt-2">
                 <li><strong>Al primer escaneo:</strong> Cambia el estado de la llave a "Entregada" (retiras la llave)</li>
@@ -22,6 +25,7 @@
                 <li><strong>Expira en 30 minutos</strong> después de generarlo</li>
             </ul>
         </div>
+
 
         <div class="row">
             @foreach($recintos as $recinto)
@@ -34,10 +38,10 @@
                         </div>
                         <div class="card-body">
                             <div class="mb-3">
-                                <strong><i class="bi bi-key"></i> Llave:</strong> 
+                                <strong><i class="bi bi-key"></i> Llave:</strong>
                                 {{ $recinto->llave->nombre ?? 'Sin llave asignada' }}
                             </div>
-                            
+                           
                             @if($recinto->llave)
                                 <div class="mb-3">
                                     <strong><i class="bi bi-info-circle"></i> Estado actual:</strong>
@@ -46,10 +50,12 @@
                                     </span>
                                 </div>
 
+
                                 <div class="mb-3">
-                                    <strong><i class="bi bi-building-gear"></i> Tipo:</strong> 
+                                    <strong><i class="bi bi-building-gear"></i> Tipo:</strong>
                                     {{ $recinto->tipoRecinto->nombre ?? 'N/A' }}
                                 </div>
+
 
                                 <div class="alert alert-light p-2 mb-3">
                                     <small class="text-muted">
@@ -62,8 +68,9 @@
                                     </small>
                                 </div>
 
+
                                 <div class="text-center">
-                                    <button class="btn btn-success btn-generar-qr" 
+                                    <button class="btn btn-success btn-generar-qr"
                                             data-recinto-id="{{ $recinto->id }}"
                                             data-recinto-nombre="{{ $recinto->nombre }}">
                                         <i class="bi bi-qr-code"></i> Generar QR
@@ -81,6 +88,7 @@
             @endforeach
         </div>
 
+
         @if($recintos->isEmpty())
             <div class="text-center py-5">
                 <i class="bi bi-building-x" style="font-size: 4rem; color: #6c757d;"></i>
@@ -97,6 +105,7 @@
     </div>
 </div>
 
+
 <!-- Modal QR -->
 <div class="modal fade" id="modalQR" tabindex="-1" aria-labelledby="modalQRLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
@@ -112,7 +121,7 @@
                     <h6 id="recinto-nombre"></h6>
                     <p class="text-muted" id="profesor-nombre">Profesor: {{ $profesor->usuario->name }}</p>
                 </div>
-                
+               
                 <div id="qr-container" class="mb-4">
                     <!-- Aquí se mostrará el QR code -->
                     <div id="qrcode" class="d-flex justify-content-center mb-3"></div>
@@ -121,10 +130,12 @@
                     </div>
                 </div>
 
+
                 <div class="alert alert-warning">
                     <i class="bi bi-clock"></i>
                     <strong>Expira a las:</strong> <span id="expira-tiempo"></span>
                 </div>
+
 
                 <div class="alert alert-success">
                     <i class="bi bi-info-circle"></i>
@@ -136,6 +147,7 @@
                     </small>
                 </div>
 
+
                 <div class="d-grid">
                     <button class="btn btn-outline-secondary" data-bs-dismiss="modal">
                         Cerrar
@@ -146,7 +158,9 @@
     </div>
 </div>
 
+
 @endsection
+
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
@@ -156,9 +170,9 @@ $(document).ready(function() {
         const button = $(this);
         const recintoId = button.data('recinto-id');
         const recintoNombre = button.data('recinto-nombre');
-        
+       
         button.prop('disabled', true).html('<i class="spinner-border spinner-border-sm"></i> Generando...');
-        
+       
         $.ajax({
             url: '{{ route("qr.generar") }}',
             method: 'POST',
@@ -172,22 +186,22 @@ $(document).ready(function() {
                     $('#recinto-nombre').text(recintoNombre);
                     $('#qr-text').text(response.qr_code);
                     $('#expira-tiempo').text(response.expira_en);
-                    
+                   
                     // Limpiar QR anterior
                     $('#qrcode').empty();
-                    
+                   
                     // Mostrar QR usando API externa
                     const qrImg = $('<img>')
                         .attr('src', response.qr_url)
                         .attr('alt', 'QR Code')
                         .addClass('img-fluid')
                         .css('max-width', '200px');
-                    
+                   
                     $('#qrcode').append(qrImg);
-                    
+                   
                     // Mostrar modal
                     $('#modalQR').modal('show');
-                    
+                   
                     // Mostrar mensaje de éxito
                     if (response.mensaje) {
                         showToast(response.mensaje, 'success');
@@ -205,6 +219,7 @@ $(document).ready(function() {
     });
 });
 
+
 function showToast(message, type) {
     const toast = $(`
         <div class="toast align-items-center text-white bg-${type === 'success' ? 'success' : 'danger'} border-0" role="alert">
@@ -214,14 +229,15 @@ function showToast(message, type) {
             </div>
         </div>
     `);
-    
+   
     $('.toast-container').append(toast);
     toast.toast('show');
-    
+   
     setTimeout(() => toast.remove(), 5000);
 }
 </script>
 @endpush
+
 
 @push('styles')
 <style>
@@ -229,9 +245,11 @@ function showToast(message, type) {
     transition: transform 0.2s;
 }
 
+
 .card:hover {
     transform: translateY(-2px);
 }
+
 
 .toast-container {
     position: fixed;
@@ -241,3 +259,5 @@ function showToast(message, type) {
 }
 </style>
 @endpush
+
+

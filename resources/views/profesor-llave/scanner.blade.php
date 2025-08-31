@@ -1,6 +1,8 @@
 @extends('Template-profesor')
 
+
 @section('title', 'Escáner QR - Profesor')
+
 
 @section('content')
 <div class="scanner-wrapper">
@@ -11,6 +13,7 @@
                 <i class="bi bi-arrow-left"></i> Volver
             </a>
         </div>
+
 
         <!-- Estado del escáner -->
         <div class="scanner-status mb-3">
@@ -23,6 +26,7 @@
             </button>
         </div>
 
+
         <!-- Vista de la cámara -->
         <div class="camera-container">
             <div id="reader" class="qr-reader"></div>
@@ -31,6 +35,7 @@
                 <p class="scanner-text">Enfoca el código QR dentro del marco</p>
             </div>
         </div>
+
 
         <!-- Controles -->
         <div class="scanner-controls mt-4">
@@ -58,6 +63,7 @@
             </div>
         </div>
 
+
         <!-- Resultado del escaneo -->
         <div id="scan-result" class="mt-4" style="display: none;">
             <div class="alert alert-success">
@@ -65,6 +71,7 @@
                 <p class="mb-0">Código: <strong id="scanned-code"></strong></p>
             </div>
         </div>
+
 
         <!-- Input manual como alternativa -->
         <div class="manual-input mt-4">
@@ -80,6 +87,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal de resultado -->
 <div class="modal fade" id="resultModal" tabindex="-1" aria-hidden="true">
@@ -108,6 +116,7 @@
 </div>
 @endsection
 
+
 @push('scripts')
 <!-- Librería Html5-QRCode para escaneo QR -->
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
@@ -119,11 +128,13 @@ $(document).ready(function() {
     let currentCameraIndex = 0;
     let currentCameraId = null;
 
+
     // Información de debugging
     console.log('Inicializando QR Scanner...');
     console.log('Navegador:', navigator.userAgent);
     console.log('HTTPS:', location.protocol === 'https:');
     console.log('getUserMedia disponible:', !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia));
+
 
     // Función para solicitar permisos de cámara
     async function requestCameraPermission() {
@@ -131,28 +142,29 @@ $(document).ready(function() {
             $('#scanner-info').html('<i class="bi bi-camera"></i> Solicitando permisos de cámara...')
                 .removeClass().addClass('alert alert-info');
 
+
             // Solicitar permisos de cámara
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { 
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
                     facingMode: 'environment',
                     width: { ideal: 640 },
                     height: { ideal: 480 }
-                } 
+                }
             });
-            
+           
             // Detener el stream inmediatamente, solo necesitábamos los permisos
             stream.getTracks().forEach(track => track.stop());
-            
+           
             $('#scanner-info').html('<i class="bi bi-check-circle"></i> ¡Permisos concedidos! Detectando cámaras...')
                 .removeClass().addClass('alert alert-success');
-            
+           
             return true;
         } catch (error) {
             console.error('Error solicitando permisos:', error);
-            
+           
             let errorMessage = 'No se pudieron obtener permisos de cámara';
             let solutions = [];
-            
+           
             if (error.name === 'NotAllowedError') {
                 errorMessage = 'Permisos de cámara denegados';
                 solutions = [
@@ -175,20 +187,21 @@ $(document).ready(function() {
                     'O usa localhost para desarrollo'
                 ];
             }
-            
-            let solutionsHtml = solutions.length > 0 
+           
+            let solutionsHtml = solutions.length > 0
                 ? '<br><br><small><strong>¿Cómo solucionarlo?</strong><br>• ' + solutions.join('<br>• ') + '</small>'
                 : '';
-                
+               
             $('#scanner-info').html(`<i class="bi bi-exclamation-triangle"></i> ${errorMessage}${solutionsHtml}`)
                 .removeClass().addClass('alert alert-danger');
-            
+           
             // Mostrar botón para reintentar permisos
             $('#request-permission').show();
-            
+           
             return false;
         }
     }
+
 
     // Configuración del escáner
     const config = {
@@ -201,6 +214,7 @@ $(document).ready(function() {
         }
     };
 
+
     // Inicializar escáner
     async function initScanner() {
         try {
@@ -209,30 +223,32 @@ $(document).ready(function() {
                 throw new Error('Tu navegador no soporta acceso a la cámara');
             }
 
+
             // Primero solicitar permisos de cámara
             const permissionsGranted = await requestCameraPermission();
             if (!permissionsGranted) {
                 return; // No continuar si no se concedieron permisos
             }
 
+
             // Obtener cámaras disponibles
             const devices = await Html5Qrcode.getCameras();
-            
+           
             if (devices && devices.length > 0) {
                 cameras = devices;
-                
+               
                 console.log('Cámaras disponibles:', cameras.map(cam => cam.label || 'Cámara sin nombre'));
-                
+               
                 // Intentar encontrar cámara trasera
                 const backCamera = cameras.find(camera => {
                     const label = camera.label.toLowerCase();
-                    return label.includes('back') || 
+                    return label.includes('back') ||
                            label.includes('rear') ||
                            label.includes('trasera') ||
                            label.includes('environment') ||
                            label.includes('facing back');
                 });
-                
+               
                 if (backCamera) {
                     currentCameraId = backCamera.id;
                     currentCameraIndex = cameras.findIndex(cam => cam.id === backCamera.id);
@@ -243,10 +259,11 @@ $(document).ready(function() {
                     console.log('Usando primera cámara disponible:', cameras[0].label);
                 }
 
+
                 $('#scanner-info').html('<i class="bi bi-check-circle"></i> ¡Todo listo! Presiona "Iniciar" para escanear códigos QR')
                     .removeClass().addClass('alert alert-success');
                 $('#start-scan').prop('disabled', false);
-                
+               
                 if (cameras.length > 1) {
                     $('#switch-camera').prop('disabled', false);
                     $('#scanner-info').append(`<br><small>Se encontraron ${cameras.length} cámaras. Puedes cambiar entre ellas.</small>`);
@@ -255,10 +272,11 @@ $(document).ready(function() {
                 throw new Error('No se encontraron cámaras disponibles en tu dispositivo');
             }
 
+
         } catch (error) {
             console.error('Error inicializando cámara:', error);
             let errorMessage = 'Error desconocido';
-            
+           
             if (error.name === 'NotAllowedError') {
                 errorMessage = 'Permisos de cámara denegados. Por favor, permite el acceso a la cámara.';
             } else if (error.name === 'NotFoundError') {
@@ -270,10 +288,10 @@ $(document).ready(function() {
             } else if (error.message) {
                 errorMessage = error.message;
             }
-            
+           
             $('#scanner-info').html(`<i class="bi bi-exclamation-triangle"></i> ${errorMessage}`)
                 .removeClass().addClass('alert alert-danger');
-                
+               
             // Mostrar consejos para resolver el problema
             $('#scanner-info').append(`
                 <br><small class="mt-2">
@@ -287,9 +305,11 @@ $(document).ready(function() {
         }
     }
 
+
     // Iniciar escaneo
     async function startScan() {
         if (isScanning) return;
+
 
         try {
             // Verificar que tenemos una cámara seleccionada
@@ -297,21 +317,23 @@ $(document).ready(function() {
                 throw new Error('No hay cámara disponible para usar');
             }
 
+
             html5QrcodeScanner = new Html5Qrcode("reader");
-            
+           
             // Callback cuando se detecta un QR
             const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                 console.log('QR Code detected:', decodedText);
-                
+               
                 // Mostrar código detectado
                 $('#scanned-code').text(decodedText);
                 $('#scan-result').show();
-                
+               
                 // Procesar QR automáticamente después de 500ms
                 setTimeout(() => {
                     processQRCode(decodedText);
                 }, 500);
             };
+
 
             // Callback de error (opcional, para debugging)
             const qrCodeErrorCallback = (error) => {
@@ -319,6 +341,7 @@ $(document).ready(function() {
                 // Solo logear en consola para debugging
                 // console.log('QR scan attempt:', error);
             };
+
 
             // Configuración mejorada
             const scanConfig = {
@@ -333,8 +356,9 @@ $(document).ready(function() {
                 }
             };
 
+
             console.log('Iniciando scanner con cámara:', currentCameraId);
-            
+           
             // Iniciar el escáner
             await html5QrcodeScanner.start(
                 currentCameraId,
@@ -343,6 +367,7 @@ $(document).ready(function() {
                 qrCodeErrorCallback
             );
 
+
             isScanning = true;
             $('#start-scan').prop('disabled', true);
             $('#stop-scan').prop('disabled', false);
@@ -350,11 +375,12 @@ $(document).ready(function() {
             $('#scanner-info').html('<i class="bi bi-search"></i> Escaneando... Enfoca el código QR')
                 .removeClass().addClass('alert alert-primary');
 
+
         } catch (error) {
             console.error('Error iniciando escáner:', error);
-            
+           
             let errorMessage = 'Error desconocido al iniciar el escáner';
-            
+           
             if (error.name === 'NotAllowedError') {
                 errorMessage = 'Permisos de cámara denegados. Permite el acceso y recarga la página.';
             } else if (error.name === 'NotFoundError') {
@@ -366,15 +392,16 @@ $(document).ready(function() {
             } else if (error.message) {
                 errorMessage = error.message;
             }
-            
+           
             $('#scanner-info').html(`<i class="bi bi-exclamation-triangle"></i> ${errorMessage}`)
                 .removeClass().addClass('alert alert-danger');
-                
+               
             isScanning = false;
             $('#start-scan').prop('disabled', false);
             $('#stop-scan').prop('disabled', true);
         }
     }
+
 
     // Detener escaneo
     async function stopScan() {
@@ -386,7 +413,7 @@ $(document).ready(function() {
                 console.error('Error deteniendo escáner:', error);
             }
         }
-        
+       
         html5QrcodeScanner = null;
         isScanning = false;
         $('#start-scan').prop('disabled', false);
@@ -397,33 +424,35 @@ $(document).ready(function() {
         $('#scan-result').hide();
     }
 
+
     // Cambiar cámara
     async function switchCamera() {
         if (cameras.length <= 1) return;
-        
+       
         await stopScan();
-        
+       
         // Cambiar al siguiente índice
         currentCameraIndex = (currentCameraIndex + 1) % cameras.length;
         currentCameraId = cameras[currentCameraIndex].id;
-        
+       
         $('#scanner-info').html('<i class="bi bi-arrow-repeat"></i> Cambiando cámara...')
             .removeClass().addClass('alert alert-info');
-        
+       
         // Reiniciar escáner con nueva cámara después de un breve delay
         setTimeout(async () => {
             await startScan();
         }, 1000);
     }
 
+
     // Procesar código QR
     async function processQRCode(code) {
         await stopScan(); // Detener escaneo mientras procesamos
-        
+       
         // Mostrar estado de procesamiento
         $('#scanner-info').html('<i class="bi bi-hourglass-split"></i> Procesando código QR...')
             .removeClass().addClass('alert alert-warning');
-        
+       
         try {
             const response = await $.ajax({
                 url: '{{ route("profesor-llave.escanear-qr") }}',
@@ -435,16 +464,17 @@ $(document).ready(function() {
                 timeout: 10000 // 10 segundos de timeout
             });
 
+
             if (response.success) {
                 showModal(true, response.mensaje);
-                
+               
                 // Redirigir después de 3 segundos
                 setTimeout(() => {
                     window.location.href = '{{ route("profesor-llave.index") }}';
                 }, 3000);
             } else {
                 showModal(false, response.error || 'Error procesando el código QR');
-                
+               
                 // Permitir escanear de nuevo después del error
                 setTimeout(() => {
                     $('#scanner-info').html('<i class="bi bi-camera"></i> Listo para escanear')
@@ -453,9 +483,10 @@ $(document).ready(function() {
                 }, 3000);
             }
 
+
         } catch (xhr) {
             let errorMsg = 'Error de conexión';
-            
+           
             if (xhr.responseJSON && xhr.responseJSON.error) {
                 errorMsg = xhr.responseJSON.error;
             } else if (xhr.responseText) {
@@ -466,9 +497,9 @@ $(document).ready(function() {
                     errorMsg = 'Error del servidor';
                 }
             }
-            
+           
             showModal(false, errorMsg);
-            
+           
             // Permitir escanear de nuevo después del error
             setTimeout(() => {
                 $('#scanner-info').html('<i class="bi bi-camera"></i> Listo para escanear')
@@ -477,6 +508,7 @@ $(document).ready(function() {
             }, 3000);
         }
     }
+
 
     // Mostrar modal de resultado
     function showModal(success, message) {
@@ -487,52 +519,53 @@ $(document).ready(function() {
             $('#modal-header-success').hide();
             $('#modal-header-error').show();
         }
-        
+       
         $('#modal-message').text(message);
         $('#resultModal').modal('show');
     }
+
 
     // Event listeners
     $('#start-scan').click(startScan);
     $('#stop-scan').click(stopScan);
     $('#switch-camera').click(switchCamera);
-    
+   
     // Botón para solicitar permisos manualmente
     $('#request-permission').click(async function() {
         $('#request-permission').hide();
         await initScanner();
     });
-    
+   
     // Botón para probar cámara
     $('#test-camera').click(async function() {
         try {
             $('#scanner-info').html('<i class="bi bi-hourglass-split"></i> Probando acceso a la cámara...')
                 .removeClass().addClass('alert alert-info');
-                
+               
             // Probar acceso básico a la cámara
-            const stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { 
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: {
                     facingMode: 'environment',
                     width: { ideal: 640 },
                     height: { ideal: 480 }
-                } 
+                }
             });
-            
+           
             // Si llegamos aquí, los permisos están bien
             stream.getTracks().forEach(track => track.stop());
-            
+           
             $('#scanner-info').html('<i class="bi bi-check-circle"></i> ¡Cámara funciona correctamente! Ahora puedes iniciar el escáner.')
                 .removeClass().addClass('alert alert-success');
-                
+               
             // Re-inicializar el escáner después de confirmar que la cámara funciona
             setTimeout(initScanner, 1000);
-            
+           
         } catch (error) {
             console.error('Error probando cámara:', error);
-            
+           
             let errorMessage = 'Error al probar la cámara';
             let solutions = [];
-            
+           
             if (error.name === 'NotAllowedError') {
                 errorMessage = 'Permisos de cámara denegados';
                 solutions = [
@@ -555,16 +588,16 @@ $(document).ready(function() {
                     'Reinicia el dispositivo si es necesario'
                 ];
             }
-            
-            let solutionsHtml = solutions.length > 0 
+           
+            let solutionsHtml = solutions.length > 0
                 ? '<br><small><strong>Soluciones:</strong><br>• ' + solutions.join('<br>• ') + '</small>'
                 : '';
-                
+               
             $('#scanner-info').html(`<i class="bi bi-exclamation-triangle"></i> ${errorMessage}${solutionsHtml}`)
                 .removeClass().addClass('alert alert-danger');
         }
     });
-    
+   
     // Formulario manual
     $('#manual-form').submit(function(e) {
         e.preventDefault();
@@ -574,13 +607,16 @@ $(document).ready(function() {
         }
     });
 
+
     // Inicializar al cargar
     initScanner();
+
 
     // Limpiar recursos al salir
     $(window).on('beforeunload', async function() {
         await stopScan();
     });
+
 
     // Manejar cambios de visibilidad de la página (móviles)
     document.addEventListener('visibilitychange', async function() {
@@ -588,6 +624,7 @@ $(document).ready(function() {
             await stopScan();
         }
     });
+
 
     // Manejar orientación en móviles
     window.addEventListener('orientationchange', function() {
@@ -602,6 +639,7 @@ $(document).ready(function() {
 </script>
 @endpush
 
+
 @push('styles')
 <style>
 .scanner-wrapper {
@@ -611,12 +649,14 @@ $(document).ready(function() {
     min-height: 100vh;
 }
 
+
 .scanner-container {
     background: white;
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
+
 
 .camera-container {
     position: relative;
@@ -628,11 +668,13 @@ $(document).ready(function() {
     margin: 0 auto;
 }
 
+
 .qr-reader {
     width: 100%;
     height: 100%;
     border-radius: 10px;
 }
+
 
 .qr-reader video {
     width: 100% !important;
@@ -640,6 +682,7 @@ $(document).ready(function() {
     object-fit: cover !important;
     border-radius: 10px;
 }
+
 
 .scanner-overlay {
     position: absolute;
@@ -655,6 +698,7 @@ $(document).ready(function() {
     z-index: 10;
 }
 
+
 .scanner-frame {
     width: 200px;
     height: 200px;
@@ -663,6 +707,7 @@ $(document).ready(function() {
     position: relative;
     animation: pulse 2s infinite;
 }
+
 
 .scanner-frame::before,
 .scanner-frame::after {
@@ -673,6 +718,7 @@ $(document).ready(function() {
     border: 3px solid #28a745;
 }
 
+
 .scanner-frame::before {
     top: -3px;
     left: -3px;
@@ -680,12 +726,14 @@ $(document).ready(function() {
     border-bottom: none;
 }
 
+
 .scanner-frame::after {
     bottom: -3px;
     right: -3px;
     border-left: none;
     border-top: none;
 }
+
 
 .scanner-text {
     color: white;
@@ -698,81 +746,91 @@ $(document).ready(function() {
     font-size: 14px;
 }
 
+
 @keyframes pulse {
     0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
     70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
     100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
 }
 
+
 .manual-input {
     border-top: 1px solid #dee2e6;
     padding-top: 20px;
 }
+
 
 .btn {
     border-radius: 10px;
     font-weight: 500;
 }
 
+
 .alert {
     border-radius: 10px;
     border: none;
 }
+
 
 /* Ocultar elementos internos del html5-qrcode */
 #reader__scan_region {
     background: transparent !important;
 }
 
+
 #reader__dashboard_section {
     display: none !important;
 }
 
+
 #reader__camera_permission_button {
     display: none !important;
 }
+
 
 /* Responsive */
 @media (max-width: 768px) {
     .scanner-wrapper {
         padding: 10px;
     }
-    
+   
     .scanner-container {
         padding: 15px;
     }
-    
+   
     .scanner-frame {
         width: 160px;
         height: 160px;
     }
-    
+   
     .camera-container {
         max-height: 320px;
     }
-    
+   
     .scanner-text {
         font-size: 12px;
         padding: 8px 16px;
     }
 }
 
+
 /* Orientación horizontal en móviles */
 @media (max-height: 600px) and (orientation: landscape) {
     .camera-container {
         max-height: 250px;
     }
-    
+   
     .scanner-frame {
         width: 140px;
         height: 140px;
     }
-    
+   
     .scanner-text {
         font-size: 11px;
         margin-top: 10px;
     }
 }
+
 
 /* iOS específico */
 @supports (-webkit-touch-callout: none) {
@@ -781,6 +839,7 @@ $(document).ready(function() {
         transform: scaleX(-1);
     }
 }
+
 
 /* Android Chrome */
 @media screen and (-webkit-min-device-pixel-ratio: 0) {

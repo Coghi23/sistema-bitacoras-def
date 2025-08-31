@@ -1,6 +1,8 @@
 @extends('Template-profesor')
 
+
 @section('title', 'Gestión de Llaves - Profesor')
+
 
 @section('content')
 <style>
@@ -8,11 +10,13 @@
     animation: spin 1s linear infinite;
 }
 
+
 @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
 }
 </style>
+
 
 <div class="wrapper">
     <div class="main-content">
@@ -35,12 +39,14 @@
             </div>
         </div>
 
+
         @if(isset($error))
             <div class="alert alert-warning">
                 <h4><i class="bi bi-exclamation-triangle"></i> Atención</h4>
                 <p>{{ $error }}</p>
             </div>
         @endif
+
 
         @if(!isset($error) && $recintos->count() > 0)
             <div class="row">
@@ -53,7 +59,7 @@
                                         <i class="bi bi-building"></i> {{ $item->recinto_nombre }}
                                     </h6>
                                     <span class="badge {{ $item->llave_estado == 0 ? 'bg-success' : 'bg-warning text-dark' }}">
-                                        {{ $item->llave_estado == 0 ? 'No Entregada' : 'Entregada' }}
+                                        {{ $item->llave_estado == 0 ? 'Entregada' : 'No Entregada' }}
                                     </span>
                                 </div>
                             </div>
@@ -62,9 +68,9 @@
                                     <strong><i class="bi bi-key"></i> Llave:</strong>
                                     <span class="text-primary">{{ $item->llave_nombre }}</span>
                                 </div>
-                                
+                               
                                 <div class="text-center">
-                                    <button class="btn btn-success btn-generar-qr" 
+                                    <button class="btn btn-success btn-generar-qr"
                                             data-recinto-id="{{ $item->recinto_id }}"
                                             data-llave-id="{{ $item->llave_id }}"
                                             data-recinto-nombre="{{ $item->recinto_nombre }}"
@@ -79,6 +85,7 @@
             </div>
         @endif
 
+
         @if(!isset($error) && $recintos->count() == 0 && isset($profesor))
             <div class="text-center py-5">
                 <i class="bi bi-building" style="font-size: 4rem; color: #6c757d;"></i>
@@ -86,6 +93,7 @@
                 <p class="text-muted">Contacta al administrador para que te asigne recintos en tus horarios.</p>
             </div>
         @endif
+
 
         <!-- QRs Temporales Activos -->
         @if(!isset($error) && $qrsTemporales->count() > 0)
@@ -102,7 +110,7 @@
                                         <strong>Llave:</strong> {{ $qr->llave_nombre }}<br>
                                         <strong>Expira:</strong> {{ \Carbon\Carbon::parse($qr->expira_en)->format('d/m/Y H:i') }}
                                     </p>
-                                    <button class="btn btn-outline-primary btn-sm btn-ver-qr" 
+                                    <button class="btn btn-outline-primary btn-sm btn-ver-qr"
                                             data-qr-code="{{ $qr->codigo_qr }}"
                                             data-recinto-nombre="{{ $qr->recinto_nombre }}"
                                             data-llave-nombre="{{ $qr->llave_nombre }}">
@@ -117,6 +125,7 @@
         @endif
     </div>
 </div>
+
 
 <!-- Modal para mostrar QR -->
 <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
@@ -134,11 +143,11 @@
                     <p><strong>Llave:</strong> <span id="modal-llave"></span></p>
                     <p><strong>Código:</strong> <span id="modal-codigo"></span></p>
                 </div>
-                
+               
                 <div id="qr-image-container">
                     <img id="qr-image" src="" alt="Código QR" style="max-width: 100%; height: auto;">
                 </div>
-                
+               
                 <div class="mt-3">
                     <small class="text-muted">El código QR expira en 30 minutos</small>
                 </div>
@@ -147,7 +156,9 @@
     </div>
 </div>
 
+
 @endsection
+
 
 @push('scripts')
 <script>
@@ -159,9 +170,9 @@ $(document).ready(function() {
         const llaveId = button.data('llave-id');
         const recintoNombre = button.data('recinto-nombre');
         const llaveNombre = button.data('llave-nombre');
-        
+       
         button.prop('disabled', true).html('<i class="spinner-border spinner-border-sm"></i> Generando...');
-        
+       
         $.ajax({
             url: '{{ route("profesor-llave.generar-qr") }}',
             method: 'POST',
@@ -177,7 +188,7 @@ $(document).ready(function() {
                     $('#modal-llave').text(llaveNombre);
                     $('#modal-codigo').text(response.codigo_qr);
                     $('#qr-image').attr('src', response.qr_url);
-                    
+                   
                     // Mostrar mensaje informativo si existe
                     if (response.mensaje) {
                         // Crear o actualizar mensaje informativo en el modal
@@ -193,16 +204,16 @@ $(document).ready(function() {
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>`;
                         }
-                        
+                       
                         // Remover mensaje anterior si existe
                         $('#qrModal .modal-body .alert').remove();
                         // Agregar nuevo mensaje
                         $('#qrModal .modal-body').append(messageHtml);
                     }
-                    
+                   
                     // Mostrar modal
                     $('#qrModal').modal('show');
-                    
+                   
                     // Recargar página después de cerrar modal
                     $('#qrModal').on('hidden.bs.modal', function () {
                         location.reload();
@@ -218,37 +229,37 @@ $(document).ready(function() {
             }
         });
     });
-    
+   
     // Ver QR existente
     $('.btn-ver-qr').click(function() {
         const qrCode = $(this).data('qr-code');
         const recintoNombre = $(this).data('recinto-nombre');
         const llaveNombre = $(this).data('llave-nombre');
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrCode}`;
-        
+       
         // Llenar información del modal
         $('#modal-recinto').text(recintoNombre);
         $('#modal-llave').text(llaveNombre);
         $('#modal-codigo').text(qrCode);
         $('#qr-image').attr('src', qrUrl);
-        
+       
         // Mostrar modal
         $('#qrModal').modal('show');
     });
-    
+   
     // ===== SISTEMA DE TIEMPO REAL =====
     let pollingInterval;
-    
+   
     function initRealTimeSystem() {
         console.log('🚀 Iniciando sistema de tiempo real - QRs cada 5 segundos');
         pollingInterval = setInterval(function() {
             updateQRsRealTime();
         }, 5000);
     }
-    
+   
     function updateQRsRealTime() {
         console.log('🔄 Actualizando QRs del profesor...');
-        
+       
         $.ajax({
             url: '{{ route("profesor-llave.qrs-realtime") }}' + '?t=' + Date.now(),
             method: 'GET',
@@ -264,12 +275,12 @@ $(document).ready(function() {
                     console.log('✅ QRs actualizados:', response.total);
                     console.log('📋 Debug info:', response.debug);
                     console.log('📊 QRs data:', response.qrs);
-                    
+                   
                     // Si no hay QRs activos, ocultar la sección
                     if (response.total === 0) {
                         $('#qrs-container').parent().hide();
                         console.log('ℹ️ No hay QRs activos, sección oculta');
-                        
+                       
                         // Detener polling si no hay QRs
                         if (pollingInterval) {
                             clearInterval(pollingInterval);
@@ -291,10 +302,10 @@ $(document).ready(function() {
             }
         });
     }
-    
+   
     function updateQRsDisplay(qrs) {
         let html = '';
-        
+       
         qrs.forEach(function(qr) {
             html += `
                 <div class="col-md-6 col-lg-4 mb-3">
@@ -306,7 +317,7 @@ $(document).ready(function() {
                                 <strong>Llave:</strong> ${qr.llave_nombre}<br>
                                 <small class="text-muted">Expira: ${qr.expira_en_humano}</small>
                             </p>
-                            <button class="btn btn-primary btn-sm btn-ver-qr" 
+                            <button class="btn btn-primary btn-sm btn-ver-qr"
                                     data-qr-code="${qr.codigo_qr}"
                                     data-recinto-nombre="${qr.recinto_nombre}"
                                     data-llave-nombre="${qr.llave_nombre}">
@@ -317,20 +328,20 @@ $(document).ready(function() {
                 </div>
             `;
         });
-        
+       
         $('#qrs-container').html(html);
-        
+       
         // Reactivar eventos para los botones ver QR
         bindVerQREvents();
     }
-    
+   
     function bindVerQREvents() {
         $('.btn-ver-qr').off('click').on('click', function() {
             const qrCode = $(this).data('qr-code');
             const recintoNombre = $(this).data('recinto-nombre');
             const llaveNombre = $(this).data('llave-nombre');
             const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${qrCode}`;
-            
+           
             $('#modal-recinto').text(recintoNombre);
             $('#modal-llave').text(llaveNombre);
             $('#modal-codigo').text(qrCode);
@@ -338,19 +349,19 @@ $(document).ready(function() {
             $('#qrModal').modal('show');
         });
     }
-    
+   
     // Inicializar sistema de tiempo real solo si hay QRs activos
     const hasActiveQRs = $('#qrs-container').length > 0;
     if (hasActiveQRs) {
         initRealTimeSystem();
     }
-    
+   
     // Botón manual para debug
     $('#btn-actualizar-qrs').on('click', function() {
         console.log('🔧 Actualización manual de QRs...');
         $(this).find('i').addClass('spin');
         updateQRsRealTime();
-        
+       
         setTimeout(() => {
             $(this).find('i').removeClass('spin');
         }, 1000);
@@ -359,21 +370,25 @@ $(document).ready(function() {
 </script>
 @endpush
 
+
 @push('styles')
 <style>
 .card {
     transition: transform 0.2s;
 }
 
+
 .card:hover {
     transform: translateY(-2px);
 }
+
 
 .wrapper {
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
 }
+
 
 .main-content {
     background: #f8f9fa;
@@ -383,3 +398,7 @@ $(document).ready(function() {
 }
 </style>
 @endpush
+
+
+
+
