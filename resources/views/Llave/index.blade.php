@@ -197,7 +197,7 @@
                                         </td>
                                         <td class="text-center">
                                         @can('delete_llaves')
-                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $llave->id }}" aria-label="Restaurar Llave">
+                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionRestaurar-{{ $llave->id }}" aria-label="Restaurar Llave">
                                                 <i class="bi bi-arrow-counterclockwise"></i>
                                             </button>
                                         @endcan
@@ -225,7 +225,7 @@
                                             </button>
                                         @endcan
                                         @can('delete_llaves')
-                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionRestaurar-{{ $llave->id }}" aria-label="Restaurar Llave">
+                                            <button type="button" class="btn btn-link text-info p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $llave->id }}" aria-label="Restaurar Llave">
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         @endcan
