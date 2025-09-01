@@ -37,71 +37,53 @@
 .sidebar-item.has-subitems.active::after {
     transform: rotate(-180deg);
 }
+/* Sidebar subitems container */
 .sidebar-subitems {
     margin-left: 0;
-    margin-top: 2px;
+    margin-top: 8px;
     margin-bottom: 8px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding-left: 18px;
+    gap: 6px;
+    padding-left: 0;
     animation: fadeInSubitem 0.25s;
 }
+
 @keyframes fadeInSubitem {
     from { opacity: 0; transform: translateY(-8px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* Individual subitem styling */
 .sidebar-item.subitem {
     background: rgba(255,255,255,0.10);
     color: #fff;
-    font-size: 14px;
+    font-size: 12px;
     border-radius: 8px;
-    padding: 8px 10px 8px 10px;
+    padding: 8px 12px;
     text-align: left;
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
     transition: background 0.2s, color 0.2s;
     box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    text-decoration: none;
+    margin-left: 8px;
+    margin-right: 8px;
 }
+
 .sidebar-item.subitem i {
-    font-size: 18px;
+    font-size: 16px;
     margin-right: 6px;
+    min-width: 16px;
+    text-align: center;
 }
+
 .sidebar-item.subitem:hover {
     background: #f5c002;
     color: #134496;
-}
-/* Sidebar subitems (inline, collapsible) */
-.sidebar-subitems {
-    margin-left: 10px;
-    margin-top: 2px;
-    margin-bottom: 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-.sidebar-item.subitem {
-    background: rgba(255,255,255,0.08);
-    color: #fff;
-    font-size: 13px;
-    border-radius: 8px;
-    padding: 6px 10px 6px 32px;
-    text-align: left;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 2px;
-    transition: background 0.2s;
-}
-.sidebar-item.subitem i {
-    font-size: 18px;
-    margin-right: 6px;
-}
-.sidebar-item.subitem:hover {
-    background: #134496;
-    color: #f5c002;
+    text-decoration: none;
 }
 .sidebar-item.has-subitems {
     cursor: pointer;
@@ -404,11 +386,30 @@ body {
     }
     .logo,  
     .right-logo {
-    height: 60px;
-    width: 60px;
-    object-fit: contain;
-    visibility: hidden;
-}
+        height: 60px;
+        width: 60px;
+        object-fit: contain;
+        visibility: hidden;
+    }
+    
+    /* Mobile-specific subitem styles */
+    .sidebar-item.subitem {
+        font-size: 10px;
+        padding: 6px 8px;
+        margin-left: 4px;
+        margin-right: 4px;
+    }
+    
+    .sidebar-item.subitem i {
+        font-size: 14px;
+        margin-right: 4px;
+    }
+    
+    .sidebar-subitems {
+        gap: 4px;
+        margin-top: 6px;
+        margin-bottom: 6px;
+    }
 }
 
 .wrapper {
