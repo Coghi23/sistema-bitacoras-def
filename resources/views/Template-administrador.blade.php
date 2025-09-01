@@ -98,7 +98,7 @@
                     <div class="sidebar-subitems" id="recinto-subitems" style="display:none;">
                         <a href="{{ asset('tipoRecinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
                         <a href="{{ asset('estadoRecinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
-                        <a href="{{ asset('recinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
+                        <a href="{{ asset('recinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-add"></i> Crear Recintos</a>
                     </div>
                 </div>
 
@@ -117,7 +117,7 @@
                 </div>
 
                 <div class="sidebar-section">
-                    <a href="{{ route('evento.index') }}" class="sidebar-item">
+                    <a href="{{ url('reportes.html') }}" class="sidebar-item">
                         <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
                         <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
                     </a>
