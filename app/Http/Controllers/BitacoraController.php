@@ -60,7 +60,8 @@ class BitacoraController extends Controller
             ->orderBy('created_at', 'desc')->get();
         
         \Log::info('BitacoraController - Bitacoras encontradas: ' . $bitacoras->count());
-        return view('admin.bitacora.index', compact('bitacoras'));
+    $dashboardRoute = route('Dashboard.indexAdmin');
+    return view('admin.bitacora.index', compact('bitacoras', 'dashboardRoute'));
     }
     
         /**

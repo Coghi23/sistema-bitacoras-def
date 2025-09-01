@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="sidebar-section">
-                    <a href="{{ route('') }}" class="sidebar-item">
+                    <a href="{{ $dashboardRoute ?? route('Dashboard.indexAdmin') }}" class="sidebar-item">
                         <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                         <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
                     </a>
