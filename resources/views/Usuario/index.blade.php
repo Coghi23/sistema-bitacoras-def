@@ -1,12 +1,57 @@
 @extends('Template-administrador')
 
 @section('content')
+<style>
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+    }
+    .search-bar-wrapper, .search-bar, .btn-agregar {
+        flex-direction: column !important;
+        width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+    .btn-agregar {
+        margin-top: 1rem !important;
+        width: 100%;
+        justify-content: center;
+    }
+    .table-responsive {
+        overflow-x: auto;
+    }
+    .table th, .table td {
+        white-space: nowrap;
+    }
+    .modal-dialog {
+        margin: 1rem auto;
+        max-width: 95vw;
+    }
+    .mb-3.d-flex.align-items-center.justify-content-between {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .mb-3.d-flex.align-items-center.justify-content-between label,
+    .mb-3.d-flex.align-items-center.justify-content-between .w-50,
+    .mb-3.d-flex.align-items-center.justify-content-between input,
+    .mb-3.d-flex.align-items-center.justify-content-between select {
+        width: 100% !important;
+        margin-bottom: 0.5rem !important;
+    }
+    .modal-footer {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+</style>
 <div class="wrapper">
-    <div class="main-content p-4" style="margin-left: 90px;">
+    <div class="main-content p-4 container-fluid" style="margin-left: 90px;">
         <div class="row align-items-end mb-4">
             {{-- Búsqueda + botón agregar --}}
-        <div class="search-bar-wrapper mb-4">
-            <div class="search-bar">
+        <div class="search-bar-wrapper mb-4 d-flex flex-wrap align-items-center">
+            <div class="search-bar flex-grow-1" style="min-width: 220px;">
                 <form id="busquedaForm" method="GET" action="{{ route('usuario.index') }}" class="w-100 position-relative">
                     <span class="search-icon">
                         <i class="bi bi-search"></i>
@@ -79,15 +124,16 @@
         @endif
         @can('view_usuarios')
             {{-- Botones para mostrar/ocultar usuarios inactivos --}}
-            <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
-                Mostrar inactivos
-            </a>
-            <a href="{{ route('usuario.index') }}" class="btn btn-primary mb-3">
-                Mostrar activos
-            </a>
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning">
+                    Mostrar inactivos
+                </a>
+                <a href="{{ route('usuario.index') }}" class="btn btn-primary">
+                    Mostrar activos
+                </a>
+            </div>
 
-            <div id="tabla-usuarios">
-
+            <div id="tabla-usuarios" class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr class="header-row">
@@ -247,7 +293,7 @@
                         --}}
                     </div>
                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary btn-crear">Registrar</button>
+                        <button type="submit" class="btn btn-primary btn-crear w-100 w-md-auto">Registrar</button>
                     </div>
                 </form>
             </div>
@@ -346,7 +392,7 @@
                         </div>
                     </div>
                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary btn-modificar">Editar</button>
+                        <button type="submit" class="btn btn-primary btn-modificar w-100 w-md-auto">Editar</button>
                     </div>
                 </form>
             </div>

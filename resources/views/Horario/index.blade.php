@@ -4,12 +4,36 @@
 
 @section('content')
 
+<style>
+/* Responsividad adicional para pantallas pequeñas */
+@media (max-width: 767.98px) {
+    .search-bar-wrapper {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .btn-agregar {
+        width: 100%;
+        margin-left: 0 !important;
+        margin-top: 10px;
+    }
+    .main-content {
+        padding: 0 5px;
+    }
+    .modal-dialog {
+        margin: 0.5rem auto;
+    }
+    .table th, .table td {
+        font-size: 0.95rem;
+        padding: 0.4rem 0.3rem;
+    }
+}
+</style>
 
 <div class="wrapper">
     <div class="main-content">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div class="search-bar-wrapper mb-4">
-                <div class="search-bar">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mb-3">
+            <div class="search-bar-wrapper d-flex flex-column flex-md-row align-items-stretch align-items-md-center mb-4 w-100">
+                <div class="search-bar flex-grow-1 mb-2 mb-md-0">
                     <form id="busquedaForm" method="GET" action="{{ route('horario.index') }}" class="w-100 position-relative">
                         <span class="search-icon">
                             <i class="bi bi-search"></i>
@@ -37,7 +61,7 @@
                     </form>
                 </div>
                 @can('create_horario')
-                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-0 ms-md-3 btn-agregar"
                         data-bs-toggle="modal" data-bs-target="#modalHorario"
                         title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem;">
                         Agregar <i class="bi bi-plus-circle ms-2"></i>
@@ -45,11 +69,11 @@
                 @endcan
             </div>
         </div>
-        <div class="mb-3">
-            <a href="{{ route('horario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
+        <div class="mb-3 d-flex flex-column flex-md-row gap-2">
+            <a href="{{ route('horario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-2 mb-md-0 w-100 w-md-auto">
                 Mostrar inactivos
             </a>
-            <a href="{{ route('horario.index', ['activos' => 1]) }}" class="btn btn-primary mb-3">
+            <a href="{{ route('horario.index', ['activos' => 1]) }}" class="btn btn-primary w-100 w-md-auto">
                 Mostrar activos
             </a>
         </div>
@@ -65,7 +89,7 @@
             @endif
 
         {{-- Tabla Horarios Fijos --}}
-        <div id="tabla-horarios-fijos">
+        <div id="tabla-horarios-fijos" class="table-responsive">
             <table class="table">
                 <thead>
                     <tr class="header-row">
@@ -157,11 +181,11 @@
                     </div>
                     <div class="linea-divisoria-horizontal"></div>
                     
-                    <div class="modal-body px-4 pt-3">
+                    <div class="modal-body px-2 px-md-4 pt-3">
                         {{-- Tipo de Horario --}}
-                        <div class="mb-4 d-flex align-items-center justify-content-between fw-bold">
-                            <label class="w-50 text-start">Tipo de horario:</label>
-                            <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
+                        <div class="mb-4 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between fw-bold">
+                            <label class="w-100 w-md-50 text-start mb-2 mb-md-0">Tipo de horario:</label>
+                            <div class="d-flex align-items-center justify-content-center w-100 w-md-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
                                     <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }} {{ request('tipoHorario') == '1' ? 'active' : '' }}" type="radio" name="tipoHorario" id="fijoRadio" value="fijo" {{ old('tipoHorario') == 'fijo' ? 'checked' : '' }} >
                                     <label class="form-check-label ms-2" for="fijoRadio">Fijo</label>
@@ -177,17 +201,17 @@
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
                         {{-- Fecha --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha') }}" @if(old('tipoHorario')=='fijo') disabled @endif>
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Fecha:</label>
+                            <input type="date" name="fecha" class="form-control rounded-4 w-100 w-md-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha') }}" @if(old('tipoHorario')=='fijo') disabled @endif>
                         </div>
                         @error('fecha')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
                         {{-- Día --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">Día:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Día:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select name="dia" class="form-select rounded-4 pe-5 {{ $errors->has('dia') ? 'is-invalid' : '' }}" @if(old('tipoHorario')=='temporal') disabled @endif>
                                     <option value="" hidden selected>Seleccione...</option>
                                     <option value="Lunes" {{ old('dia') == 'Lunes' ? 'selected' : '' }}>Lunes</option>
@@ -205,9 +229,9 @@
                         @enderror
 
                         {{-- Docente --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="idDocente" class="fw-bold me-3 w-50 text-start">Docente:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="idDocente" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Docente:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5 {{ $errors->has('user_id') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un docente</option>
                                     @foreach ($profesores as $profesor)
@@ -221,9 +245,9 @@
                         @enderror
                         
                         {{-- Recinto --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="recintoSelect" class="fw-bold me-3 w-50 text-start">Recinto:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="recintoSelect" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Recinto:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione un recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un recinto</option>
                                     @foreach ($recintos as $recinto)
@@ -236,10 +260,10 @@
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
                         
-                            {{-- Subárea --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="idSubarea" class="fw-bold me-3 w-50 text-start">Subárea:</label>
-                            <div class="position-relative w-50">
+                        {{-- Subárea --}}
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="idSubarea" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Subárea:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione una subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione una subárea</option>
                                     @foreach ($subareas as $subarea)
@@ -252,10 +276,10 @@
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
 
-                            {{-- Sección --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Sección:</label>
-                            <div class="position-relative w-50">
+                        {{-- Sección --}}
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="idSubareaSeccion" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Sección:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione una sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione una sección</option>
                                     @foreach ($secciones as $seccion)
@@ -329,8 +353,8 @@
                             @enderror
                         </div>
                     </div>
-                    <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary btn-crear">Crear</button>
+                    <div class="modal-footer px-2 px-md-4 pb-3 d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary btn-crear w-100 w-md-auto">Crear</button>
                     </div>
                 </form>
             </div>
@@ -354,11 +378,11 @@
                     <div class="linea-divisoria-horizontal"></div>
                     
                     <input type="hidden" name="id" value="{{ $horario->id }}">
-                    <div class="modal-body px-4 pt-3">
+                    <div class="modal-body px-2 px-md-4 pt-3">
                         {{-- Tipo de Horario --}}
-                        <div class="mb-4 d-flex align-items-center justify-content-between fw-bold">
-                            <label class="w-50 text-start">Tipo de horario:</label>
-                            <div class="d-flex align-items-center justify-content-center w-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
+                        <div class="mb-4 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between fw-bold">
+                            <label class="w-100 w-md-50 text-start mb-2 mb-md-0">Tipo de horario:</label>
+                            <div class="d-flex align-items-center justify-content-center w-100 w-md-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
                                     <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" type="radio" name="tipoHorario" id="fijoRadio{{ $horario->id }}" value="fijo" 
                                     {{ old('tipoHorario', $horario->tipoHorario == 1 ? 'fijo' : 'temporal') == 'fijo' ? 'checked' : ''}} >
@@ -376,17 +400,17 @@
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
                         {{-- Fecha --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha', $horario->fecha ? $horario->fecha->format('Y-m-d') : '') }}">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Fecha:</label>
+                            <input type="date" name="fecha" class="form-control rounded-4 w-100 w-md-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha', $horario->fecha ? $horario->fecha->format('Y-m-d') : '') }}">
                         </div>
                         @error('fecha')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
                         {{-- Día --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">Día:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Día:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select name="dia" class="form-select rounded-4 pe-5 {{ $errors->has('dia') ? 'is-invalid' : '' }}">
                                     <option value="" hidden>Seleccione...</option>
                                     <option value="Lunes" {{ old('dia', $horario->dia) == 'Lunes' ? 'selected' : '' }}>Lunes</option>
@@ -404,9 +428,9 @@
                         @enderror
                         
                         {{-- Docente --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="idDocente" class="fw-bold me-3 w-50 text-start">Docente:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="idDocente" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Docente:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5 {{ $errors->has('user_id') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un docente</option>
                                     @foreach ($profesores as $profesor)
@@ -423,9 +447,9 @@
                         @enderror
                         
                         {{-- Recinto --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="recintoSelect" class="fw-bold me-3 w-50 text-start">Recinto:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="recintoSelect" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Recinto:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione un recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione un recinto</option>
                                     @foreach ($recintos as $recinto)
@@ -442,9 +466,9 @@
                         @enderror
                         
                             {{-- Subárea --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="idSubarea" class="fw-bold me-3 w-50 text-start">Subárea:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="idSubarea" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Subárea:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione una subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione una subárea</option>
                                     @foreach ($subareas as $subarea)
@@ -461,9 +485,9 @@
                         @enderror
 
                             {{-- Sección --}}
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label for="idSubareaSeccion" class="fw-bold me-3 w-50 text-start">Sección:</label>
-                            <div class="position-relative w-50">
+                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                            <label for="idSubareaSeccion" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Sección:</label>
+                            <div class="position-relative w-100 w-md-50">
                                 <select data-size="4" title="Seleccione una sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}" >
                                     <option value="">Seleccione una sección</option>
                                     @foreach ($secciones as $seccion)
@@ -540,8 +564,8 @@
                                                 @enderror
                                             </div>
                                     </div>
-                                    <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-primary btn-modificar">Modificar</button>
+                                    <div class="modal-footer px-2 px-md-4 pb-3 d-flex justify-content-end">
+                                        <button type="submit" class="btn btn-primary btn-modificar w-100 w-md-auto">Modificar</button>
                                     </div>
                                 </form>
                             </div>

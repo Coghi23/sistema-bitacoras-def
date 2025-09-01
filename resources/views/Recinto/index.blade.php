@@ -81,9 +81,7 @@
                                         style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
                                         {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
                                 </span>
-                                <span class="badge px-2 py-1 rounded-pill text-white {{ $recinto->condicion == 1 ? 'bg-success' : 'bg-danger' }}" style="font-size:0.9em;">
-                                    {{ $recinto->condicion == 1 ? 'Activo' : 'Inactivo' }}
-                                </span>
+                                
                                 </div>
                                 <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
