@@ -33,38 +33,40 @@
             <!-- Contenedor para datos asíncronos -->
             <div id="eventos-container">            
                 @foreach ($eventos as $evento)
-                    <div class="record-row hover-effect">
-                        <div data-label="Docente">{{ $evento->usuario->name ?? 'N/A' }}</div>
-                        <div data-label="Recinto">{{ $evento->horario->recinto->nombre ?? '' }}</div>
-                        <div data-label="Fecha">{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</div>
-                        <div data-label="Hora">{{ \Carbon\Carbon::parse($evento->hora_envio)->format('H:i') }}</div>
-                        <div data-label="Institución">{{ $evento->horario->recinto->institucion->nombre ?? '' }}</div>
-                        <div data-label="Prioridad">
-                            <span class="badge bg-secondary">
-                                {{ ucfirst($evento->prioridad) }}
-                            </span>
+                    @if ($evento->condicion == 1)
+                        <div class="record-row hover-effect">
+                            <div data-label="Docente">{{ $evento->usuario->name ?? 'N/A' }}</div>
+                            <div data-label="Recinto">{{ $evento->horario->recinto->nombre ?? '' }}</div>
+                            <div data-label="Fecha">{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}</div>
+                            <div data-label="Hora">{{ \Carbon\Carbon::parse($evento->hora_envio)->format('H:i') }}</div>
+                            <div data-label="Institución">{{ $evento->horario->recinto->institucion->nombre ?? '' }}</div>
+                            <div data-label="Prioridad">
+                                <span class="badge bg-secondary">
+                                    {{ ucfirst($evento->prioridad) }}
+                                </span>
+                            </div>
+                            <div data-label="Estado">
+                                <span class="badge bg-secondary">
+                                    @if($evento->estado == 'en_espera')
+                                        En espera
+                                    @elseif($evento->estado == 'en_proceso')
+                                        En proceso
+                                    @elseif($evento->estado == 'completado')
+                                        Completado
+                                    @else
+                                        {{ ucfirst($evento->estado) }}
+                                    @endif
+                                </span>
+                            </div>
+                            <div data-label="Detalles">
+                                <button class="btn btn-sm rounded-pill px-3" 
+                                        style="background-color: #134496; color: white;"
+                                        onclick="abrirModal({{ $evento->id }})">
+                                    <i class="bi bi-eye me-1"></i> Ver Más
+                                </button>
+                            </div>
                         </div>
-                        <div data-label="Estado">
-                            <span class="badge bg-secondary">
-                                @if($evento->estado == 'en_espera')
-                                    En espera
-                                @elseif($evento->estado == 'en_proceso')
-                                    En proceso
-                                @elseif($evento->estado == 'completado')
-                                    Completado
-                                @else
-                                    {{ ucfirst($evento->estado) }}
-                                @endif
-                            </span>
-                        </div>
-                        <div data-label="Detalles">
-                            <button class="btn btn-sm rounded-pill px-3" 
-                                    style="background-color: #134496; color: white;"
-                                    onclick="abrirModal({{ $evento->id }})">
-                                <i class="bi bi-eye me-1"></i> Ver Más
-                            </button>
-                        </div>
-                    </div>
+                    @endif
                 @endforeach
             </div>
         </div>
@@ -73,61 +75,63 @@
 
 <!-- Modales existentes sin cambios -->
 @foreach ($eventos as $evento)
-    <div id="modalDetalles-{{ $evento->id }}" class="modal">
-        <div class="modal-contenido">
-            <div class="modal-encabezado">
-                <span class="icono-atras" onclick="cerrarModal({{ $evento->id }})">
-                    <i>
-                        <img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="icono volver"/>
-                    </i>
-                </span>
-                <h1 class="titulo">Detalles</h1>
-            </div>
-
-            <div class="modal-cuerpo">
-                <div class="row">
-                    <div class="col">
-                        <label>Docente:</label>
-                        <input type="text" value="{{ $evento->usuario->name ?? 'N/A' }}" disabled>
-
-                        <label>Institución:</label>
-                        <input type="text" value="{{ $evento->horario->recinto->institucion->nombre ?? '' }}" disabled>
-
-                        <label>SubÁrea:</label>
-                        <input type="text" value="{{ $evento->subarea->nombre ?? '' }}" disabled>
-
-                        <label>Sección:</label>
-                        <input type="text" value="{{ $evento->seccion->nombre ?? '' }}" disabled>
-
-                        <label>Especialidad:</label>
-                        <input type="text" value="{{ $evento->subarea->especialidad->nombre ?? '' }}" disabled>
-                    </div>
-
-                    <div class="col">
-                        <label>Fecha:</label>
-                        <input type="text" value="{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}" disabled>
-                        
-                        <label>Hora:</label>
-                        <input type="text" value="{{ \Carbon\Carbon::parse($evento->hora_envio)->format('H:i') }}" disabled>
-                        
-                        <label>Recinto:</label>
-                        <input type="text" value="{{ $evento->horario->recinto->nombre ?? '' }}" disabled>
-
-                        <label>Prioridad:</label>
-                        <input type="text" value="{{ ucfirst($evento->prioridad) }}" disabled>
-
-                        <label>Estado:</label>
-                        <input type="text" value="@if($evento->estado == 'en_espera')En espera@elseif($evento->estado == 'en_proceso')En proceso@elseif($evento->estado == 'completado')Completado@else{{ ucfirst($evento->estado) }}@endif" disabled>
-                    </div>
+    @if ($evento->condicion == 1)
+        <div id="modalDetalles-{{ $evento->id }}" class="modal">
+            <div class="modal-contenido">
+                <div class="modal-encabezado">
+                    <span class="icono-atras" onclick="cerrarModal({{ $evento->id }})">
+                        <i>
+                            <img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="icono volver"/>
+                        </i>
+                    </span>
+                    <h1 class="titulo">Detalles</h1>
                 </div>
 
-                <div class="observaciones">
-                    <label>Observaciones:</label>
-                    <textarea disabled>{{ $evento->observacion }}</textarea>
+                <div class="modal-cuerpo">
+                    <div class="row">
+                        <div class="col">
+                            <label>Docente:</label>
+                            <input type="text" value="{{ $evento->usuario->name ?? 'N/A' }}" disabled>
+
+                            <label>Institución:</label>
+                            <input type="text" value="{{ $evento->horario->recinto->institucion->nombre ?? '' }}" disabled>
+
+                            <label>SubÁrea:</label>
+                            <input type="text" value="{{ $evento->subarea->nombre ?? '' }}" disabled>
+
+                            <label>Sección:</label>
+                            <input type="text" value="{{ $evento->seccion->nombre ?? '' }}" disabled>
+
+                            <label>Especialidad:</label>
+                            <input type="text" value="{{ $evento->subarea->especialidad->nombre ?? '' }}" disabled>
+                        </div>
+
+                        <div class="col">
+                            <label>Fecha:</label>
+                            <input type="text" value="{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}" disabled>
+                            
+                            <label>Hora:</label>
+                            <input type="text" value="{{ \Carbon\Carbon::parse($evento->hora_envio)->format('H:i') }}" disabled>
+                            
+                            <label>Recinto:</label>
+                            <input type="text" value="{{ $evento->horario->recinto->nombre ?? '' }}" disabled>
+
+                            <label>Prioridad:</label>
+                            <input type="text" value="{{ ucfirst($evento->prioridad) }}" disabled>
+
+                            <label>Estado:</label>
+                            <input type="text" value="@if($evento->estado == 'en_espera')En espera@elseif($evento->estado == 'en_proceso')En proceso@elseif($evento->estado == 'completado')Completado@else{{ ucfirst($evento->estado) }}@endif" disabled>
+                        </div>
+                    </div>
+
+                    <div class="observaciones">
+                        <label>Observaciones:</label>
+                        <textarea disabled>{{ $evento->observacion }}</textarea>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endif
 @endforeach
 
 @endsection
