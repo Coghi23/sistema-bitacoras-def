@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/delete-alerts.css') }}">
-    <link rel="stylesheet" href="{{ asset('Css/inicio.css') }}">
-    
+    <link rel="stylesheet" href="{{ asset('Css/Inicio.css') }}">
+
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
 </head>
 
@@ -40,82 +40,89 @@
         <div class="sidebar-separator d-none d-md-block"></div>
 
         <div class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
-            </div>
-
-            <a href="{{ route('Dashboard.indexAdmin') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
-            </a>
-
-                <div class="sidebar-item" id="roles-btn" data-bs-toggle="tooltip" title="Roles y permisos" tabindex="0" style="cursor:pointer;">
-                    <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
-                    <div class="label">Roles y permisos</div>
-                </div>
-                <div class="submenu-popover" id="roles-submenu" style="position:absolute;z-index:999;display:none;">
-                    <div class="submenu-arrow"></div>
-                    <a href="{{ asset('role') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Roles</a>
-                    <a href="{{ asset('permisos') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Permisos</a>
+            <div class="sidebar-content">
+                <div class="sidebar-logo">
+                    <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
                 </div>
 
-            <a href="{{ asset('usuario') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-person"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
-            </a>
+                <div class="sidebar-section">
+                    <a href="{{ route('dashboard') }}" class="sidebar-item">
+                        <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
+                    </a>
+                </div>
 
-            <div class="sidebar-item" id="personal-btn" data-bs-toggle="tooltip" title="Opciones extra">
-                <div class="icon-circle"><i class="bi bi-clipboard-fill"></i></div>
-                <div class="label">Otras opciones</div>
-            </div>
-            <div class="submenu-popover" id="submenu">
-                <div class="submenu-arrow"></div>
-                <a href="{{ asset('institucion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-bank"></i> Institución</a>
-                <a href="{{ asset('especialidad') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
-                <a href="{{ asset('seccion') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-3"></i> Sección</a>
-                <a href="{{ asset('subarea') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-diagram-2"></i> SubÁrea</a>
-            </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('roles-subitems')" style="cursor:pointer;">
+                        <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
+                        <div class="label">Roles y permisos</div>
+                    </div>
+                    <div class="sidebar-subitems" id="roles-subitems" style="display:none;">
+                        <a href="{{ asset('role') }}" class="sidebar-item subitem"><i class="bi bi-bank"></i> Roles</a>
+                        <a href="{{ asset('permisos') }}" class="sidebar-item subitem"><i class="bi bi-journal-bookmark"></i> Permisos</a>
+                    </div>
+                </div>
 
-            <a href="{{ asset('llave') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
-            </a>
+                <div class="sidebar-section">
+                    <a href="{{ asset('usuario') }}" class="sidebar-item">
+                        <div class="icon-circle"><i class="bi bi-person"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
+                    </a>
+                </div>
 
-            <div class="sidebar-item" id="recinto-btn" data-bs-toggle="tooltip" title="Manejo de Recintos">
-                <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
-                <div class="label">Recintos</div>
-            </div>
-           
-            <div class="submenu-popover" id="recinto-submenu">
-                <div class="submenu-arrow"></div>
-                <a href="{{ asset('tipoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
-                <a href="{{ asset('estadoRecinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
-                <a href="{{ asset('recinto') }}" class="submenu-item" style="text-decoration: none;"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
-            </div>
+                <div class="sidebar-section">
+                    <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('otras-subitems')" style="cursor:pointer;">
+                        <div class="icon-circle"><i class="bi bi-clipboard-fill"></i></div>
+                        <div class="label">Otras opciones</div>
+                    </div>
+                    <div class="sidebar-subitems" id="otras-subitems" style="display:none;">
+                        <a href="{{ asset('institucion') }}" class="sidebar-item subitem"><i class="bi bi-bank"></i> Institución</a>
+                        <a href="{{ asset('especialidad') }}" class="sidebar-item subitem"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
+                        <a href="{{ asset('seccion') }}" class="sidebar-item subitem"><i class="bi bi-diagram-3"></i> Sección</a>
+                        <a href="{{ asset('subarea') }}" class="sidebar-item subitem"><i class="bi bi-diagram-2"></i> SubÁrea</a>
+                    </div>
+                </div>
 
-            <a href="{{ asset('horario') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
-            </a>
-            
-            <a href="{{ route('admin.qr.index') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-qr-code-scan"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="QR Temporales">QR Temporales</div>
+                <div class="sidebar-section">
+                    <a href="{{ asset('llave') }}" class="sidebar-item">
+                        <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
+                    </a>
+                </div>
 
-            </a>
+                <div class="sidebar-section">
+                    <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('recinto-subitems')" style="cursor:pointer;">
+                        <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
+                        <div class="label">Recintos</div>
+                    </div>
+                    <div class="sidebar-subitems" id="recinto-subitems" style="display:none;">
+                        <a href="{{ asset('tipoRecinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
+                        <a href="{{ asset('estadoRecinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
+                        <a href="{{ asset('recinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-add"></i>Crear Recintos</a>
+                    </div>
+                </div>
 
-            <a href="{{ route('bitacora.index') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Bitácora">Bitácora</div>
-            </a>
+                <div class="sidebar-section">
+                    <a href="{{ asset('horario') }}" class="sidebar-item">
+                        <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
+                    </a>
+                </div>
 
+                <div class="sidebar-section">
+                    <a href="{{ route('admin.qr.index') }}" class="sidebar-item">
+                        <div class="icon-circle"><i class="bi bi-qr-code-scan"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="QR Temporales">QR Temporales</div>
+                    </a>
+                </div>
 
-            <a href="{{ url('reportes.html') }}" class="sidebar-item">
-                <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
-                <div class="label" data-bs-toggle="tooltip" title="Reportes">Reporte</div>
-            </a>
-
-            <div class="mt-auto mb-3" style="width:100%;">
+                <div class="sidebar-section">
+                    <a href="{{ url('reportes.html') }}" class="sidebar-item">
+                        <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
+                        <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
+                    </a>
+                </div>
+                <div class="mt-auto mb-3" style="width:100%;">
                 <form method="POST" action="{{ route('logout') }}" style="margin:0;">
                     @csrf
                     <a href="#" onclick="this.closest('form').submit();return false;" class="sidebar-item" style="width:100%;">
@@ -124,9 +131,27 @@
                     </a>
                 </form>
             </div>
-            
+            </div>
+           
+        </div>
         </div>
     </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     <div class="wrapper">
         <div class="main-content p-4">
@@ -134,6 +159,19 @@
         </div>
     </div>
 
+    <script>
+    function toggleSidebarSubmenu(id) {
+        var el = document.getElementById(id);
+        var parent = el.previousElementSibling;
+        if (el.style.display === 'none' || el.style.display === '') {
+            el.style.display = 'block';
+            parent.classList.add('active');
+        } else {
+            el.style.display = 'none';
+            parent.classList.remove('active');
+        }
+    }
+    </script>
     <script src="{{ asset('JS/Sidebar.js') }}"></script>
     <script src="{{ asset('JS/modals-create-especialidad.js') }}"></script>
     <script src="{{ asset('JS/modals-edit-especialidad.js') }}"></script>
