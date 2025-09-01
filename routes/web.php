@@ -140,17 +140,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
-    
+    // Priorizar el rol de administrador sobre profesor
     if ($user->hasRole('administrador')) {
-        return redirect('/template-administrador');
+        return redirect()->route('Dashboard.indexAdmin');
     } elseif ($user->hasRole('director')) {
         return redirect('/template-administrador');
     } elseif ($user->hasRole('superadmin')) {
         return redirect('/template-administrador');
     } elseif ($user->hasRole('profesor')) {
-        return redirect('/template-profesor');
+        return redirect()->route('Dashboard.indexDocente');
     } elseif ($user->hasRole('soporte')) {
-        return redirect('/template-soporte');
+        return redirect()->route('Dashboard.indexSoporte');
     }
 
 })->middleware(['auth', 'verified'])->name('dashboard');
