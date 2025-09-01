@@ -46,7 +46,7 @@
                 </div>
 
                 <div class="sidebar-section">
-                    <a href="{{ route('') }}" class="sidebar-item">
+                    <a href="{{ route('dashboard') }}" class="sidebar-item">
                         <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
                         <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
                     </a>
@@ -115,6 +115,11 @@
                         <div class="label" data-bs-toggle="tooltip" title="QR Temporales">QR Temporales</div>
                     </a>
                 </div>
+
+                <a href="{{ route('bitacora.index') }}" class="sidebar-item">
+                    <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
+                    <div class="label" data-bs-toggle="tooltip" title="Bitácora">Bitácora</div>
+                </a>
 
                 <div class="sidebar-section">
                     <a href="{{ route('evento.index') }}" class="sidebar-item">
