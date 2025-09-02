@@ -17,7 +17,6 @@ class Recinto extends Model
 
 
     protected $fillable = [
-        'institucion_id',
         'llave_id',
         'nombre',
         'tiporecinto_id',
@@ -26,12 +25,6 @@ class Recinto extends Model
     ];
 
 
-    // Un recinto pertenece a una institución via institucion_id
-    public function institucion()
-    {
-        return $this->belongsTo(Institucione::class);
-    }
-   
     public function llave()
     {
         return $this->belongsTo(Llave::class);
