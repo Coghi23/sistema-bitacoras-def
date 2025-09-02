@@ -42,8 +42,9 @@ class UsuarioController extends Controller
 
         $usuarios = $query->get();
         $roles = Role::all();
-        
-        return view('Usuario.index', compact('usuarios', 'roles'));
+        $instituciones = Institucione::where('condicion', 1)->get();
+
+        return view('Usuario.index', compact('usuarios', 'roles', 'instituciones'));
     }
 
     public function create()
