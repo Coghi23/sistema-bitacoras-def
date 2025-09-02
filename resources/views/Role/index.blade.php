@@ -217,20 +217,77 @@
 
                     <div class="mb-3">
                         <label class="form-label">Permisos</label>
-                        <div class="row">
-                            @foreach($permisos as $permiso)
-                                <div class="col-md-6 col-lg-4 mb-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" 
-                                               name="permissions[]" value="{{ $permiso->id }}" 
-                                               id="permission_{{ $permiso->id }}">
-                                        <label class="form-check-label" for="permission_{{ $permiso->id }}">
-                                            {{ $permiso->name }}
-                                        </label>
-                                    </div>
+                        
+                        <!-- Pestañas para organizar permisos -->
+                        <ul class="nav nav-tabs mb-3" id="permissionTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="normal-permissions-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#normal-permissions" type="button" role="tab">
+                                    Permisos Normales
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="sidebar-permissions-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#sidebar-permissions" type="button" role="tab">
+                                    Permisos de Sidebar
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="permissionTabContent">
+                            <!-- Permisos Normales -->
+                            <div class="tab-pane fade show active" id="normal-permissions" role="tabpanel">
+                                <div class="row">
+                                    @php
+                                        $sidebarPermissions = [
+                                            'view_roles', 'view_usuarios', 'view_institucion', 'view_especialidad', 
+                                            'view_seccion', 'view_subarea', 'view_llaves', 'view_tipo_recinto', 
+                                            'view_estado_recinto', 'view_recintos', 'view_horario', 'view_qr_temporales', 
+                                            'view_bitacoras', 'view_reportes'
+                                        ];
+                                        $normalPermissions = $permisos->reject(function($permiso) use ($sidebarPermissions) {
+                                            return in_array($permiso->name, $sidebarPermissions);
+                                        });
+                                    @endphp
+                                    @foreach($normalPermissions as $permiso)
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="permissions[]" value="{{ $permiso->id }}" 
+                                                       id="permission_{{ $permiso->id }}">
+                                                <label class="form-check-label" for="permission_{{ $permiso->id }}">
+                                                    {{ $permiso->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            </div>
+                            
+                            <!-- Permisos de Sidebar -->
+                            <div class="tab-pane fade" id="sidebar-permissions" role="tabpanel">
+                                <div class="row">
+                                    @php
+                                        $sidebarPermisos = $permisos->filter(function($permiso) use ($sidebarPermissions) {
+                                            return in_array($permiso->name, $sidebarPermissions);
+                                        });
+                                    @endphp
+                                    @foreach($sidebarPermisos as $permiso)
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="permissions[]" value="{{ $permiso->id }}" 
+                                                       id="permission_{{ $permiso->id }}">
+                                                <label class="form-check-label" for="permission_{{ $permiso->id }}">
+                                                    {{ $permiso->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
+                        
                         @error('permissions')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
@@ -264,19 +321,75 @@
 
                     <div class="mb-3">
                         <label class="form-label">Permisos</label>
-                        <div class="row" id="edit_permissions">
-                            @foreach($permisos as $permiso)
-                                <div class="col-md-6 col-lg-4 mb-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" 
-                                               name="permissions[]" value="{{ $permiso->id }}" 
-                                               id="edit_permission_{{ $permiso->id }}">
-                                        <label class="form-check-label" for="edit_permission_{{ $permiso->id }}">
-                                            {{ $permiso->name }}
-                                        </label>
-                                    </div>
+                        
+                        <!-- Pestañas para organizar permisos en edición -->
+                        <ul class="nav nav-tabs mb-3" id="editPermissionTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="edit-normal-permissions-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#edit-normal-permissions" type="button" role="tab">
+                                    Permisos Normales
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="edit-sidebar-permissions-tab" data-bs-toggle="tab" 
+                                        data-bs-target="#edit-sidebar-permissions" type="button" role="tab">
+                                    Permisos de Sidebar
+                                </button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="editPermissionTabContent">
+                            <!-- Permisos Normales -->
+                            <div class="tab-pane fade show active" id="edit-normal-permissions" role="tabpanel">
+                                <div class="row">
+                                    @php
+                                        $sidebarPermissions = [
+                                            'view_roles', 'view_usuarios', 'view_institucion', 'view_especialidad', 
+                                            'view_seccion', 'view_subarea', 'view_llaves', 'view_tipo_recinto', 
+                                            'view_estado_recinto', 'view_recintos', 'view_horario', 'view_qr_temporales', 
+                                            'view_bitacoras', 'view_reportes'
+                                        ];
+                                        $normalPermissions = $permisos->reject(function($permiso) use ($sidebarPermissions) {
+                                            return in_array($permiso->name, $sidebarPermissions);
+                                        });
+                                    @endphp
+                                    @foreach($normalPermissions as $permiso)
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="permissions[]" value="{{ $permiso->id }}" 
+                                                       id="edit_permission_{{ $permiso->id }}">
+                                                <label class="form-check-label" for="edit_permission_{{ $permiso->id }}">
+                                                    {{ $permiso->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
                                 </div>
-                            @endforeach
+                            </div>
+                            
+                            <!-- Permisos de Sidebar -->
+                            <div class="tab-pane fade" id="edit-sidebar-permissions" role="tabpanel">
+                                <div class="row">
+                                    @php
+                                        $sidebarPermisos = $permisos->filter(function($permiso) use ($sidebarPermissions) {
+                                            return in_array($permiso->name, $sidebarPermissions);
+                                        });
+                                    @endphp
+                                    @foreach($sidebarPermisos as $permiso)
+                                        <div class="col-md-6 col-lg-4 mb-2">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" 
+                                                       name="permissions[]" value="{{ $permiso->id }}" 
+                                                       id="edit_permission_{{ $permiso->id }}">
+                                                <label class="form-check-label" for="edit_permission_{{ $permiso->id }}">
+                                                    {{ $permiso->name }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -341,11 +454,13 @@
 function loadEditModal(roleId, roleName, permissions) {
     document.getElementById('edit_name').value = roleName;
     document.getElementById('editRoleForm').action = `/role/${roleId}`;
-    // Limpiar todos los checkboxes
-    const checkboxes = document.querySelectorAll('#edit_permissions input[type="checkbox"]');
-    checkboxes.forEach(checkbox => {
+    
+    // Limpiar todos los checkboxes en ambas pestañas
+    const allCheckboxes = document.querySelectorAll('#edit-normal-permissions input[type="checkbox"], #edit-sidebar-permissions input[type="checkbox"]');
+    allCheckboxes.forEach(checkbox => {
         checkbox.checked = false;
     });
+    
     // Marcar los permisos del rol
     permissions.forEach(permissionId => {
         const checkbox = document.getElementById(`edit_permission_${permissionId}`);
