@@ -27,30 +27,6 @@ class AdminUserSeeder extends Seeder
         );
         $superAdmin->assignRole('superadmin');
 
-        // Crear usuario administrador normal si no existe
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@sistema.com'],
-            [
-                'name' => 'Administrador',
-                'cedula' => '12345678',
-                'password' => Hash::make('admin123'),
-                'condicion' => true,
-            ]
-        );
-        $admin->assignRole('administrador');
-
-        // Crear usuario administrador por defecto
-        $profe = User::firstOrCreate(
-            ['email' => 'profe@sistema.com'],
-            [
-                'name' => 'Profesor',
-                'cedula' => '12345678',
-                'password' => Hash::make('profe123'),
-                'condicion' => true,
-            ]
-        );
-
-        // Asignar rol de administrador
-        $admin->assignRole('profesor');
+        
     }
 }
