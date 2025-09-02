@@ -18,7 +18,7 @@ class EspecialidadController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Especialidade::with('institucion');
+    $query = Especialidade::with('instituciones');
 
         // Filtrar por activos/inactivos
         if ($request->query('inactivos')) {
@@ -34,13 +34,13 @@ class EspecialidadController extends Controller
             $busqueda = $request->busquedaEspecialidad;
             $query->where(function($q) use ($busqueda) {
                 $q->where('nombre', 'like', "%{$busqueda}%")
-                  ->orWhereHas('institucion', function($q2) use ($busqueda) {
+                  ->orWhereHas('instituciones', function($q2) use ($busqueda) {
                       $q2->where('nombre', 'like', "%{$busqueda}%");
                   });
             });
         }
 
-        $especialidades = $query->get();
+    $especialidades = $query->get();
         $instituciones = Institucione::where('condicion', 1)->get();
 
         return view('Especialidad.index', compact('especialidades', 'instituciones'));
@@ -62,12 +62,24 @@ class EspecialidadController extends Controller
         try {
             DB::beginTransaction();
             
-            // Crear la especialidad
-            $especialidad = Especialidade::create([
-                'nombre' => $request->input('nombre'),
-                'id_institucion' => $request->input('id_institucion'),
-                'condicion' => 1 // Activo por defecto
-            ]);
+            // Crear la especialidad (solo campos del modelo)
+            $especialidad = Especialidade::create($request->only(['nombre']));
+
+            // Asociar instituciones si existen
+            if ($request->has('instituciones') && is_array($request->instituciones)) {
+                $institucionesIds = array_filter($request->instituciones); // Filtrar valores vacíos
+                if (!empty($institucionesIds)) {
+                    $pivotData = [];
+                    foreach ($institucionesIds as $instId) {
+                        $pivotData[$instId] = [
+                            'condicion' => 1,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ];
+                    }
+                    $especialidad->instituciones()->attach($pivotData);
+                }
+            }
 
             DB::commit();
 
@@ -95,7 +107,7 @@ class EspecialidadController extends Controller
     public function edit(string $id)
     {
         $especialidad = Especialidade::findOrFail($id);
-        $especialidades = Especialidade::with('institucion')->get();
+    $especialidades = Especialidade::with('instituciones')->get();
         $instituciones = Institucione::where('condicion', 1)->get();
 
         return view('Especialidad.index', compact('especialidades', 'instituciones', 'especialidad'));
@@ -104,27 +116,45 @@ class EspecialidadController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateEspecialidadRequest $request, string $id)
+    public function update(UpdateEspecialidadRequest $request, Especialidade $especialidad)
     {
         try {
             DB::beginTransaction();
-            
-            $especialidad = Especialidade::findOrFail($id);
-            
-            $especialidad->update([
-                'nombre' => $request->input('nombre'),
-                'id_institucion' => $request->input('id_institucion')
-            ]);
 
+            // Actualizar la especialidad
+            $especialidad->update($request->validated());
+
+            // Sincronizar instituciones
+            if ($request->has('instituciones') && is_array($request->instituciones)) {
+                $instituciones = array_filter($request->instituciones); // Filtrar valores vacíos
+
+                if (!empty($instituciones)) {
+                    // Preparar datos para la tabla pivot con condición = 1
+                    $pivotData = [];
+                    foreach ($instituciones as $institucionId) {
+                        $pivotData[$institucionId] = [
+                            'condicion' => 1,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
+                    }
+
+                    // Sincronizar instituciones (elimina las anteriores y agrega las nuevas)
+                    $especialidad->instituciones()->sync($pivotData);
+                }
+            } else {
+                // Si no hay instituciones seleccionadas, desconectar todas
+                $especialidad->instituciones()->sync([]);
+            }
+            
             DB::commit();
-
-            return redirect()->route('especialidad.index')
-                ->with('success', 'Especialidad actualizada correctamente.');
-
+            return redirect()->route('especialidad.index')->with('success', 'Especialidad actualizada correctamente.');
         } catch (Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Hubo un problema al actualizar la especialidad.'])
-                ->withInput();
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Hubo un problema al actualizar la especialidad: ' . $e->getMessage()])
+                ->with('modal_editar_id', $especialidad->id);
         }
     }
 

@@ -18,7 +18,9 @@ class Institucione extends Model
 
     public function especialidad()
     {
-        return $this->hasMany(Especialidade::class, 'id_institucion');
+        return $this->belongsToMany(Especialidade::class, 'especialidad_institucion', 'institucion_id', 'especialidad_id')
+                    ->withPivot('condicion')
+                    ->withTimestamps();
     }
 
     protected $table = 'institucione';
