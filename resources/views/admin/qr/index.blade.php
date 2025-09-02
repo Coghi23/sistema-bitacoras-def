@@ -136,6 +136,45 @@
     </div>
 </div>
 
+<!-- Modal para Simulación de Escaneo -->
+<div class="modal fade modal-scan" id="scanSimulationModal" tabindex="-1" aria-labelledby="scanSimulationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="scanSimulationModalLabel">
+                    <i class="bi bi-upc-scan me-2"></i>Simular Escaneo de QR
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="mb-4">
+                    <i class="bi bi-qr-code scan-icon"></i>
+                </div>
+                <h5 class="mb-3">¿Estás seguro de simular el escaneo?</h5>
+                <p class="text-muted mb-4">
+                    Esta acción cambiará el estado de la llave y será registrada en el sistema.
+                    <br>
+                    <small><strong>Código QR:</strong> <span id="qr-code-display" class="text-primary"></span></small>
+                </p>
+                <div class="alert alert-info d-flex align-items-center" role="alert">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <div>
+                        El escaneo simulado tendrá el mismo efecto que un escaneo real con la cámara.
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i>Cancelar
+                </button>
+                <button type="button" class="btn btn-scan" id="confirmScanBtn">
+                    <i class="bi bi-check-circle me-1"></i>Confirmar Escaneo
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 @endsection
 
@@ -184,10 +223,55 @@ $(document).ready(function() {
             return;
         }
        
-        if (!confirm('¿Simular escaneo? Esto cambiará el estado de la llave.')) {
+        // Verificar que el modal existe
+        const modal = $('#scanSimulationModal');
+        console.log('Modal encontrado:', modal.length > 0);
+        
+        if (modal.length === 0) {
+            console.error('Modal no encontrado, usando confirm como fallback');
+            if (!confirm('¿Simular escaneo? Esto cambiará el estado de la llave.')) {
+                return;
+            }
+            performScan(button, qrCode);
             return;
         }
        
+        // Mostrar modal
+        $('#qr-code-display').text(qrCode);
+        modal.modal('show');
+        
+        // Guardar datos en el modal para usarlos después
+        modal.data('scanButton', button);
+        modal.data('qrCode', qrCode);
+        
+        console.log('Modal mostrado con datos:', {qrCode});
+    });
+
+    // Manejar confirmación del modal
+    $(document).on('click', '#confirmScanBtn', function(e) {
+        e.preventDefault();
+        console.log('Click en confirmar escaneo');
+        
+        const modal = $('#scanSimulationModal');
+        const button = modal.data('scanButton');
+        const qrCode = modal.data('qrCode');
+        
+        console.log('Datos del modal:', {button: button ? 'found' : 'not found', qrCode});
+        
+        if (!button || !qrCode) {
+            console.error('Datos del modal no encontrados');
+            showToast('Error interno: datos no encontrados', 'error');
+            return;
+        }
+        
+        // Cerrar modal
+        modal.modal('hide');
+        
+        // Continuar con el escaneo
+        performScan(button, qrCode);
+    });
+    
+    function performScan(button, qrCode) {
         button.prop('disabled', true).html('<i class="spinner-border spinner-border-sm"></i> Escaneando...');
        
         $.ajax({
@@ -211,7 +295,7 @@ $(document).ready(function() {
                 button.prop('disabled', false).html('<i class="bi bi-upc-scan"></i> Simular Escaneo');
             }
         });
-    });
+    }
 
 
     // ===== SISTEMA DE TIEMPO REAL =====
@@ -691,6 +775,43 @@ function showToast(message, type = 'info', duration = 3000) {
     #update-indicator {
         font-size: 0.75rem;
         padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Estilos para el modal de simulación */
+.modal-scan .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-bottom: none;
+}
+
+.modal-scan .btn-scan {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.modal-scan .btn-scan:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+.scan-icon {
+    font-size: 3rem;
+    color: #667eea;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
     }
 }
 </style>
