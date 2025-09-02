@@ -83,28 +83,49 @@
                         <a href="{{ route('evento.create', ['id_bitacora' => $bitacora->id]) }}" class="btn btn-success btn-sm me-2">
                             <i class="bi bi-plus-circle"></i> Agregar evento
                         </a>
-                        <button class="btn btn-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#eventos-{{ $bitacora->id }}" aria-expanded="false" aria-controls="eventos-{{ $bitacora->id }}">
-                            <i class="bi bi-eye"></i> Ver eventos
-                        </button>
+                        @if ($bitacora->evento && $bitacora->evento->isNotEmpty())
+                            <button class="btn btn-outline-primary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#eventos-{{ $bitacora->id }}" aria-expanded="false" aria-controls="eventos-{{ $bitacora->id }}">
+                                <i class="bi bi-eye"></i> Ver eventos ({{ $bitacora->evento->count() }})
+                            </button>
+                        @endif
                     </div>
                 </div>
                 <div class="card-body">
-                    <div class="collapse" id="eventos-{{ $bitacora->id }}">
-                        @if ($bitacora->evento && $bitacora->evento->isNotEmpty())
-                            <ul class="list-group mb-2">
+                    @if ($bitacora->evento && $bitacora->evento->isEmpty())
+                        <p class="text-muted">No hay eventos registrados para esta bitácora.</p>
+                    @elseif ($bitacora->evento && $bitacora->evento->isNotEmpty())
+                        <div class="collapse" id="eventos-{{ $bitacora->id }}">
+                            <h6 class="mb-3"><i class="bi bi-calendar-event"></i> Eventos registrados:</h6>
+                            <div class="row">
                                 @foreach ($bitacora->evento as $evento)
-                                    <li class="list-group-item">
-                                        <strong>Fecha:</strong> {{ $evento->fecha }}<br>
-                                        <strong>Observación:</strong> {{ $evento->observacion }}<br>
-                                        <strong>Prioridad:</strong> {{ $evento->prioridad }}<br>
-                                        <strong>Estado:</strong> {{ $evento->estado }}<br>
-                                    </li>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="border rounded p-3">
+                                            <div class="mb-2">
+                                                <strong><i class="bi bi-calendar3"></i> Fecha:</strong> 
+                                                <span class="text-primary">{{ $evento->fecha }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong><i class="bi bi-chat-text"></i> Observación:</strong> 
+                                                <span>{{ $evento->observacion }}</span>
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong><i class="bi bi-exclamation-triangle"></i> Prioridad:</strong> 
+                                                <span class="badge bg-{{ $evento->prioridad == 'alta' ? 'danger' : ($evento->prioridad == 'media' ? 'warning' : 'secondary') }}">
+                                                    {{ ucfirst($evento->prioridad) }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <strong><i class="bi bi-info-circle"></i> Estado:</strong> 
+                                                <span class="badge bg-info">{{ $evento->estado }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                 @endforeach
-                            </ul>
-                        @else
-                            <p>No hay eventos registrados para esta bitácora.</p>
-                        @endif
-                    </div>
+                            </div>
+                        </div>
+                    @else
+                        <p class="text-muted">No hay eventos registrados para esta bitácora.</p>
+                    @endif
                 </div>
             </div>
         @endforeach
@@ -116,7 +137,6 @@
         </div>
     @endif
 </div>
-
 
 <script>
 const inputBusqueda = document.getElementById('inputBusqueda');
