@@ -25,11 +25,13 @@
                 </form>
             </div>
             @can('create_estado_recinto')
+                @if(Auth::user() && !Auth::user()->hasRole('director'))
                 <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                     data-bs-toggle="modal" data-bs-target="#modalAgregarEstadoRecinto"
-                    title="Agregar Estado de Recinto" style="background-color: #134496; font-size: 1.2rem; @if(Auth::user() && Auth::user()->hasRole('director')) display: none; @endif">
+                    title="Agregar Estado de Recinto" style="background-color: #134496; font-size: 1.2rem;">
                     Agregar <i class="bi bi-plus-circle ms-2"></i>
                 </button>
+                @endif
             @endcan
         </div>
 
@@ -115,9 +117,9 @@
                                 @if (($mostrarActivos && $estadoRecinto->condicion == 1) || ($mostrarInactivos && $estadoRecinto->condicion == 0))
                                     <td class="text-center">{{ $estadoRecinto->nombre }}</td>
                                     <td class="text-center">
-                                        <span class="badge" style="background-color: {{ $estadoRecinto->color }};">
-                                            {{ $estadoRecinto->color }}
+                                        <span class="badge" style="display: inline-block; width: 20px; height: 20px; border-radius: 50%; background-color: {{ $estadoRecinto->color }};">
                                         </span>
+                                    </td>
                                     <td class="text-center">
                                         @if(Auth::user() && !Auth::user()->hasRole('director'))
                                             @if($mostrarActivos && $estadoRecinto->condicion == 1)
