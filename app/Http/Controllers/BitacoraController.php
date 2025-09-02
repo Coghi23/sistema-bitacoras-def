@@ -60,13 +60,31 @@ class BitacoraController extends Controller
     {
         \Log::info('BitacoraController - Ejecutando indexAdmin');
         
-        // Para el administrador, mostrar el historial de bitácoras
-        $bitacoras = Bitacora::with(['recinto', 'evento' => function($q) { $q->where('condicion', 1); }])
-            ->orderBy('created_at', 'desc')->get();
+        // Obtener todas las bitácoras para estadísticas
+        $todasLasBitacoras = Bitacora::with(['recinto'])->get();
+        
+        // Inicializar query base para la lista filtrada
+        $query = Bitacora::with(['recinto', 'evento' => function($q) { $q->where('condicion', 1); }]);
+        
+        // Aplicar filtro de búsqueda por recinto si existe
+        if ($request->has('busquedaBitacora') && $request->busquedaBitacora) {
+            $query->whereHas('recinto', function($q) use ($request) {
+                $q->where('nombre', 'like', '%' . $request->busquedaBitacora . '%');
+            });
+        }
+        
+        // Aplicar filtro de estado (activas/inactivas)
+        if ($request->has('inactivas') && $request->inactivas == '1') {
+            $query->where('condicion', 0); // Bitácoras inactivas
+        } else {
+            $query->where('condicion', 1); // Bitácoras activas por defecto
+        }
+        
+        $bitacoras = $query->orderBy('created_at', 'desc')->get();
         
         \Log::info('BitacoraController - Bitacoras encontradas: ' . $bitacoras->count());
-    $dashboardRoute = route('Dashboard.indexAdmin');
-    return view('admin.bitacora.index', compact('bitacoras', 'dashboardRoute'));
+        $dashboardRoute = route('Dashboard.indexAdmin');
+        return view('admin.bitacora.index', compact('bitacoras', 'todasLasBitacoras', 'dashboardRoute'));
     }
     
         /**
@@ -88,19 +106,39 @@ class BitacoraController extends Controller
             
             // Filtrar bitácoras solo de los recintos asignados al profesor
             if (!empty($recintoIds)) {
-                $bitacoras = Bitacora::with(['recinto', 'evento' => function($q) { $q->where('condicion', 1); }])
+                // Obtener todas las bitácoras del profesor para estadísticas
+                $todasLasBitacoras = Bitacora::with(['recinto'])
                     ->whereIn('id_recinto', $recintoIds)
-                    ->orderBy('created_at', 'desc')
                     ->get();
+                
+                $query = Bitacora::with(['recinto', 'evento' => function($q) { $q->where('condicion', 1); }])
+                    ->whereIn('id_recinto', $recintoIds);
+                
+                // Aplicar filtro de búsqueda por recinto si existe
+                if ($request->has('busquedaBitacora') && $request->busquedaBitacora) {
+                    $query->whereHas('recinto', function($q) use ($request) {
+                        $q->where('nombre', 'like', '%' . $request->busquedaBitacora . '%');
+                    });
+                }
+                
+                // Aplicar filtro de estado (activas/inactivas)
+                if ($request->has('inactivas') && $request->inactivas == '1') {
+                    $query->where('condicion', 0); // Bitácoras inactivas
+                } else {
+                    $query->where('condicion', 1); // Bitácoras activas por defecto
+                }
+                
+                $bitacoras = $query->orderBy('created_at', 'desc')->get();
             } else {
                 // Si el profesor no tiene recintos asignados, mostrar mensaje vacío
                 $bitacoras = collect();
+                $todasLasBitacoras = collect();
                 \Log::info('BitacoraController - Profesor no tiene recintos asignados');
             }
             
             \Log::info('BitacoraController - Bitacoras encontradas para profesor: ' . $bitacoras->count());
             
-            return view('profesor.bitacora.index', compact('bitacoras', 'profesor'));
+            return view('profesor.bitacora.index', compact('bitacoras', 'todasLasBitacoras', 'profesor'));
         } catch (\Exception $e) {
             \Log::error('BitacoraController - Error en indexProfesor: ' . $e->getMessage());
             
