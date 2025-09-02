@@ -4,11 +4,11 @@
 
 @section('content')
 <head>
-    <link rel="stylesheet" href="{{ asset('CSS/Bitacora.css') }}">
+    <link rel="stylesheet" href="{{ route('CSS/Bitacora.css') }}">
 </head>
 
 <head> 
-      <link rel="stylesheet" href="{{ asset('Css/Bitacoras.css') }}">
+      <link rel="stylesheet" href="{{ route('Css/Bitacoras.css') }}">
 </head>
 
 <!------------------------------------------------------------------------------------------------------------------------->

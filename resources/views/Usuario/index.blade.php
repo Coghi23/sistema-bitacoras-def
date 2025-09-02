@@ -503,7 +503,7 @@
         if (btnLimpiar) {
             btnLimpiar.addEventListener('click', function() {
                 inputBusqueda.value = '';
-                window.location.href = '{{ route("usuario.index") }}';
+                window.location.href = '{{ asset("usuario.index") }}';
             });
         }
 

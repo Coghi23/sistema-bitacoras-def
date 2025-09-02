@@ -8,11 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
-    <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}" />
+    <link rel="stylesheet" href="{{ asset('Css/tabla.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/Modals.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/delete-alerts.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/inicio.css') }}">
-   
+
     <link rel="icon" href="https://covao.ed.cr/wp-content/uploads/2025/02/cropped-favicon-32x32.png" sizes="32x32">
 </head>
 
@@ -89,10 +89,4 @@
     @stack('scripts')
 </body>
 
-
 </html>
-
-
-
-
-
