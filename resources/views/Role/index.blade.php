@@ -229,7 +229,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="sidebar-permissions-tab" data-bs-toggle="tab" 
                                         data-bs-target="#sidebar-permissions" type="button" role="tab">
-                                    Permisos de Sidebar
+                                    Permisos de Menú
                                 </button>
                             </li>
                         </ul>
@@ -333,7 +333,7 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="edit-sidebar-permissions-tab" data-bs-toggle="tab" 
                                         data-bs-target="#edit-sidebar-permissions" type="button" role="tab">
-                                    Permisos de Sidebar
+                                    Permisos de Menú
                                 </button>
                             </li>
                         </ul>
