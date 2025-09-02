@@ -19,6 +19,11 @@ class BitacoraController extends Controller
     //Display a listing of the resource.*/
     public function index(Request $request)
     {
+        // Verificar permiso para ver bitácoras
+        if (!auth()->user()->can('view_bitacoras')) {
+            abort(403, 'No tienes permisos para acceder a las bitácoras.');
+        }
+
         $user = Auth::user();
         
         // Debug: verificar usuario y roles
@@ -26,7 +31,7 @@ class BitacoraController extends Controller
         \Log::info('BitacoraController - Roles: ' . $user->roles->pluck('name')->join(', '));
         
         // Verificar si es administrador (probamos diferentes variaciones)
-        if ($user->hasRole('Administrador') || $user->hasRole('administrador') || $user->hasRole('admin')) {
+        if ($user->hasRole('Administrador') || $user->hasRole('administrador') || $user->hasRole('admin') || $user->hasRole('superadmin')) {
             \Log::info('BitacoraController - Usuario es Administrador');
             return $this->indexAdmin($request);
         }

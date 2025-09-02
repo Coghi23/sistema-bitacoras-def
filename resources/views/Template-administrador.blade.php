@@ -45,99 +45,170 @@
                     <img src="https://academiashhc.com/wp-content/uploads/2022/09/AcademiasB.png" alt="Logo Academias" class="right-logo d-none d-md-block" />
                 </div>
 
-                <div class="sidebar-section">
-                    <a href="{{ $dashboardRoute ?? route('Dashboard.indexAdmin') }}" class="sidebar-item">
-                        <div class="icon-circle"><i class="bi bi-house-door-fill"></i></div>
-                        <div class="label" data-bs-toggle="tooltip" title="Inicio">Inicio</div>
-                    </a>
-                </div>
+                @if(isset($sidebarItems))
+                    {{-- Inicio --}}
+                    @if($sidebarItems['inicio']['show'])
+                        <div class="sidebar-section">
+                            <a href="{{ $sidebarItems['inicio']['route'] }}" class="sidebar-item">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['inicio']['icon'] }}"></i></div>
+                                <div class="label" data-bs-toggle="tooltip" title="{{ $sidebarItems['inicio']['label'] }}">{{ $sidebarItems['inicio']['label'] }}</div>
+                            </a>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('roles-subitems')" style="cursor:pointer;">
-                        <div class="icon-circle"><i class="bi bi-shield-lock"></i></div>
-                        <div class="label">Roles y permisos</div>
-                    </div>
-                    <div class="sidebar-subitems" id="roles-subitems" style="display:none;">
-                        <a href="{{ asset('role') }}" class="sidebar-item subitem"><i class="bi bi-bank"></i> Roles</a>
-                        <a href="{{ asset('permisos') }}" class="sidebar-item subitem"><i class="bi bi-journal-bookmark"></i> Permisos</a>
-                    </div>
-                </div>
+                    {{-- Roles y permisos --}}
+                    @if($sidebarItems['roles']['show'])
+                        <div class="sidebar-section">
+                            <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('roles-subitems')" style="cursor:pointer;">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['roles']['icon'] }}"></i></div>
+                                <div class="label">{{ $sidebarItems['roles']['label'] }}</div>
+                            </div>
+                            <div class="sidebar-subitems" id="roles-subitems" style="display:none;">
+                                @if($sidebarItems['roles']['subitems']['roles']['show'])
+                                    <a href="{{ $sidebarItems['roles']['subitems']['roles']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['roles']['subitems']['roles']['icon'] }}"></i> {{ $sidebarItems['roles']['subitems']['roles']['label'] }}
+                                    </a>
+                                @endif
+                                @if($sidebarItems['roles']['subitems']['permisos']['show'])
+                                    <a href="{{ $sidebarItems['roles']['subitems']['permisos']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['roles']['subitems']['permisos']['icon'] }}"></i> {{ $sidebarItems['roles']['subitems']['permisos']['label'] }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <a href="{{ asset('usuario') }}" class="sidebar-item">
-                        <div class="icon-circle"><i class="bi bi-person"></i></div>
-                        <div class="label" data-bs-toggle="tooltip" title="Horarios">Usuarios</div>
-                    </a>
-                </div>
+                    {{-- Usuarios --}}
+                    @if($sidebarItems['usuarios']['show'])
+                        <div class="sidebar-section">
+                            <a href="{{ $sidebarItems['usuarios']['route'] }}" class="sidebar-item">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['usuarios']['icon'] }}"></i></div>
+                                <div class="label" data-bs-toggle="tooltip" title="{{ $sidebarItems['usuarios']['label'] }}">{{ $sidebarItems['usuarios']['label'] }}</div>
+                            </a>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('otras-subitems')" style="cursor:pointer;">
-                        <div class="icon-circle"><i class="bi bi-clipboard-fill"></i></div>
-                        <div class="label">Otras opciones</div>
-                    </div>
-                    <div class="sidebar-subitems" id="otras-subitems" style="display:none;">
-                        <a href="{{ asset('institucion') }}" class="sidebar-item subitem"><i class="bi bi-bank"></i> Institución</a>
-                        <a href="{{ asset('especialidad') }}" class="sidebar-item subitem"><i class="bi bi-journal-bookmark"></i> Especialidad</a>
-                        <a href="{{ asset('seccion') }}" class="sidebar-item subitem"><i class="bi bi-diagram-3"></i> Sección</a>
-                        <a href="{{ asset('subarea') }}" class="sidebar-item subitem"><i class="bi bi-diagram-2"></i> SubÁrea</a>
-                    </div>
-                </div>
+                    {{-- Otras opciones --}}
+                    @if($sidebarItems['otras_opciones']['show'])
+                        <div class="sidebar-section">
+                            <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('otras-subitems')" style="cursor:pointer;">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['otras_opciones']['icon'] }}"></i></div>
+                                <div class="label">{{ $sidebarItems['otras_opciones']['label'] }}</div>
+                            </div>
+                            <div class="sidebar-subitems" id="otras-subitems" style="display:none;">
+                                @if($sidebarItems['otras_opciones']['subitems']['instituciones']['show'])
+                                    <a href="{{ $sidebarItems['otras_opciones']['subitems']['instituciones']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['otras_opciones']['subitems']['instituciones']['icon'] }}"></i> {{ $sidebarItems['otras_opciones']['subitems']['instituciones']['label'] }}
+                                    </a>
+                                @endif
+                                @if($sidebarItems['otras_opciones']['subitems']['especialidades']['show'])
+                                    <a href="{{ $sidebarItems['otras_opciones']['subitems']['especialidades']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['otras_opciones']['subitems']['especialidades']['icon'] }}"></i> {{ $sidebarItems['otras_opciones']['subitems']['especialidades']['label'] }}
+                                    </a>
+                                @endif
+                                @if($sidebarItems['otras_opciones']['subitems']['secciones']['show'])
+                                    <a href="{{ $sidebarItems['otras_opciones']['subitems']['secciones']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['otras_opciones']['subitems']['secciones']['icon'] }}"></i> {{ $sidebarItems['otras_opciones']['subitems']['secciones']['label'] }}
+                                    </a>
+                                @endif
+                                @if($sidebarItems['otras_opciones']['subitems']['subareas']['show'])
+                                    <a href="{{ $sidebarItems['otras_opciones']['subitems']['subareas']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['otras_opciones']['subitems']['subareas']['icon'] }}"></i> {{ $sidebarItems['otras_opciones']['subitems']['subareas']['label'] }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <a href="{{ asset('llave') }}" class="sidebar-item">
-                        <div class="icon-circle"><i class="bi bi-key-fill"></i></div>
-                        <div class="label" data-bs-toggle="tooltip" title="Llaves">Llaves</div>
-                    </a>
-                </div>
+                    {{-- Llaves --}}
+                    @if($sidebarItems['llaves']['show'])
+                        <div class="sidebar-section">
+                            <a href="{{ $sidebarItems['llaves']['route'] }}" class="sidebar-item">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['llaves']['icon'] }}"></i></div>
+                                <div class="label" data-bs-toggle="tooltip" title="{{ $sidebarItems['llaves']['label'] }}">{{ $sidebarItems['llaves']['label'] }}</div>
+                            </a>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('recinto-subitems')" style="cursor:pointer;">
-                        <div class="icon-circle"><i class="bi bi-building-fill"></i></div>
-                        <div class="label">Recintos</div>
-                    </div>
-                    <div class="sidebar-subitems" id="recinto-subitems" style="display:none;">
-                        <a href="{{ asset('tipoRecinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-gear"></i> Tipo de Recinto</a>
-                        <a href="{{ asset('estadoRecinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-exclamation"></i> Estado de Recinto</a>
-                        <a href="{{ asset('recinto') }}" class="sidebar-item subitem"><i class="bi bi-building-fill-add"></i> Crear Recintos</a>
-                    </div>
-                </div>
+                    {{-- Recintos --}}
+                    @if($sidebarItems['recintos']['show'])
+                        <div class="sidebar-section">
+                            <div class="sidebar-item has-subitems" onclick="toggleSidebarSubmenu('recinto-subitems')" style="cursor:pointer;">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['recintos']['icon'] }}"></i></div>
+                                <div class="label">{{ $sidebarItems['recintos']['label'] }}</div>
+                            </div>
+                            <div class="sidebar-subitems" id="recinto-subitems" style="display:none;">
+                                @if($sidebarItems['recintos']['subitems']['tipo_recintos']['show'])
+                                    <a href="{{ $sidebarItems['recintos']['subitems']['tipo_recintos']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['recintos']['subitems']['tipo_recintos']['icon'] }}"></i> {{ $sidebarItems['recintos']['subitems']['tipo_recintos']['label'] }}
+                                    </a>
+                                @endif
+                                @if($sidebarItems['recintos']['subitems']['estado_recintos']['show'])
+                                    <a href="{{ $sidebarItems['recintos']['subitems']['estado_recintos']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['recintos']['subitems']['estado_recintos']['icon'] }}"></i> {{ $sidebarItems['recintos']['subitems']['estado_recintos']['label'] }}
+                                    </a>
+                                @endif
+                                @if($sidebarItems['recintos']['subitems']['recintos']['show'])
+                                    <a href="{{ $sidebarItems['recintos']['subitems']['recintos']['route'] }}" class="sidebar-item subitem">
+                                        <i class="bi {{ $sidebarItems['recintos']['subitems']['recintos']['icon'] }}"></i> {{ $sidebarItems['recintos']['subitems']['recintos']['label'] }}
+                                    </a>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <a href="{{ asset('horario') }}" class="sidebar-item">
-                        <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
-                        <div class="label" data-bs-toggle="tooltip" title="Horarios">Horarios</div>
-                    </a>
-                </div>
+                    {{-- Horarios --}}
+                    @if($sidebarItems['horarios']['show'])
+                        <div class="sidebar-section">
+                            <a href="{{ $sidebarItems['horarios']['route'] }}" class="sidebar-item">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['horarios']['icon'] }}"></i></div>
+                                <div class="label" data-bs-toggle="tooltip" title="{{ $sidebarItems['horarios']['label'] }}">{{ $sidebarItems['horarios']['label'] }}</div>
+                            </a>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <a href="{{ route('admin.qr.index') }}" class="sidebar-item">
-                        <div class="icon-circle"><i class="bi bi-qr-code-scan"></i></div>
-                        <div class="label" data-bs-toggle="tooltip" title="QR Temporales">QR Temporales</div>
-                    </a>
-                </div>
+                    {{-- QR Temporales --}}
+                    @if($sidebarItems['qr_temporales']['show'])
+                        <div class="sidebar-section">
+                            <a href="{{ $sidebarItems['qr_temporales']['route'] }}" class="sidebar-item">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['qr_temporales']['icon'] }}"></i></div>
+                                <div class="label" data-bs-toggle="tooltip" title="{{ $sidebarItems['qr_temporales']['label'] }}">{{ $sidebarItems['qr_temporales']['label'] }}</div>
+                            </a>
+                        </div>
+                    @endif
 
-                <a href="{{ route('bitacora.index') }}" class="sidebar-item">
-                    <div class="icon-circle"><i class="bi bi-calendar-week-fill"></i></div>
-                    <div class="label" data-bs-toggle="tooltip" title="Bitácora">Bitácora</div>
-                </a>
+                    {{-- Bitácora --}}
+                    @if($sidebarItems['bitacora']['show'])
+                        <div class="sidebar-section">
+                            <a href="{{ $sidebarItems['bitacora']['route'] }}" class="sidebar-item">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['bitacora']['icon'] }}"></i></div>
+                                <div class="label" data-bs-toggle="tooltip" title="{{ $sidebarItems['bitacora']['label'] }}">{{ $sidebarItems['bitacora']['label'] }}</div>
+                            </a>
+                        </div>
+                    @endif
 
-                <div class="sidebar-section">
-                    <a href="{{ route('evento.index') }}" class="sidebar-item">
-                        <div class="icon-circle"><i class="bi bi-file-earmark-bar-graph-fill"></i></div>
-                        <div class="label" data-bs-toggle="tooltip" title="Reportes">Reportes</div>
-                    </a>
-                </div>
+                    {{-- Reportes --}}
+                    @if($sidebarItems['reportes']['show'])
+                        <div class="sidebar-section">
+                            <a href="{{ $sidebarItems['reportes']['route'] }}" class="sidebar-item">
+                                <div class="icon-circle"><i class="bi {{ $sidebarItems['reportes']['icon'] }}"></i></div>
+                                <div class="label" data-bs-toggle="tooltip" title="{{ $sidebarItems['reportes']['label'] }}">{{ $sidebarItems['reportes']['label'] }}</div>
+                            </a>
+                        </div>
+                    @endif
+                @endif
+
+                {{-- Salir - siempre visible --}}
                 <div class="mt-auto mb-3" style="width:100%;">
-                <form method="POST" action="{{ route('logout') }}" style="margin:0;">
-                    @csrf
-                    <a href="#" onclick="this.closest('form').submit();return false;" class="sidebar-item" style="width:100%;">
-                        <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
-                        <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
-                    </a>
-                </form>
+                    <form method="POST" action="{{ route('logout') }}" style="margin:0;">
+                        @csrf
+                        <a href="#" onclick="this.closest('form').submit();return false;" class="sidebar-item" style="width:100%;">
+                            <div class="icon-circle"><i class="bi bi-box-arrow-right"></i></div>
+                            <div class="label" data-bs-toggle="tooltip" title="Salir">Salir</div>
+                        </a>
+                    </form>
+                </div>
             </div>
-            </div>
-           
         </div>
         </div>
     </div>

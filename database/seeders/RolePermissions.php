@@ -57,6 +57,12 @@ class RolePermissions extends Seeder
             'create_tipo_recinto', 'view_tipo_recinto', 'edit_tipo_recinto', 'delete_tipo_recinto',
             // Role
             'create_roles', 'view_roles', 'edit_roles', 'delete_roles',
+            // QR Temporales
+            'create_qr_temporales', 'view_qr_temporales', 'edit_qr_temporales', 'delete_qr_temporales',
+            // Bitácora
+            'create_bitacoras', 'view_bitacoras', 'edit_bitacoras', 'delete_bitacoras',
+            // Reportes
+            'view_reportes', 'export_reportes',
         ];
 
         foreach ($permissions as $permission) {
