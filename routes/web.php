@@ -20,11 +20,12 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-
-
+    // Si el usuario está autenticado, redirigir al dashboard
+    if (Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+    // Si no está autenticado, mostrar la página de bienvenida
     return view('welcome');
-
-
 });
 
 
@@ -103,8 +104,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/profesor-llave/qrs-realtime', [App\Http\Controllers\ProfesorLlaveController::class, 'getQRsRealTime'])->name('profesor-llave.qrs-realtime');
         });
         
-        // Para administradores
-    Route::middleware('role:superadmin|administrador|director')->group(function () {
+        // Para administradores - Usar permisos en lugar de roles
+    Route::middleware('can:view_qr_temporales')->group(function () {
             Route::get('/admin/qr', [QrController::class, 'indexAdmin'])->name('admin.qr.index');
             
             // Rutas para datos en tiempo real del administrador
@@ -116,8 +117,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/qr/escanear', [QrController::class, 'escanearQr'])->name('qr.escanear');
     });
 
-        // Rutas específicas por rol (usar la misma ruta pero con diferentes nombres)
-        Route::middleware(['role:superadmin|administrador|director'])->group(function () {
+        // Rutas específicas por rol - Usar permisos en lugar de roles
+        Route::middleware(['can:view_usuarios'])->group(function () {
             Route::get('/template-administrador', function () {
                 return view('Template-administrador');
             })->name('template-administrador');
@@ -138,22 +139,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
     
 
-Route::get('/dashboard', function () {
-    $user = Auth::user();
-    // Priorizar el rol de administrador sobre profesor
-    if ($user->hasRole('administrador')) {
-        return redirect()->route('Dashboard.indexAdmin');
-    } elseif ($user->hasRole('director')) {
-        return redirect('/template-administrador');
-    } elseif ($user->hasRole('superadmin')) {
-        return redirect('/template-administrador');
-    } elseif ($user->hasRole('profesor')) {
-        return redirect()->route('Dashboard.indexDocente');
-    } elseif ($user->hasRole('soporte')) {
-        return redirect()->route('Dashboard.indexSoporte');
-    }
-
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [App\Http\Controllers\DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

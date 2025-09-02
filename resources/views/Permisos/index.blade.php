@@ -62,6 +62,11 @@
                     <a class="nav-link {{ ($tab ?? '') === 'eliminar' ? 'active' : '' }}" href="?tab=eliminar{{ request('busquedaPermiso') ? '&busquedaPermiso='.request('busquedaPermiso') : '' }}">Eliminar</a>
                 </li>
                 <li class="nav-item" role="presentation">
+                    <a class="nav-link {{ ($tab ?? '') === 'sidebar' ? 'active' : '' }}" href="?tab=sidebar{{ request('busquedaPermiso') ? '&busquedaPermiso='.request('busquedaPermiso') : '' }}">
+                        <i class="bi bi-sidebar"></i> Sidebar
+                    </a>
+                </li>
+                <li class="nav-item" role="presentation">
                     <a class="nav-link {{ ($tab ?? '') === 'otros' ? 'active' : '' }}" href="?tab=otros{{ request('busquedaPermiso') ? '&busquedaPermiso='.request('busquedaPermiso') : '' }}">Otros</a>
                 </li>
             </ul>

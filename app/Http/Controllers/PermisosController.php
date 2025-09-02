@@ -16,24 +16,42 @@ class PermisosController extends Controller
         $tab = $request->get('tab', 'ver');
         $busqueda = $request->get('busquedaPermiso');
         $query = Permission::query();
+        
         if ($busqueda) {
             $query->where('name', 'like', "%$busqueda%");
         }
+        
+        // Definir permisos del sidebar
+        $sidebarPermissions = [
+            'view_roles', 'view_usuarios', 'view_institucion', 'view_especialidad',
+            'view_seccion', 'view_subarea', 'view_llaves', 'view_tipo_recinto',
+            'view_estado_recinto', 'view_recintos', 'view_horario', 'view_qr_temporales',
+            'view_bitacoras', 'view_reportes'
+        ];
+        
         $tipos = [
             'ver' => 'view_',
             'crear' => 'create_',
             'editar' => 'edit_',
             'eliminar' => 'delete_',
         ];
-        if (isset($tipos[$tab])) {
-            $query->where('name', 'like', $tipos[$tab] . '%');
+        
+        if ($tab === 'sidebar') {
+            // Mostrar solo permisos del sidebar
+            $query->whereIn('name', $sidebarPermissions);
+        } elseif (isset($tipos[$tab])) {
+            // Filtrar por tipo, pero excluir permisos del sidebar
+            $query->where('name', 'like', $tipos[$tab] . '%')
+                  ->whereNotIn('name', $sidebarPermissions);
         } elseif ($tab === 'otros') {
-            $query->where(function($q) use ($tipos) {
+            // Mostrar otros permisos (que no son CRUD ni sidebar)
+            $query->where(function($q) use ($tipos, $sidebarPermissions) {
                 foreach ($tipos as $pref) {
                     $q->where('name', 'not like', $pref . '%');
                 }
-            });
+            })->whereNotIn('name', $sidebarPermissions);
         }
+        
         $permisos = $query->orderBy('name')->paginate(10)->appends(['tab' => $tab, 'busquedaPermiso' => $busqueda]);
         return view('Permisos.index', compact('permisos', 'tab'));
     }

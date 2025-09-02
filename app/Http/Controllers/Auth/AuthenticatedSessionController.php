@@ -26,16 +26,9 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
         $request->session()->regenerate();
-        $user = Auth::user();
-        if ($user->hasRole('profesor')) {
-            return redirect()->route('Dashboard.indexDocente');
-        } elseif ($user->hasRole('soporte')) {
-            return redirect()->route('Dashboard.indexSoporte');
-        } elseif ($user->hasRole('administrador') || $user->hasRole('director') || $user->hasRole('superadmin')) {
-            return redirect()->route('Dashboard.indexAdmin');
-        }
-        // Redirección por defecto
-        return redirect('/');
+        
+        // Redirigir siempre al dashboard principal que manejará la lógica de roles
+        return redirect()->route('dashboard');
     }
 
     /**

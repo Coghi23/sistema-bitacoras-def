@@ -13,6 +13,23 @@ use Illuminate\Support\Facades\Auth;
 class QrController extends Controller
 {
     /**
+     * Vista de administrador para QR temporales
+     */
+    public function index()
+    {
+        // Verificar permiso
+        if (!auth()->user()->can('view_qr_temporales')) {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
+        }
+
+        $qrTemporales = QrTemporal::with(['recinto', 'profesor.usuario'])
+                                  ->orderBy('created_at', 'desc')
+                                  ->paginate(15);
+        
+        return view('admin.qr.index', compact('qrTemporales'));
+    }
+
+    /**
      * Vista de llaves para profesores
      */
     public function indexProfesor()
@@ -84,6 +101,11 @@ class QrController extends Controller
      */
     public function indexAdmin()
     {
+        // Verificar permiso para ver QR temporales
+        if (!auth()->user()->can('view_qr_temporales')) {
+            abort(403, 'No tienes permisos para acceder a esta sección.');
+        }
+
         // Usar SQL directo para evitar problemas con el modelo
         $qrsTemporales = \DB::table('qr_temporales')
             ->join('recinto', 'qr_temporales.recinto_id', '=', 'recinto.id')
