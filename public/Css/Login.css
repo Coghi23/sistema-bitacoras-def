@@ -1,14 +1,24 @@
 /* ------------------ Estilos Generales ------------------ */
 body {
     height: 100vh;
-    background-image: url('../Logos_Login/fondo-pagina.png'); 
+    font-family: 'Segoe UI', sans-serif; 
+    color: #134496;
     background-repeat: no-repeat;
     background-position: center;
     background-size: cover;
-    font-family: 'Segoe UI', sans-serif; 
-    color: #134496;
 }
 
+@media (min-width: 992px) {
+    body {
+        background-image: url('../Logos_Login/fondo-pagina.png'); 
+    }
+}
+
+@media (max-width: 991px) {
+    body {
+        background-image: url('../Logos_Login/fondo-pagina-movil.png'); 
+    }
+}
 
 .login-wrapper {
   display: flex;
@@ -44,17 +54,22 @@ body {
 
 /* ------------------ Card de Login ------------------ */
 .login-card {
-    background-image: url('/Logos_Login/Frame 18.png'); 
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center;
     border-radius: 20px;
     box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-    padding: 50px;
     max-width: 900px;
     width: 100%;
 }
 
+/* Solo en pantallas grandes */
+@media (min-width:785px) {
+    .login-card {
+        background-image: url('/Logos_Login/Frame 18.png'); 
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        padding: 50px;
+    }
+}
 /* ------------------ Logo ------------------ */
 .logo-container {
     display: flex;
@@ -103,7 +118,6 @@ body {
 .olvidé-contraseña {
     color: #134496;
     text-decoration: underline;
-    margin-left: 40px;
     font-size: 14px;
 }
 
@@ -145,8 +159,6 @@ body {
   justify-content: center;
   z-index: 9999;
 }
-
-
 
 .popup-card {
   background-color: white;
@@ -213,8 +225,6 @@ body {
   padding: 5x;
   margin: auto;
 }
-
-
 
 .swal2-html-container {
   font-size: 1.2rem !important;
@@ -395,4 +405,8 @@ body.swal2-shown {
   justify-content: center;
   margin-right: 10px;
   font-weight: bold;
+}
+
+.textBoton {
+  font-size: clamp(0.75rem,2vw,0.80rem);
 }

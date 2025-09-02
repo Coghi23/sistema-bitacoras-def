@@ -75,9 +75,13 @@
                     </div>
 
                     <!-- Botón + Olvidé contraseña -->
-                    <div class="d-flex align-items-center gap-2 mb-2">
-                        <button type="submit" class="btn-custom">Inicio de sesión</button>
-                        <a href="{{ route('password.request') }}" id="forgot-link" class="olvidé-contraseña ms-auto">¿Olvidaste la contraseña?</a>
+                    <div class="d-flex flex-column flex-md-row align-items-center text-center justify-content-center gap-2 mb-2">
+                        <button type="submit" class="btn btn-custom w-sm-100 w-md-auto">
+                            <p class="mb-0">Inicio de sesión</p>
+                        </button>
+                        <a href="{{ route('password.request') }}" id="forgot-link" class="olvidé-contraseña ms-lg-auto mt-2 mt-md-0">
+                            ¿Olvidaste la contraseña?
+                        </a>
                     </div>
                 </form>
             </div>
