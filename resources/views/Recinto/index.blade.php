@@ -354,15 +354,37 @@
 
  
                         <div class="mb-3">
-                            <label for="institucionRecinto" class="form-label mb-1">Institución</label>
-                           
-                            <select data-size="4" title="Seleccione una Institución" data-live-search="true" name="institucion_id" id="institucion_id" class="form-control selectpicker show-tick" required>
-                                <option value="">Seleccione una Institución</option>
-                                @foreach ($instituciones as $institucion)
-                                    <option value="{{$institucion->id}}" {{ old('institucion_id') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+    <label class="form-label fw-bold">Instituciones</label>
+    
+    @if(session('modal_crear') && $errors->has('instituciones'))
+        <div class="text-danger small mb-2">
+            {{ $errors->first('instituciones') }}
+            <br><small><i class="bi bi-info-circle"></i> Debe asignar al menos una institución.</small>
+        </div>
+    @endif
+
+    <div id="instituciones">
+        <div class="input-group dynamic-group">
+            <select id="selectInstitucion" class="form-select">
+                <option value="">Seleccione una institución</option>
+                @foreach ($instituciones as $institucion)
+                    <option value="{{ $institucion->id }}" data-nombre="{{ $institucion->nombre }}">{{ $institucion->nombre }}</option>
+                @endforeach
+            </select>
+            <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarInstitucion()" style="height: 9%; min-width: 38px; padding: 0;">
+                <i class="bi bi-plus" style="height: 49px;"></i>
+            </button>
+        </div>
+
+        <!-- Instituciones seleccionadas -->
+        <div id="institucionesSeleccionadas" class="mt-2"></div>
+
+        <!-- Validación -->
+        <div id="mensajeValidacionInstitucion" class="alert alert-danger d-none mt-2" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span id="textoMensajeInstitucion"></span>
+        </div>
+    </div>
+</div>
                         <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
                             <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-guardar rounded-pill px-4">Crear</button>

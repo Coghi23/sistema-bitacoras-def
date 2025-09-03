@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('recinto_id')->constrained('recinto');
             $table->foreignId('institucion_id')->constrained('institucione');
             $table->timestamps();
-           
+            $table->tinyInteger('condicion')->default(1);
         });
     }
 

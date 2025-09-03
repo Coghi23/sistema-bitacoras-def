@@ -24,6 +24,12 @@ class Recinto extends Model
         'condicion',
     ];
 
+    public function instituciones(){
+        return $this->belongsToMany(Institucione::class, 'recinto_institucion', 'recinto_id', 'institucion_id')
+            ->withPivot('condicion')
+            ->withTimestamps();
+    }
+
 
     public function llave()
     {
@@ -56,9 +62,6 @@ class Recinto extends Model
     }
 
 
-    /**
-     * Boot method para eventos del modelo
-     */
     protected static function boot()
     {
         parent::boot();
