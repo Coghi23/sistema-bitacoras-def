@@ -1,6 +1,150 @@
 @extends('Template-administrador')
 
 @section('content')
+
+<style>
+/* Responsive adjustments for Permisos */
+@media (max-width: 768px) {
+    .main-content {
+        margin-left: 0 !important;
+        padding: 0.5rem !important;
+    }
+    
+    .search-bar-wrapper {
+        flex-direction: column !important;
+        gap: 1rem;
+    }
+    
+    .search-bar {
+        margin-bottom: 0 !important;
+    }
+    
+    .btn-agregar {
+        width: 100%;
+        justify-content: center !important;
+        margin-left: 0 !important;
+    }
+    
+    /* Tabs responsive */
+    .nav-tabs {
+        flex-wrap: wrap;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .nav-tabs .nav-item {
+        margin-bottom: 0;
+    }
+    
+    .nav-tabs .nav-link {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+        white-space: nowrap;
+    }
+    
+    /* Table responsive */
+    .table-responsive {
+        border: none;
+    }
+    
+    .table {
+        font-size: 0.85rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 0.5rem 0.25rem;
+        vertical-align: middle;
+    }
+    
+    .table th:first-child,
+    .table td:first-child {
+        padding-left: 0.5rem;
+    }
+    
+    .table th:last-child,
+    .table td:last-child {
+        padding-right: 0.5rem;
+    }
+    
+    /* Action buttons */
+    .btn.p-0 {
+        padding: 0.25rem !important;
+        margin: 0 0.1rem;
+    }
+    
+    .btn.p-0 i {
+        font-size: 1.1rem;
+    }
+    
+    /* Modal responsive */
+    .modal-dialog {
+        margin: 0.5rem;
+        max-width: calc(100% - 1rem);
+    }
+    
+    .modal-body {
+        padding: 1rem 0.75rem;
+    }
+    
+    .modal-footer {
+        padding: 0.75rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .modal-footer .btn {
+        width: 100%;
+        margin: 0;
+    }
+    
+    /* Search input responsive */
+    .search-icon {
+        left: 0.75rem;
+    }
+    
+    .form-control {
+        font-size: 1rem;
+        padding: 0.75rem 0.75rem 0.75rem 2.5rem;
+    }
+    
+    /* Alert responsive */
+    .alert {
+        margin: 0.5rem 0;
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+    
+    /* Pagination responsive */
+    .pagination {
+        font-size: 0.85rem;
+    }
+    
+    .page-link {
+        padding: 0.375rem 0.5rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .nav-tabs .nav-link {
+        font-size: 0.75rem;
+        padding: 0.4rem 0.5rem;
+    }
+    
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .btn-agregar {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .modal-title {
+        font-size: 1.1rem;
+    }
+}
+</style>
+
 <div class="wrapper">
     <div class="main-content p-4" style="margin-left: 90px;">
         <div class="row align-items-end mb-4">
@@ -72,33 +216,35 @@
             </ul>
             <div class="tab-content" id="permisoTabsContent">
                 <div class="tab-pane fade show active" id="{{ $tab ?? 'ver' }}" role="tabpanel">
-                    <table class="table table-striped">
-                        <thead>
-                            <tr class="header-row">
-                                <th>Nombre del Permiso</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($permisos as $permiso)
-                            <tr class="record-row">
-                                <td>{{ $permiso->name }}</td>
-                                <td>
-                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#editPermisoModal{{ $permiso->id }}" title="Editar permiso">
-                                        <i class="bi bi-pencil icon-editar"></i>
-                                    </button>
-                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#deletePermisoModal{{ $permiso->id }}" title="Eliminar permiso">
-                                        <i class="bi bi-trash icon-eliminar"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr class="record-row">
-                                <td class="text-center" colspan="2">No hay permisos registrados en esta categoría.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr class="header-row">
+                                    <th>Nombre del Permiso</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($permisos as $permiso)
+                                <tr class="record-row">
+                                    <td>{{ $permiso->name }}</td>
+                                    <td>
+                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#editPermisoModal{{ $permiso->id }}" title="Editar permiso">
+                                            <i class="bi bi-pencil icon-editar"></i>
+                                        </button>
+                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#deletePermisoModal{{ $permiso->id }}" title="Eliminar permiso">
+                                            <i class="bi bi-trash icon-eliminar"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                @empty
+                                <tr class="record-row">
+                                    <td class="text-center" colspan="2">No hay permisos registrados en esta categoría.</td>
+                                </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="mt-3 d-flex justify-content-center">
                         {{ $permisos->links('pagination::bootstrap-5') }}
                     </div>

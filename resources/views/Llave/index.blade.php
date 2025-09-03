@@ -4,6 +4,143 @@
 
 @section('content')
 
+<style>
+    /* Responsive styles for mobile */
+    @media (max-width: 768px) {
+        .search-bar-wrapper .search-bar {
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .search-bar .form-control {
+            font-size: 16px; /* Evita zoom en iOS */
+        }
+        
+        .btn-agregar {
+            width: 100%;
+            justify-content: center;
+            margin: 0 !important;
+        }
+        
+        .row.mb-4 {
+            margin-bottom: 1rem !important;
+        }
+        
+        .col-md-4 {
+            margin-bottom: 1rem;
+        }
+        
+        .card {
+            margin-bottom: 0.5rem;
+        }
+        
+        .table-responsive {
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .table {
+            font-size: 0.9rem;
+        }
+        
+        .table th {
+            font-size: 0.8rem;
+            padding: 8px 4px;
+            white-space: nowrap;
+        }
+        
+        .table td {
+            padding: 8px 4px;
+            vertical-align: middle;
+        }
+        
+        .table th:first-child,
+        .table td:first-child {
+            min-width: 120px;
+        }
+        
+        .badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+        }
+        
+        .ultima-actualizacion {
+            font-size: 0.7rem;
+        }
+        
+        .btn-link {
+            padding: 4px;
+        }
+        
+        .btn-link i {
+            font-size: 1rem;
+        }
+        
+        .modal-dialog {
+            margin: 1rem;
+            max-width: calc(100% - 2rem);
+        }
+        
+        .modal-body {
+            padding: 1rem !important;
+        }
+        
+        .alert {
+            font-size: 0.9rem;
+            padding: 0.5rem 1rem;
+        }
+        
+        .search-bar form {
+            margin-bottom: 0.5rem;
+        }
+        
+        .search-bar .btn {
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .search-bar .btn:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    @media (max-width: 480px) {
+        .table th:nth-child(3),
+        .table td:nth-child(3) {
+            display: none; /* Ocultar columna de fecha en pantallas muy pequeñas */
+        }
+        
+        .card-body h3 {
+            font-size: 1.5rem;
+        }
+        
+        .card-body i {
+            font-size: 1.5rem !important;
+        }
+        
+        .modal-header {
+            padding: 0.75rem 1rem;
+        }
+        
+        .modal-title {
+            font-size: 1.1rem;
+        }
+    }
+    
+    /* Mejoras generales */
+    .estado-badge {
+        white-space: nowrap;
+    }
+    
+    .btn-editar, .btn-link {
+        transition: transform 0.2s;
+    }
+    
+    .btn-editar:hover, .btn-link:hover {
+        transform: scale(1.1);
+    }
+</style>
+
 <div class="wrapper">
     <div class="main-content">
         {{-- Búsqueda + botón agregar --}}

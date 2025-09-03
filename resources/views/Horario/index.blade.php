@@ -5,63 +5,145 @@
 @section('content')
 
 <style>
-/* Responsividad adicional para pantallas pequeñas */
-@media (max-width: 767.98px) {
+/* Responsive adjustments for Horarios */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 0.5rem !important;
+    }
+    
     .search-bar-wrapper {
         flex-direction: column !important;
-        align-items: stretch !important;
+        gap: 0.75rem;
     }
+    
+    .search-bar {
+        width: 100% !important;
+    }
+    
     .btn-agregar {
-        width: 100%;
+        width: 100% !important;
+        justify-content: center !important;
         margin-left: 0 !important;
-        margin-top: 10px;
+        font-size: 1rem !important;
     }
-    .main-content {
-        padding: 0 5px;
+    
+    .table-responsive {
+        font-size: 0.85rem;
     }
-    .modal-dialog {
-        margin: 0.5rem auto;
-    }
+    
     .table th, .table td {
-        font-size: 0.95rem;
-        padding: 0.4rem 0.3rem;
+        padding: 0.4rem 0.3rem !important;
+        font-size: 0.8rem;
+        vertical-align: middle;
     }
+    
+    .modal-dialog {
+        margin: 0.5rem !important;
+        max-width: calc(100% - 1rem) !important;
+    }
+    
+    .modal-body {
+        padding: 1rem !important;
+    }
+    
+    .form-responsive {
+        flex-direction: column !important;
+    }
+    
+    .form-responsive .form-label {
+        width: 100% !important;
+        margin-bottom: 0.5rem !important;
+        text-align: left !important;
+    }
+    
+    .form-responsive .form-control,
+    .form-responsive .form-select {
+        width: 100% !important;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .filter-buttons .btn {
+        width: 100%;
+    }
+    
+    .tipo-horario-container {
+        flex-direction: column !important;
+        text-align: center;
+    }
+    
+    .lecciones-container {
+        max-height: 200px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .table {
+        font-size: 0.75rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.5rem;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.7rem;
+    }
+    
+    .modal-dialog {
+        margin: 0.25rem !important;
+    }
+    
+    .form-check-label {
+        font-size: 0.8rem;
+    }
+}
+
+/* Mejorar visibilidad de iconos de acción */
+.icon-editar, .icon-eliminar {
+    font-size: 1.2rem;
+    transition: all 0.2s ease;
+}
+
+.icon-editar:hover {
+    color: #0d6efd !important;
+    transform: scale(1.1);
+}
+
+.icon-eliminar:hover {
+    color: #dc3545 !important;
+    transform: scale(1.1);
 }
 </style>
 
-<div class="wrapper">
-    <div class="main-content">
-        <div class="d-flex flex-column flex-md-row justify-content-between align-items-stretch align-items-md-center mb-3">
-            <div class="search-bar-wrapper d-flex flex-column flex-md-row align-items-stretch align-items-md-center mb-4 w-100">
-                <div class="search-bar flex-grow-1 mb-2 mb-md-0">
+<div id="horarios-container" class="wrapper">
+    <div id="main-content" class="main-content">
+        {{-- Header con búsqueda y botón agregar --}}
+        <div id="header-section" class="row align-items-end mb-4">
+            <div id="search-wrapper" class="search-bar-wrapper d-flex align-items-center mb-4">
+                <div id="search-bar-container" class="search-bar flex-grow-1">
                     <form id="busquedaForm" method="GET" action="{{ route('horario.index') }}" class="w-100 position-relative">
                         <span class="search-icon">
                             <i class="bi bi-search"></i>
                         </span>
-                        <input
-                            type="text"
-                            class="form-control"
-                            placeholder="Buscar horario..."
-                            name="busquedaHorario"
-                            value="{{ request('busquedaHorario') }}"
-                            id="inputBusqueda"
-                            autocomplete="off"
-                        >
+                        <input type="text" id="inputBusqueda" class="form-control" placeholder="Buscar horario..." 
+                               name="busquedaHorario" value="{{ request('busquedaHorario') }}" autocomplete="off">
                         @if(request('busquedaHorario'))
-                        <button
-                            type="button"
-                            class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
-                            id="limpiarBusqueda"
-                            title="Limpiar búsqueda"
-                            style="background: transparent;"
-                        >
+                        <button type="button" id="limpiarBusqueda" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" 
+                                title="Limpiar búsqueda" style="background: transparent;">
                             <i class="bi bi-x-circle"></i>
                         </button>
                         @endif
                     </form>
                 </div>
                 @can('create_horario')
-                    <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-0 ms-md-3 btn-agregar"
+                    <button id="btn-agregar-horario" class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
                         data-bs-toggle="modal" data-bs-target="#modalHorario"
                         title="Agregar Horario" style="background-color: #134496; font-size: 1.2rem;">
                         Agregar <i class="bi bi-plus-circle ms-2"></i>
@@ -69,30 +151,35 @@
                 @endcan
             </div>
         </div>
-        <div class="mb-3 d-flex flex-column flex-md-row gap-2">
-            <a href="{{ route('horario.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-2 mb-md-0 w-100 w-md-auto">
-                Mostrar inactivos
-            </a>
-            <a href="{{ route('horario.index', ['activos' => 1]) }}" class="btn btn-primary w-100 w-md-auto">
-                Mostrar activos
-            </a>
-        </div>
-      {{-- Indicador de resultados de búsqueda --}}
-            @if(request('busquedaHorario'))
-                <div class="alert alert-info d-flex align-items-center" role="alert">
-                    <i class="bi bi-info-circle me-2"></i>
-                    <span>
-                        Mostrando {{ $horarios->count() }} resultado(s) para "<strong>{{ request('busquedaHorario') }}</strong>"
-                        <a href="{{ route('horario.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
-                    </span>
-                </div>
-            @endif
 
-        {{-- Tabla Horarios Fijos --}}
-        <div id="tabla-horarios-fijos" class="table-responsive">
+        {{-- Botones de filtros --}}
+        <div id="filter-buttons" class="filter-buttons mb-3">
+            <div class="d-flex flex-column flex-md-row gap-2">
+                <a href="{{ route('horario.index', ['inactivos' => 1]) }}" class="btn btn-warning">
+                    Mostrar inactivos
+                </a>
+                <a href="{{ route('horario.index', ['activos' => 1]) }}" class="btn btn-primary">
+                    Mostrar activos
+                </a>
+            </div>
+        </div>
+
+        {{-- Indicador de resultados de búsqueda --}}
+        @if(request('busquedaHorario'))
+            <div id="search-results" class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="bi bi-info-circle me-2"></i>
+                <span>
+                    Mostrando {{ $horarios->count() }} resultado(s) para "<strong>{{ request('busquedaHorario') }}</strong>"
+                    <a href="{{ route('horario.index') }}" class="btn btn-sm btn-outline-primary ms-2">Ver todas</a>
+                </span>
+            </div>
+        @endif
+
+        {{-- Tabla Horarios --}}
+        <div id="tabla-horarios" class="table-responsive">
             <table class="table">
                 <thead>
-                    <tr class="header-row">
+                    <tr id="horarios-header-row" class="header-row">
                         <th class="col-dia">Día</th>
                         <th class="col-recinto">Recinto</th>
                         <th class="col-especialidad">Especialidad</th>
@@ -100,61 +187,86 @@
                         <th class="col-entrada">Entrada</th>
                         <th class="col-salida">Salida</th>
                         <th class="col-docente">Docente</th>
+                        <th class="col-estado">Estado</th>
                         <th class="col-acciones">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="horarios-tbody">
                     @php
                         $mostrarActivos = request('activos') == 1 || !request('inactivos');
                         $mostrarInactivos = request('inactivos') == 1;
                         $hayHorarios = false;
                     @endphp
-                    @foreach ($horarios as $horario)
+                    @forelse ($horarios as $horario)
                         @if (($mostrarActivos && $horario->condicion == 1) || ($mostrarInactivos && $horario->condicion == 0))
                             @php $hayHorarios = true; @endphp
                             @can('view_horario')
-                                <tr class="record-row">
+                                <tr id="horario-row-{{ $horario->id }}" class="record-row">
                                     <td class="col-dia">
                                         @if($horario->tipoHorario == false)
-                                            {{ $horario->fecha->format('Y/m/d') }}
+                                            <span class="badge bg-info text-dark mb-1 d-block">
+                                                {{ $horario->fecha->format('Y/m/d') }}
+                                            </span>
                                         @endif
-                                        {{ $horario->dia }}
+                                        <span class="fw-bold">{{ $horario->dia }}</span>
                                     </td>
-                                    <td class="col-recinto">{{ $horario->recinto->nombre ?? '' }}</td>
-                                    <td class="col-especialidad">{{ $horario->subarea->nombre ?? '' }}</td>
-                                    <td class="col-seccion">{{ $horario->seccion->nombre ?? '' }}</td>
-                                    <td class="col-entrada">{{ $horario->hora_entrada }}</td>
-                                    <td class="col-salida">{{ $horario->hora_salida }}</td>
-                                    <td class="col-docente">{{ $horario->profesor->name ?? '' }}</td>
+                                    <td class="col-recinto">{{ $horario->recinto->nombre ?? 'N/A' }}</td>
+                                    <td class="col-especialidad">{{ $horario->subarea->nombre ?? 'N/A' }}</td>
+                                    <td class="col-seccion">{{ $horario->seccion->nombre ?? 'N/A' }}</td>
+                                    <td class="col-entrada">
+                                        <span class="badge bg-success">{{ $horario->hora_entrada }}</span>
+                                    </td>
+                                    <td class="col-salida">
+                                        <span class="badge bg-danger">{{ $horario->hora_salida }}</span>
+                                    </td>
+                                    <td class="col-docente">{{ $horario->profesor->name ?? 'N/A' }}</td>
+                                    <td class="col-estado">
+                                        <span id="estado-badge-{{ $horario->id }}" class="badge {{ $horario->condicion == 1 ? 'bg-success' : 'bg-secondary' }}">
+                                            {{ $horario->condicion == 1 ? 'Activo' : 'Inactivo' }}
+                                        </span>
+                                    </td>
                                     <td class="col-acciones">
-                                        @if($mostrarActivos && $horario->condicion == 1)
-                                            @can('edit_horario')
-                                                <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}">
-                                                    <i class="bi bi-pencil icon-editar"></i>
-                                                </button>
-                                            @endcan
-                                            @can('delete_horario')
-                                                <button class="btn p-0 text-danger" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
-                                                    <i class="bi bi-trash icon-eliminar"></i>
-                                                </button>
-                                            @endcan
-                                        @elseif($mostrarInactivos && $horario->condicion == 0)
-                                            @can('delete_horario')
-                                                <button class="btn p-0 text-success" data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}">
-                                                    <i class="bi bi-arrow-counterclockwise icon-eliminar"></i>
-                                                </button>
-                                            @endcan
-                                        @endif
+                                        <div id="actions-{{ $horario->id }}" class="d-flex flex-column flex-md-row justify-content-center gap-1">
+                                            @if($mostrarActivos && $horario->condicion == 1)
+                                                @can('edit_horario')
+                                                    <button id="btn-edit-{{ $horario->id }}" type="button" class="btn p-0" 
+                                                            data-bs-toggle="modal" data-bs-target="#modalEditarHorario{{ $horario->id }}"
+                                                            title="Editar horario">
+                                                        <i class="bi bi-pencil icon-editar"></i>
+                                                    </button>
+                                                @endcan
+                                                @can('delete_horario')
+                                                    <button id="btn-delete-{{ $horario->id }}" class="btn p-0 text-danger" 
+                                                            data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}"
+                                                            title="Eliminar horario">
+                                                        <i class="bi bi-trash icon-eliminar"></i>
+                                                    </button>
+                                                @endcan
+                                            @elseif($mostrarInactivos && $horario->condicion == 0)
+                                                @can('delete_horario')
+                                                    <button id="btn-restore-{{ $horario->id }}" class="btn p-0 text-success" 
+                                                            data-bs-toggle="modal" data-bs-target="#modalEliminarHorario{{ $horario->id }}"
+                                                            title="Restaurar horario">
+                                                        <i class="bi bi-arrow-counterclockwise icon-eliminar"></i>
+                                                    </button>
+                                                @endcan
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @endcan
                         @endif
-                    @endforeach
-                    @unless($hayHorarios)
-                        <tr class="record-row">
-                            <td class="col text-center" colspan="8">No hay horarios fijos registrados.</td>
+                    @empty
+                        <tr id="no-horarios-row" class="record-row">
+                            <td class="text-center" colspan="9">
+                                <div class="text-muted py-4">
+                                    <i class="bi bi-calendar-x display-4 mb-3"></i>
+                                    <h5>No hay horarios registrados</h5>
+                                    <p>Los horarios aparecerán aquí cuando se registren.</p>
+                                </div>
+                            </td>
                         </tr>
-                    @endunless
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -164,35 +276,29 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
                 <div class="modal-header modal-header-custom">
-                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                            <i class="bi bi-arrow-left"></i>
-                        </button>
-                        <h5 class="modal-title">Crear Horario</h5>
-                    </div>
-                <form method="POST" action="{{ route('horario.store') }}">
+                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <h5 class="modal-title">Crear Horario</h5>
+                </div>
+                <form id="form-crear-horario" method="POST" action="{{ route('horario.store') }}">
                     @csrf
-                    <div class="modal-header custom-header text-white px-4 py-3 position-relative justify-content-center">
-                        <button type="button" class="btn p-0 d-flex align-items-center position-absolute start-0 ms-3" data-bs-dismiss="modal" aria-label="Cerrar">
-                            <div class="circle-yellow d-flex justify-content-center align-items-center">
-                                <i class="fas fa-arrow-left text-blue-forced"></i>
-                            </div>
-                            <div class="linea-vertical-amarilla ms-2"></div>
-                        </button>
-                    </div>
-                    <div class="linea-divisoria-horizontal"></div>
-                    
                     <div class="modal-body px-2 px-md-4 pt-3">
                         {{-- Tipo de Horario --}}
-                        <div class="mb-4 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between fw-bold">
+                        <div id="tipo-horario-field" class="mb-4 form-responsive d-flex align-items-center justify-content-between fw-bold tipo-horario-container">
                             <label class="w-100 w-md-50 text-start mb-2 mb-md-0">Tipo de horario:</label>
                             <div class="d-flex align-items-center justify-content-center w-100 w-md-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
                                 <div class="form-check me-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }} {{ request('tipoHorario') == '1' ? 'active' : '' }}" type="radio" name="tipoHorario" id="fijoRadio" value="fijo" {{ old('tipoHorario') == 'fijo' ? 'checked' : '' }} >
+                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" 
+                                           type="radio" name="tipoHorario" id="fijoRadio" value="fijo" 
+                                           {{ old('tipoHorario') == 'fijo' ? 'checked' : '' }}>
                                     <label class="form-check-label ms-2" for="fijoRadio">Fijo</label>
                                 </div>
                                 <div style="width:1px; height:24px; background-color:#0d6efd; opacity:0.7;"></div>
                                 <div class="form-check ms-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }} {{ request('tipoHorario') == '0' ? 'active' : '' }}" type="radio" name="tipoHorario" id="temporalRadio" value="temporal" {{ old('tipoHorario') == 'temporal' ? 'checked' : '' }} >
+                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" 
+                                           type="radio" name="tipoHorario" id="temporalRadio" value="temporal" 
+                                           {{ old('tipoHorario') == 'temporal' ? 'checked' : '' }}>
                                     <label class="form-check-label ms-2" for="temporalRadio">Temporal</label>
                                 </div>
                             </div>
@@ -200,105 +306,101 @@
                         @error('tipoHorario')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
+
                         {{-- Fecha --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-100 w-md-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha') }}" @if(old('tipoHorario')=='fijo') disabled @endif>
+                        <div id="fecha-field" class="mb-3 form-responsive d-flex align-items-center justify-content-between">
+                            <label for="fecha-crear" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Fecha:</label>
+                            <input type="date" id="fecha-crear" name="fecha" 
+                                   class="form-control rounded-4 w-100 w-md-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" 
+                                   value="{{ old('fecha') }}">
                         </div>
                         @error('fecha')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
+
                         {{-- Día --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Día:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select name="dia" class="form-select rounded-4 pe-5 {{ $errors->has('dia') ? 'is-invalid' : '' }}" @if(old('tipoHorario')=='temporal') disabled @endif>
-                                    <option value="" hidden selected>Seleccione...</option>
-                                    <option value="Lunes" {{ old('dia') == 'Lunes' ? 'selected' : '' }}>Lunes</option>
-                                    <option value="Martes" {{ old('dia') == 'Martes' ? 'selected' : '' }}>Martes</option>
-                                    <option value="Miércoles" {{ old('dia') == 'Miércoles' ? 'selected' : '' }}>Miércoles</option>
-                                    <option value="Jueves" {{ old('dia') == 'Jueves' ? 'selected' : '' }}>Jueves</option>
-                                    <option value="Viernes" {{ old('dia') == 'Viernes' ? 'selected' : '' }}>Viernes</option>
-                                    <option value="Sábado" {{ old('dia') == 'Sábado' ? 'selected' : '' }}>Sábado</option>
-                                    <option value="Domingo" {{ old('dia') == 'Domingo' ? 'selected' : '' }}>Domingo</option>
-                                </select>
-                            </div>
+                        <div id="dia-field" class="mb-3 form-responsive d-flex align-items-center justify-content-between">
+                            <label for="dia-crear" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Día:</label>
+                            <select id="dia-crear" name="dia" class="form-select rounded-4 w-100 w-md-50 {{ $errors->has('dia') ? 'is-invalid' : '' }}">
+                                <option value="">Seleccione...</option>
+                                <option value="Lunes" {{ old('dia') == 'Lunes' ? 'selected' : '' }}>Lunes</option>
+                                <option value="Martes" {{ old('dia') == 'Martes' ? 'selected' : '' }}>Martes</option>
+                                <option value="Miércoles" {{ old('dia') == 'Miércoles' ? 'selected' : '' }}>Miércoles</option>
+                                <option value="Jueves" {{ old('dia') == 'Jueves' ? 'selected' : '' }}>Jueves</option>
+                                <option value="Viernes" {{ old('dia') == 'Viernes' ? 'selected' : '' }}>Viernes</option>
+                                <option value="Sábado" {{ old('dia') == 'Sábado' ? 'selected' : '' }}>Sábado</option>
+                                <option value="Domingo" {{ old('dia') == 'Domingo' ? 'selected' : '' }}>Domingo</option>
+                            </select>
                         </div>
                         @error('dia')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
 
                         {{-- Docente --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label for="idDocente" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Docente:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5 {{ $errors->has('user_id') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione un docente</option>
-                                    @foreach ($profesores as $profesor)
-                                        <option value="{{$profesor->id}}" {{ old('user_id') == $profesor->id ? 'selected' : '' }}>{{$profesor->name}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div id="docente-field" class="mb-3 form-responsive d-flex align-items-center justify-content-between">
+                            <label for="user_id" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Docente:</label>
+                            <select id="user_id" name="user_id" class="form-select rounded-4 w-100 w-md-50 {{ $errors->has('user_id') ? 'is-invalid' : '' }}">
+                                <option value="">Seleccione un docente</option>
+                                @foreach ($profesores as $profesor)
+                                    <option value="{{$profesor->id}}" {{ old('user_id') == $profesor->id ? 'selected' : '' }}>{{$profesor->name}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         @error('user_id')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
                         
                         {{-- Recinto --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label for="recintoSelect" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Recinto:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione un recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione un recinto</option>
-                                    @foreach ($recintos as $recinto)
-                                        <option value="{{$recinto->id}}" {{ old('idRecinto') == $recinto->id ? 'selected' : '' }}>{{$recinto->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div id="recinto-field" class="mb-3 form-responsive d-flex align-items-center justify-content-between">
+                            <label for="idRecinto" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Recinto:</label>
+                            <select id="idRecinto" name="idRecinto" class="form-select rounded-4 w-100 w-md-50 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}">
+                                <option value="">Seleccione un recinto</option>
+                                @foreach ($recintos as $recinto)
+                                    <option value="{{$recinto->id}}" {{ old('idRecinto') == $recinto->id ? 'selected' : '' }}>{{$recinto->nombre}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         @error('idRecinto')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
                         
                         {{-- Subárea --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                        <div id="subarea-field" class="mb-3 form-responsive d-flex align-items-center justify-content-between">
                             <label for="idSubarea" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Subárea:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione una subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione una subárea</option>
-                                    @foreach ($subareas as $subarea)
-                                        <option value="{{$subarea->id}}" {{ old('idSubarea') == $subarea->id ? 'selected' : '' }}>{{$subarea->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            <select id="idSubarea" name="idSubarea" class="form-select rounded-4 w-100 w-md-50 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}">
+                                <option value="">Seleccione una subárea</option>
+                                @foreach ($subareas as $subarea)
+                                    <option value="{{$subarea->id}}" {{ old('idSubarea') == $subarea->id ? 'selected' : '' }}>{{$subarea->nombre}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         @error('idSubarea')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
 
                         {{-- Sección --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label for="idSubareaSeccion" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Sección:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione una sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione una sección</option>
-                                    @foreach ($secciones as $seccion)
-                                        <option value="{{$seccion->id}}" {{ old('idSeccion') == $seccion->id ? 'selected' : '' }}>{{$seccion->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
+                        <div id="seccion-field" class="mb-3 form-responsive d-flex align-items-center justify-content-between">
+                            <label for="idSeccion" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Sección:</label>
+                            <select id="idSeccion" name="idSeccion" class="form-select rounded-4 w-100 w-md-50 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}">
+                                <option value="">Seleccione una sección</option>
+                                @foreach ($secciones as $seccion)
+                                    <option value="{{$seccion->id}}" {{ old('idSeccion') == $seccion->id ? 'selected' : '' }}>{{$seccion->nombre}}</option>
+                                @endforeach
+                            </select>
                         </div>
                         @error('idSeccion')
                             <div class="text-danger small mb-3 text-end">{{ $message }}</div>
                         @enderror
 
                         {{-- Lecciones --}}
-                        <div class="mb-3">
+                        <div id="lecciones-field" class="mb-3">
                             <label class="fw-bold mb-3">Lecciones:</label>
-                            <div class="border rounded-4 p-3 {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
+                            <div class="border rounded-4 p-3 lecciones-container {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
                                 {{-- Lecciones Académicas --}}
                                 <div class="mb-3">
-                                    <h6 class="text-primary mb-2">Lecciones Académicas</h6>
+                                    <h6 class="text-primary mb-2">
+                                        <i class="bi bi-book me-2"></i>Lecciones Académicas
+                                    </h6>
                                     <div class="row">
                                         @foreach($lecciones as $leccion)
                                             @if(strtolower($leccion->tipoLeccion) == 'academica')
@@ -308,7 +410,8 @@
                                                             value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}"
                                                             {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) ? 'checked' : '' }}>
                                                         <label class="form-check-label small" for="leccion_create_{{ $leccion->id }}">
-                                                            {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
+                                                            {{ $leccion->leccion }} 
+                                                            <span class="text-muted">({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})</span>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -317,9 +420,11 @@
                                     </div>
                                 </div>
 
-                                {{-- Lecciones Tecnicas --}}
+                                {{-- Lecciones Técnicas --}}
                                 <div>
-                                    <h6 class="text-success mb-2">Lecciones Técnicas</h6>
+                                    <h6 class="text-success mb-2">
+                                        <i class="bi bi-gear me-2"></i>Lecciones Técnicas
+                                    </h6>
                                     <div class="row">
                                         @foreach($lecciones as $leccion)
                                             @if(strtolower($leccion->tipoLeccion) == 'tecnica')
@@ -329,7 +434,8 @@
                                                             value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}"
                                                             {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) ? 'checked' : '' }}>
                                                         <label class="form-check-label small" for="leccion_create_{{ $leccion->id }}">
-                                                            {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
+                                                            {{ $leccion->leccion }} 
+                                                            <span class="text-muted">({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})</span>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -341,10 +447,10 @@
                                 {{-- Botones para seleccionar/deseleccionar todos --}}
                                 <div class="mt-3 d-flex gap-2 justify-content-center">
                                     <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLeccionesCrear()">
-                                        Seleccionar todas
+                                        <i class="bi bi-check-all me-1"></i>Seleccionar todas
                                     </button>
                                     <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLeccionesCrear()">
-                                        Deseleccionar todas
+                                        <i class="bi bi-x-circle me-1"></i>Deseleccionar todas
                                     </button>
                                 </div>
                             </div>
@@ -354,310 +460,415 @@
                         </div>
                     </div>
                     <div class="modal-footer px-2 px-md-4 pb-3 d-flex justify-content-end">
-                        <button type="submit" class="btn btn-primary btn-crear w-100 w-md-auto">Crear</button>
+                        <button type="button" class="btn btn-outline-secondary me-2" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary btn-crear">
+                            <i class="bi bi-plus-circle me-2"></i>Crear
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    @foreach($horarios as $horario )
-    {{-- Modales de edición y eliminación se incluyen por cada horario en el loop de arriba --}}
-    <div class="modal fade" id="modalEditarHorario{{ $horario->id }}" tabindex="-1" aria-labelledby="modalEditarHorarioLabel{{ $horario->id }}" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content rounded-4 shadow-lg">
-                <div class="modal-header modal-header-custom">
-                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                        <i class="bi bi-arrow-left"></i>
-                    </button>
-                    <h5 class="modal-title">Modificar horario</h5>
-                </div>
-                <form method="POST" action="{{ route('horario.update', ['horario' => $horario]) }}">
-                    @csrf
-                    @method('PUT')
-                    <div class="linea-divisoria-horizontal"></div>
-                    
-                    <input type="hidden" name="id" value="{{ $horario->id }}">
-                    <div class="modal-body px-2 px-md-4 pt-3">
-                        {{-- Tipo de Horario --}}
-                        <div class="mb-4 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between fw-bold">
-                            <label class="w-100 w-md-50 text-start mb-2 mb-md-0">Tipo de horario:</label>
-                            <div class="d-flex align-items-center justify-content-center w-100 w-md-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
-                                <div class="form-check me-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" type="radio" name="tipoHorario" id="fijoRadio{{ $horario->id }}" value="fijo" 
-                                    {{ old('tipoHorario', $horario->tipoHorario == 1 ? 'fijo' : 'temporal') == 'fijo' ? 'checked' : ''}} >
-                                    <label class="form-check-label ms-2" for="fijoRadio{{ $horario->id }}">Fijo</label>
+    {{-- Modales de edición y eliminación --}}
+    @foreach($horarios as $horario)
+        <div class="modal fade" id="modalEditarHorario{{ $horario->id }}" tabindex="-1" aria-labelledby="modalEditarHorarioLabel{{ $horario->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content rounded-4 shadow-lg">
+                    <div class="modal-header modal-header-custom">
+                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                            <i class="bi bi-arrow-left"></i>
+                        </button>
+                        <h5 class="modal-title">Modificar horario</h5>
+                    </div>
+                    <form method="POST" action="{{ route('horario.update', ['horario' => $horario]) }}">
+                        @csrf
+                        @method('PUT')
+                        <div class="linea-divisoria-horizontal"></div>
+                        
+                        <input type="hidden" name="id" value="{{ $horario->id }}">
+                        <div class="modal-body px-2 px-md-4 pt-3">
+                            {{-- Tipo de Horario --}}
+                            <div class="mb-4 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between fw-bold">
+                                <label class="w-100 w-md-50 text-start mb-2 mb-md-0">Tipo de horario:</label>
+                                <div class="d-flex align-items-center justify-content-center w-100 w-md-50 bg-info bg-opacity-10 border border-info rounded-3 p-2">
+                                    <div class="form-check me-3 d-flex align-items-center">
+                                        <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" type="radio" name="tipoHorario" id="fijoRadio{{ $horario->id }}" value="fijo" 
+                                        {{ old('tipoHorario', $horario->tipoHorario == 1 ? 'fijo' : 'temporal') == 'fijo' ? 'checked' : ''}} >
+                                        <label class="form-check-label ms-2" for="fijoRadio{{ $horario->id }}">Fijo</label>
+                                    </div>
+                                    <div style="width:1px; height:24px; background-color:#0d6efd; opacity:0.7;"></div>
+                                    <div class="form-check ms-3 d-flex align-items-center">
+                                        <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" type="radio" name="tipoHorario" id="temporalRadio{{ $horario->id }}" value="temporal"
+                                        {{ old('tipoHorario', $horario->tipoHorario == 1 ? 'fijo' : 'temporal') == 'temporal' ? 'checked' : ''}} >
+                                        <label class="form-check-label ms-2" for="temporalRadio{{ $horario->id }}">Temporal</label>
+                                    </div>
                                 </div>
-                                <div style="width:1px; height:24px; background-color:#0d6efd; opacity:0.7;"></div>
-                                <div class="form-check ms-3 d-flex align-items-center">
-                                    <input class="form-check-input {{ $errors->has('tipoHorario') ? 'is-invalid' : '' }}" type="radio" name="tipoHorario" id="temporalRadio{{ $horario->id }}" value="temporal"
-                                    {{ old('tipoHorario', $horario->tipoHorario == 1 ? 'fijo' : 'temporal') == 'temporal' ? 'checked' : ''}} >
-                                    <label class="form-check-label ms-2" for="temporalRadio{{ $horario->id }}">Temporal</label>
+                            </div>
+                            @error('tipoHorario')
+                                <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                            @enderror
+                            {{-- Fecha --}}
+                            <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                                <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Fecha:</label>
+                                <input type="date" name="fecha" class="form-control rounded-4 w-100 w-md-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha', $horario->fecha ? $horario->fecha->format('Y-m-d') : '') }}">
+                            </div>
+                            @error('fecha')
+                                <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                            @enderror
+                            {{-- Día --}}
+                            <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                                <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Día:</label>
+                                <div class="position-relative w-100 w-md-50">
+                                    <select name="dia" class="form-select rounded-4 pe-5 {{ $errors->has('dia') ? 'is-invalid' : '' }}">
+                                        <option value="" hidden>Seleccione...</option>
+                                        <option value="Lunes" {{ old('dia', $horario->dia) == 'Lunes' ? 'selected' : '' }}>Lunes</option>
+                                        <option value="Martes" {{ old('dia', $horario->dia) == 'Martes' ? 'selected' : '' }}>Martes</option>
+                                        <option value="Miércoles" {{ old('dia', $horario->dia) == 'Miércoles' ? 'selected' : '' }}>Miércoles</option>
+                                        <option value="Jueves" {{ old('dia', $horario->dia) == 'Jueves' ? 'selected' : '' }}>Jueves</option>
+                                        <option value="Viernes" {{ old('dia', $horario->dia) == 'Viernes' ? 'selected' : '' }}>Viernes</option>
+                                        <option value="Sábado" {{ old('dia', $horario->dia) == 'Sábado' ? 'selected' : '' }}>Sábado</option>
+                                        <option value="Domingo" {{ old('dia', $horario->dia) == 'Domingo' ? 'selected' : '' }}>Domingo</option>
+                                    </select>
                                 </div>
                             </div>
-                        </div>
-                        @error('tipoHorario')
-                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
-                        @enderror
-                        {{-- Fecha --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Fecha:</label>
-                            <input type="date" name="fecha" class="form-control rounded-4 w-100 w-md-50 {{ $errors->has('fecha') ? 'is-invalid' : '' }}" value="{{ old('fecha', $horario->fecha ? $horario->fecha->format('Y-m-d') : '') }}">
-                        </div>
-                        @error('fecha')
-                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
-                        @enderror
-                        {{-- Día --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Día:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select name="dia" class="form-select rounded-4 pe-5 {{ $errors->has('dia') ? 'is-invalid' : '' }}">
-                                    <option value="" hidden>Seleccione...</option>
-                                    <option value="Lunes" {{ old('dia', $horario->dia) == 'Lunes' ? 'selected' : '' }}>Lunes</option>
-                                    <option value="Martes" {{ old('dia', $horario->dia) == 'Martes' ? 'selected' : '' }}>Martes</option>
-                                    <option value="Miércoles" {{ old('dia', $horario->dia) == 'Miércoles' ? 'selected' : '' }}>Miércoles</option>
-                                    <option value="Jueves" {{ old('dia', $horario->dia) == 'Jueves' ? 'selected' : '' }}>Jueves</option>
-                                    <option value="Viernes" {{ old('dia', $horario->dia) == 'Viernes' ? 'selected' : '' }}>Viernes</option>
-                                    <option value="Sábado" {{ old('dia', $horario->dia) == 'Sábado' ? 'selected' : '' }}>Sábado</option>
-                                    <option value="Domingo" {{ old('dia', $horario->dia) == 'Domingo' ? 'selected' : '' }}>Domingo</option>
-                                </select>
+                            @error('dia')
+                                <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                            @enderror
+                            
+                            {{-- Docente --}}
+                            <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                                <label for="idDocente" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Docente:</label>
+                                <div class="position-relative w-100 w-md-50">
+                                    <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5 {{ $errors->has('user_id') ? 'is-invalid' : '' }}" >
+                                        <option value="">Seleccione un docente</option>
+                                        @foreach ($profesores as $profesor)
+                                            <option value="{{$profesor->id}}"
+                                             {{ old('user_id', $horario->user_id) == $profesor->id ? 'selected' : '' }}>
+                                                {{ $profesor->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        @error('dia')
-                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
-                        @enderror
-                        
-                        {{-- Docente --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label for="idDocente" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Docente:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione un docente" data-live-search="true" name="user_id" id="user_id" class="form-select rounded-4 pe-5 {{ $errors->has('user_id') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione un docente</option>
-                                    @foreach ($profesores as $profesor)
-                                        <option value="{{$profesor->id}}"
-                                         {{ old('user_id', $horario->user_id) == $profesor->id ? 'selected' : '' }}>
-                                            {{ $profesor->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                            @error('user_id')
+                                <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                            @enderror
+                            
+                            {{-- Recinto --}}
+                            <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                                <label for="recintoSelect" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Recinto:</label>
+                                <div class="position-relative w-100 w-md-50">
+                                    <select data-size="4" title="Seleccione un recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}" >
+                                        <option value="">Seleccione un recinto</option>
+                                        @foreach ($recintos as $recinto)
+                                            <option value="{{$recinto->id}}"
+                                            {{ old('idRecinto', $horario->idRecinto) == $recinto->id ? 'selected' : '' }}>
+                                                {{ $recinto->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        @error('user_id')
-                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
-                        @enderror
-                        
-                        {{-- Recinto --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label for="recintoSelect" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Recinto:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione un recinto" data-live-search="true" name="idRecinto" id="idRecinto" class="form-select rounded-4 pe-5 {{ $errors->has('idRecinto') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione un recinto</option>
-                                    @foreach ($recintos as $recinto)
-                                        <option value="{{$recinto->id}}"
-                                        {{ old('idRecinto', $horario->idRecinto) == $recinto->id ? 'selected' : '' }}>
-                                            {{ $recinto->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                            @error('idRecinto')
+                                <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                            @enderror
+                            
+                                {{-- Subárea --}}
+                            <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                                <label for="idSubarea" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Subárea:</label>
+                                <div class="position-relative w-100 w-md-50">
+                                    <select data-size="4" title="Seleccione una subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}" >
+                                        <option value="">Seleccione una subárea</option>
+                                        @foreach ($subareas as $subarea)
+                                            <option value="{{$subarea->id}}" 
+                                                {{ old('idSubarea', $horario->idSubarea) == $subarea->id ? 'selected' : '' }}>
+                                                {{ $subarea->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        @error('idRecinto')
-                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
-                        @enderror
-                        
-                            {{-- Subárea --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label for="idSubarea" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Subárea:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione una subárea" data-live-search="true" name="idSubarea" id="idSubarea" class="form-select rounded-4 pe-5 {{ $errors->has('idSubarea') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione una subárea</option>
-                                    @foreach ($subareas as $subarea)
-                                        <option value="{{$subarea->id}}" 
-                                            {{ old('idSubarea', $horario->idSubarea) == $subarea->id ? 'selected' : '' }}>
-                                            {{ $subarea->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        @error('idSubarea')
-                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
-                        @enderror
+                            @error('idSubarea')
+                                <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                            @enderror
 
-                            {{-- Sección --}}
-                        <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
-                            <label for="idSubareaSeccion" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Sección:</label>
-                            <div class="position-relative w-100 w-md-50">
-                                <select data-size="4" title="Seleccione una sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}" >
-                                    <option value="">Seleccione una sección</option>
-                                    @foreach ($secciones as $seccion)
-                                        <option value="{{$seccion->id}}" 
-                                        {{ old('idSeccion', $horario->idSeccion) == $seccion->id ? 'selected' : '' }}>
-                                            {{ $seccion->nombre }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                {{-- Sección --}}
+                            <div class="mb-3 d-flex flex-column flex-md-row align-items-stretch align-items-md-center justify-content-between">
+                                <label for="idSubareaSeccion" class="fw-bold me-3 w-100 w-md-50 text-start mb-2 mb-md-0">Sección:</label>
+                                <div class="position-relative w-100 w-md-50">
+                                    <select data-size="4" title="Seleccione una sección" data-live-search="true" name="idSeccion" id="idSeccion" class="form-select rounded-4 pe-5 {{ $errors->has('idSeccion') ? 'is-invalid' : '' }}" >
+                                        <option value="">Seleccione una sección</option>
+                                        @foreach ($secciones as $seccion)
+                                            <option value="{{$seccion->id}}" 
+                                            {{ old('idSeccion', $horario->idSeccion) == $seccion->id ? 'selected' : '' }}>
+                                                {{ $seccion->nombre }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
-                        </div>
-                        @error('idSeccion')
-                            <div class="text-danger small mb-3 text-end">{{ $message }}</div>
-                        @enderror
+                            @error('idSeccion')
+                                <div class="text-danger small mb-3 text-end">{{ $message }}</div>
+                            @enderror
 
-                                            {{-- Lecciones --}}
-                                            <div class="mb-3">
-                                                <label class="fw-bold mb-3">Lecciones:</label>
-                                                <div class="border rounded-4 p-3 {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
-                                                    {{-- Lecciones Académicas --}}
+                                                    {{-- Lecciones --}}
                                                     <div class="mb-3">
-                                                        <h6 class="text-primary mb-2">Lecciones Académicas</h6>
-                                                        <div class="row">
-                                                            @foreach($lecciones as $leccion)
-                                                                @if(strtolower($leccion->tipoLeccion) == 'academica')
-                                                                    <div class="col-12 col-md-6 mb-2">
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                                                value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
-                                                                                {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) || (!old('lecciones') && $horario->leccion->contains($leccion->id)) ? 'checked' : '' }}>
-                                                                            <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
-                                                                                {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
+                                                        <label class="fw-bold mb-3">Lecciones:</label>
+                                                        <div class="border rounded-4 p-3 {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
+                                                            {{-- Lecciones Académicas --}}
+                                                            <div class="mb-3">
+                                                                <h6 class="text-primary mb-2">Lecciones Académicas</h6>
+                                                                <div class="row">
+                                                                    @foreach($lecciones as $leccion)
+                                                                        @if(strtolower($leccion->tipoLeccion) == 'academica')
+                                                                            <div class="col-12 col-md-6 mb-2">
+                                                                                <div class="form-check">
+                                                                                    <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                                                        value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
+                                                                                        {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) || (!old('lecciones') && $horario->leccion->contains($leccion->id)) ? 'checked' : '' }}>
+                                                                                    <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
+                                                                                        {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
 
-                                                    {{-- Lecciones Tecnicas --}}
-                                                    <div>
-                                                        <h6 class="text-success mb-2">Lecciones Técnicas</h6>
-                                                        <div class="row">
-                                                            @foreach($lecciones as $leccion)
-                                                                @if(strtolower($leccion->tipoLeccion) == 'tecnica')
-                                                                    <div class="col-12 col-md-6 mb-2">
-                                                                        <div class="form-check">
-                                                                            <input class="form-check-input" type="checkbox" name="lecciones[]" 
-                                                                                value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
-                                                                                {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) || (!old('lecciones') && $horario->leccion->contains($leccion->id)) ? 'checked' : '' }}>
-                                                                            <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
-                                                                                {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
-                                                                            </label>
-                                                                        </div>
-                                                                    </div>  
-                                                                @endif
-                                                            @endforeach
-                                                        </div>
-                                                    </div>
+                                                            {{-- Lecciones Tecnicas --}}
+                                                            <div>
+                                                                <h6 class="text-success mb-2">Lecciones Técnicas</h6>
+                                                                <div class="row">
+                                                                    @foreach($lecciones as $leccion)
+                                                                        @if(strtolower($leccion->tipoLeccion) == 'tecnica')
+                                                                            <div class="col-12 col-md-6 mb-2">
+                                                                                <div class="form-check">
+                                                                                    <input class="form-check-input" type="checkbox" name="lecciones[]" 
+                                                                                        value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
+                                                                                        {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) || (!old('lecciones') && $horario->leccion->contains($leccion->id)) ? 'checked' : '' }}>
+                                                                                    <label class="form-check-label small" for="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}">
+                                                                                        {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
+                                                                                    </label>
+                                                                                </div>
+                                                                            </div>  
+                                                                        @endif
+                                                                    @endforeach
+                                                                </div>
+                                                            </div>
 
-                                                    {{-- Botones para seleccionar/deseleccionar todos --}}
-                                                    <div class="mt-3 d-flex gap-2 justify-content-center">
-                                                        <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLeccionesEditar('{{ $horario->id }}')">
-                                                            Seleccionar todas
-                                                        </button>
-                                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLeccionesEditar('{{ $horario->id }}')">
-                                                            Deseleccionar todas
-                                                        </button>
+                                                            {{-- Botones para seleccionar/deseleccionar todos --}}
+                                                            <div class="mt-3 d-flex gap-2 justify-content-center">
+                                                                <button type="button" class="btn btn-sm btn-outline-primary" onclick="seleccionarTodasLeccionesEditar('{{ $horario->id }}')">
+                                                                    Seleccionar todas
+                                                                </button>
+                                                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deseleccionarTodasLeccionesEditar('{{ $horario->id }}')">
+                                                                    Deseleccionar todas
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        @error('lecciones')
+                                                            <div class="text-danger small mt-2">{{ $message }}</div>
+                                                        @enderror
+                                                    </div>
+                                            </div>
+                                            <div class="modal-footer px-2 px-md-4 pb-3 d-flex justify-content-end">
+                                                <button type="submit" class="btn btn-primary btn-modificar w-100 w-md-auto">Modificar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Modal eliminar -->
+                                <div class="modal fade" id="modalEliminarHorario{{ $horario->id }}" tabindex="-1" aria-labelledby="modalEliminarHorarioLabel{{ $horario->id }}" 
+                                aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content custom-modal">
+                                            <div class="modal-body text-center">
+                                                <div class="icon-container">
+                                                    <div class="circle-icon">
+                                                    <i class="bi bi-exclamation-circle"></i>
                                                     </div>
                                                 </div>
-                                                @error('lecciones')
-                                                    <div class="text-danger small mt-2">{{ $message }}</div>
-                                                @enderror
-                                            </div>
-                                    </div>
-                                    <div class="modal-footer px-2 px-md-4 pb-3 d-flex justify-content-end">
-                                        <button type="submit" class="btn btn-primary btn-modificar w-100 w-md-auto">Modificar</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Modal eliminar -->
-                        <div class="modal fade" id="modalEliminarHorario{{ $horario->id }}" tabindex="-1" aria-labelledby="modalEliminarHorarioLabel{{ $horario->id }}" 
-                        aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content custom-modal">
-                                    <div class="modal-body text-center">
-                                        <div class="icon-container">
-                                            <div class="circle-icon">
-                                            <i class="bi bi-exclamation-circle"></i>
+                                                <p class="modal-text">
+                                                    @if($horario->condicion == 1)
+                                                        ¿Desea eliminar el horario?
+                                                    @else
+                                                        ¿Desea restaurar el horario?
+                                                    @endif
+                                                </p>
+                                                <div class="btn-group-custom">
+                                                    <form action="{{ route('horario.destroy', ['horario' => $horario->id]) }}" method="post">
+                                                        @method('DELETE')
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-custom {{ $horario->condicion == 1 }}">Sí</button>
+                                                        <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
-                                        <p class="modal-text">
-                                            @if($horario->condicion == 1)
-                                                ¿Desea eliminar el horario?
-                                            @else
-                                                ¿Desea restaurar el horario?
-                                            @endif
-                                        </p>
-                                        <div class="btn-group-custom">
-                                            <form action="{{ route('horario.destroy', ['horario' => $horario->id]) }}" method="post">
-                                                @method('DELETE')
-                                                @csrf
-                                                <button type="submit" class="btn btn-custom {{ $horario->condicion == 1 }}">Sí</button>
-                                                <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
-                                            </form>
+                                    </div>
+                                </div>
+
+                            {{-- Modal Éxito Eliminar --}}
+                            @if(session('eliminado'))
+                            <div class="modal fade show" id="modalExitoEliminar" tabindex="-1" aria-modal="true" style="display:block;">
+                                <div class="modal-dialog modal-dialog-centered">
+                                    <div class="modal-content text-center">
+                                        <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 256 256">
+                                                <g fill="#efc737" fill-rule="nonzero">
+                                                    <g transform="scale(5.12,5.12)">
+                                                        <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"/>
+                                                    </g>
+                                                </g>
+                                            </svg>
+                                            <p class="mb-0">Horario eliminado con éxito</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                            @endif
+        @endforeach
+        
+    </div>
+    </div>
+    @endsection
 
-                    {{-- Modal Éxito Eliminar --}}
-                    @if(session('eliminado'))
-                    <div class="modal fade show" id="modalExitoEliminar" tabindex="-1" aria-modal="true" style="display:block;">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content text-center">
-                                <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 256 256">
-                                        <g fill="#efc737" fill-rule="nonzero">
-                                            <g transform="scale(5.12,5.12)">
-                                                <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"/>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                    <p class="mb-0">Horario eliminado con éxito</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-    @endforeach
-    
-</div>
-</div>
-@endsection
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Recargar la página al cerrar cualquier modal de crear o editar
+            var modalCrear = document.getElementById('modalHorario');
+            if (modalCrear) {
+                modalCrear.addEventListener('hidden.bs.modal', function () {
+                    window.location.reload();
+                });
+            }
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Recargar la página al cerrar cualquier modal de crear o editar
-        var modalCrear = document.getElementById('modalHorario');
-        if (modalCrear) {
-            modalCrear.addEventListener('hidden.bs.modal', function () {
-                window.location.reload();
-            });
-        }
-
-        document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modalEditar) {
-            modalEditar.addEventListener('hidden.bs.modal', function () {
-                window.location.reload();
+            document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modalEditar) {
+                modalEditar.addEventListener('hidden.bs.modal', function () {
+                    window.location.reload();
+                });
             });
         });
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-            document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modal) {
-        const id = modal.id.replace('modalEditarHorario', '');
-        const fijoRadio = modal.querySelector(`#fijoRadio${id}`);
-        const temporalRadio = modal.querySelector(`#temporalRadio${id}`);
-        const fechaInput = modal.querySelector('input[name="fecha"]');
-        const diaSelect = modal.querySelector('select[name="dia"]');
+                document.querySelectorAll('[id^="modalEditarHorario"]').forEach(function(modal) {
+            const id = modal.id.replace('modalEditarHorario', '');
+            const fijoRadio = modal.querySelector(`#fijoRadio${id}`);
+            const temporalRadio = modal.querySelector(`#temporalRadio${id}`);
+            const fechaInput = modal.querySelector('input[name="fecha"]');
+            const diaSelect = modal.querySelector('select[name="dia"]');
 
-        function toggleFieldsEditar() {
+            function toggleFieldsEditar() {
+                if (fijoRadio && fijoRadio.checked) {
+                    if (fechaInput) {
+                        fechaInput.disabled = true;
+                        fechaInput.style.backgroundColor = '#f8f9fa';
+                        fechaInput.style.color = '#6c757d';
+                        fechaInput.style.cursor = 'not-allowed';
+                    }
+                    if (diaSelect) {
+                        diaSelect.disabled = false;
+                        diaSelect.style.backgroundColor = '';
+                        diaSelect.style.color = '';
+                        diaSelect.style.cursor = '';
+                    }
+                } else if (temporalRadio && temporalRadio.checked) {
+                    if (diaSelect) {
+                        diaSelect.disabled = true;
+                        diaSelect.style.backgroundColor = '#f8f9fa';
+                        diaSelect.style.color = '#6c757d';
+                        diaSelect.style.cursor = 'not-allowed';
+                    }
+                    if (fechaInput) {
+                        fechaInput.disabled = false;
+                        fechaInput.style.backgroundColor = '';
+                        fechaInput.style.color = '';
+                        fechaInput.style.cursor = '';
+                    }
+                }
+            }
+
+            if (fijoRadio && temporalRadio && fechaInput && diaSelect) {
+                fijoRadio.addEventListener('change', toggleFieldsEditar);
+                temporalRadio.addEventListener('change', toggleFieldsEditar);
+
+                modal.addEventListener('shown.bs.modal', function() {
+                    toggleFieldsEditar();
+                });
+
+                // Estado inicial
+                toggleFieldsEditar();
+            }
+        });
+
+
+        // Funcionalidad de búsqueda en tiempo real
+        let timeoutId;
+        const inputBusqueda = document.getElementById('inputBusqueda');
+        const formBusqueda = document.getElementById('busquedaForm');
+        const btnLimpiar = document.getElementById('limpiarBusqueda');
+        
+        if (inputBusqueda) {
+            inputBusqueda.addEventListener('input', function() {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(function() {
+                    formBusqueda.submit();
+                }, 500); // Espera 500ms después de que el usuario deje de escribir
+            });
+            
+            // También permitir búsqueda al presionar Enter
+            inputBusqueda.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    formBusqueda.submit();
+                }
+            });
+        }
+        
+        // Funcionalidad del botón limpiar
+        if (btnLimpiar) {
+            btnLimpiar.addEventListener('click', function() {
+                inputBusqueda.value = '';
+                window.location.href = '{{ route("horario.index") }}';
+            });
+        }
+        // Abrir modal automáticamente si hay errores de validación
+        @if ($errors->any() && (old('_method') === null))
+            // Si hay errores y no es una actualización (método PUT), abrir modal de creación
+            const modalCrear = new bootstrap.Modal(document.getElementById('modalHorario'));
+            modalCrear.show();
+        @elseif ($errors->any() && old('_method') === 'PUT')
+            // Si hay errores y es una actualización, abrir modal de edición correspondiente
+            @if(old('id'))
+                const modalEditar = new bootstrap.Modal(document.getElementById('modalEditarHorario{{ old('id') }}'));
+                modalEditar.show();
+            @endif
+        @endif
+
+        // Obtener elementos
+        const fijoRadio = document.getElementById('fijoRadio');
+        const temporalRadio = document.getElementById('temporalRadio');
+        const fechaInput = document.querySelector('input[name="fecha"]');
+        const diaSelect = document.querySelector('select[name="dia"]');
+
+        console.log('Elementos encontrados:', {
+            fijoRadio: fijoRadio,
+            temporalRadio: temporalRadio,
+            fechaInput: fechaInput,
+            diaSelect: diaSelect
+        });
+
+        // Función para manejar el estado de los campos
+        function toggleFields() {
             if (fijoRadio && fijoRadio.checked) {
+                // Si se selecciona "Fijo": deshabilitar fecha, habilitar día
                 if (fechaInput) {
                     fechaInput.disabled = true;
                     fechaInput.style.backgroundColor = '#f8f9fa';
@@ -670,7 +881,9 @@
                     diaSelect.style.color = '';
                     diaSelect.style.cursor = '';
                 }
+                console.log('Fijo seleccionado - Fecha deshabilitada, Día habilitado');
             } else if (temporalRadio && temporalRadio.checked) {
+                // Si se selecciona "Temporal": deshabilitar día, habilitar fecha
                 if (diaSelect) {
                     diaSelect.disabled = true;
                     diaSelect.style.backgroundColor = '#f8f9fa';
@@ -683,178 +896,70 @@
                     fechaInput.style.color = '';
                     fechaInput.style.cursor = '';
                 }
+                console.log('Temporal seleccionado - Día deshabilitado, Fecha habilitada');
             }
         }
 
+        // Verificar que los elementos existen
         if (fijoRadio && temporalRadio && fechaInput && diaSelect) {
-            fijoRadio.addEventListener('change', toggleFieldsEditar);
-            temporalRadio.addEventListener('change', toggleFieldsEditar);
-
-            modal.addEventListener('shown.bs.modal', function() {
-                toggleFieldsEditar();
+            console.log('Todos los elementos existen, configurando eventos...');
+            
+            // Agregar event listeners a los radio buttons
+            fijoRadio.addEventListener('change', function() {
+                console.log('Fijo radio cambiado');
+                toggleFields();
             });
 
-            // Estado inicial
-            toggleFieldsEditar();
+            temporalRadio.addEventListener('change', function() {
+                console.log('Temporal radio cambiado');
+                toggleFields();
+            });
+
+            // Estado inicial basado en los valores old() o por defecto
+            toggleFields();
+
+            console.log('Estado inicial configurado');
+            
+        } else {
+            console.error('Algunos elementos no se encontraron:', {
+                fijoRadio: !!fijoRadio,
+                temporalRadio: !!temporalRadio,
+                fechaInput: !!fechaInput,
+                diaSelect: !!diaSelect
+            });
         }
     });
 
-
-    // Funcionalidad de búsqueda en tiempo real
-    let timeoutId;
-    const inputBusqueda = document.getElementById('inputBusqueda');
-    const formBusqueda = document.getElementById('busquedaForm');
-    const btnLimpiar = document.getElementById('limpiarBusqueda');
-    
-    if (inputBusqueda) {
-        inputBusqueda.addEventListener('input', function() {
-            clearTimeout(timeoutId);
-            timeoutId = setTimeout(function() {
-                formBusqueda.submit();
-            }, 500); // Espera 500ms después de que el usuario deje de escribir
-        });
-        
-        // También permitir búsqueda al presionar Enter
-        inputBusqueda.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                formBusqueda.submit();
-            }
-        });
-    }
-    
-    // Funcionalidad del botón limpiar
-    if (btnLimpiar) {
-        btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
-            window.location.href = '{{ route("horario.index") }}';
-        });
-    }
-    // Abrir modal automáticamente si hay errores de validación
-    @if ($errors->any() && (old('_method') === null))
-        // Si hay errores y no es una actualización (método PUT), abrir modal de creación
-        const modalCrear = new bootstrap.Modal(document.getElementById('modalHorario'));
-        modalCrear.show();
-    @elseif ($errors->any() && old('_method') === 'PUT')
-        // Si hay errores y es una actualización, abrir modal de edición correspondiente
-        @if(old('id'))
-            const modalEditar = new bootstrap.Modal(document.getElementById('modalEditarHorario{{ old('id') }}'));
-            modalEditar.show();
-        @endif
-    @endif
-
-    // Obtener elementos
-    const fijoRadio = document.getElementById('fijoRadio');
-    const temporalRadio = document.getElementById('temporalRadio');
-    const fechaInput = document.querySelector('input[name="fecha"]');
-    const diaSelect = document.querySelector('select[name="dia"]');
-
-    console.log('Elementos encontrados:', {
-        fijoRadio: fijoRadio,
-        temporalRadio: temporalRadio,
-        fechaInput: fechaInput,
-        diaSelect: diaSelect
-    });
-
-    // Función para manejar el estado de los campos
-    function toggleFields() {
-        if (fijoRadio && fijoRadio.checked) {
-            // Si se selecciona "Fijo": deshabilitar fecha, habilitar día
-            if (fechaInput) {
-                fechaInput.disabled = true;
-                fechaInput.style.backgroundColor = '#f8f9fa';
-                fechaInput.style.color = '#6c757d';
-                fechaInput.style.cursor = 'not-allowed';
-            }
-            if (diaSelect) {
-                diaSelect.disabled = false;
-                diaSelect.style.backgroundColor = '';
-                diaSelect.style.color = '';
-                diaSelect.style.cursor = '';
-            }
-            console.log('Fijo seleccionado - Fecha deshabilitada, Día habilitado');
-        } else if (temporalRadio && temporalRadio.checked) {
-            // Si se selecciona "Temporal": deshabilitar día, habilitar fecha
-            if (diaSelect) {
-                diaSelect.disabled = true;
-                diaSelect.style.backgroundColor = '#f8f9fa';
-                diaSelect.style.color = '#6c757d';
-                diaSelect.style.cursor = 'not-allowed';
-            }
-            if (fechaInput) {
-                fechaInput.disabled = false;
-                fechaInput.style.backgroundColor = '';
-                fechaInput.style.color = '';
-                fechaInput.style.cursor = '';
-            }
-            console.log('Temporal seleccionado - Día deshabilitado, Fecha habilitada');
-        }
+    // Funciones para manejar selección de lecciones en modal crear
+    function seleccionarTodasLeccionesCrear() {
+        const checkboxes = document.querySelectorAll('#modalHorario input[name="lecciones[]"]');
+        checkboxes.forEach(checkbox => checkbox.checked = true);
     }
 
-    // Verificar que los elementos existen
-    if (fijoRadio && temporalRadio && fechaInput && diaSelect) {
-        console.log('Todos los elementos existen, configurando eventos...');
-        
-        // Agregar event listeners a los radio buttons
-        fijoRadio.addEventListener('change', function() {
-            console.log('Fijo radio cambiado');
-            toggleFields();
-        });
-
-        temporalRadio.addEventListener('change', function() {
-            console.log('Temporal radio cambiado');
-            toggleFields();
-        });
-
-        // Estado inicial basado en los valores old() o por defecto
-        toggleFields();
-
-        console.log('Estado inicial configurado');
-        
-    } else {
-        console.error('Algunos elementos no se encontraron:', {
-            fijoRadio: !!fijoRadio,
-            temporalRadio: !!temporalRadio,
-            fechaInput: !!fechaInput,
-            diaSelect: !!diaSelect
-        });
+    function deseleccionarTodasLeccionesCrear() {
+        const checkboxes = document.querySelectorAll('#modalHorario input[name="lecciones[]"]');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
     }
-});
 
-// Funciones para manejar selección de lecciones en modal crear
-function seleccionarTodasLeccionesCrear() {
-    const checkboxes = document.querySelectorAll('#modalHorario input[name="lecciones[]"]');
-    checkboxes.forEach(checkbox => checkbox.checked = true);
-}
+    // Funciones para manejar selección de lecciones en modal editar
+    function seleccionarTodasLeccionesEditar(horarioId) {
+        const checkboxes = document.querySelectorAll(`#modalEditarHorario${horarioId} input[name="lecciones[]"]`);
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+    }
 
-function deseleccionarTodasLeccionesCrear() {
-    const checkboxes = document.querySelectorAll('#modalHorario input[name="lecciones[]"]');
-    checkboxes.forEach(checkbox => checkbox.checked = false);
-}
+    function deseleccionarTodasLeccionesEditar(horarioId) {
+        const checkboxes = document.querySelectorAll(`#modalEditarHorario${horarioId} input[name="lecciones[]"]`);
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+    }
 
-// Funciones para manejar selección de lecciones en modal editar
-function seleccionarTodasLeccionesEditar(horarioId) {
-    const checkboxes = document.querySelectorAll(`#modalEditarHorario${horarioId} input[name="lecciones[]"]`);
-    checkboxes.forEach(checkbox => checkbox.checked = true);
-}
+    // Funciones para manejar selección de lecciones (mantener compatibilidad)
+    function seleccionarTodasLecciones() {
+        const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
+        checkboxes.forEach(checkbox => checkbox.checked = true);
+    }
 
-function deseleccionarTodasLeccionesEditar(horarioId) {
-    const checkboxes = document.querySelectorAll(`#modalEditarHorario${horarioId} input[name="lecciones[]"]`);
-    checkboxes.forEach(checkbox => checkbox.checked = false);
-}
-
-// Funciones para manejar selección de lecciones (mantener compatibilidad)
-function seleccionarTodasLecciones() {
-    const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
-    checkboxes.forEach(checkbox => checkbox.checked = true);
-}
-
-function deseleccionarTodasLecciones() {
-    const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
-    checkboxes.forEach(checkbox => checkbox.checked = false);
-}
-
-
-
-
-</script>
+    function deseleccionarTodasLecciones() {
+        const checkboxes = document.querySelectorAll('input[name="lecciones[]"]');
+        checkboxes.forEach(checkbox => checkbox.checked = false);
+    }
+    </script>

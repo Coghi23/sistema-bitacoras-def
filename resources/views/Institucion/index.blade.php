@@ -4,57 +4,120 @@
 
 @section('content')
 
+<style>
+/* Responsive adjustments for Instituciones */
+@media (max-width: 768px) {
+    .main-content {
+        padding: 0.5rem !important;
+    }
+    
+    .search-bar-wrapper {
+        flex-direction: column !important;
+        gap: 0.75rem;
+    }
+    
+    .search-bar {
+        width: 100% !important;
+    }
+    
+    .btn-agregar {
+        width: 100% !important;
+        justify-content: center !important;
+        margin-left: 0 !important;
+        font-size: 1rem !important;
+    }
+    
+    .table-responsive {
+        font-size: 0.85rem;
+    }
+    
+    .table th, .table td {
+        padding: 0.5rem !important;
+        vertical-align: middle;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem !important;
+        max-width: calc(100% - 1rem) !important;
+    }
+    
+    .filter-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .filter-buttons .btn {
+        width: 100%;
+    }
+}
 
-<div class="wrapper">
-    <div class="main-content">
-        {{-- Búsqueda + botón agregar --}}
-        <div class="search-bar-wrapper mb-4">
-            <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('institucion.index') }}" class="w-100 position-relative">
-                    <span class="search-icon">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Buscar institución..."
-                        name="busquedaInstitucion"
-                        value="{{ request('busquedaInstitucion') }}"
-                        id="inputBusqueda"
-                        autocomplete="off"
-                    >
-                    @if(request('busquedaInstitucion'))
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
-                        id="limpiarBusqueda"
-                        title="Limpiar búsqueda"
-                        style="background: transparent;"
-                    >
-                        <i class="bi bi-x-circle"></i>
+@media (max-width: 576px) {
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+    }
+    
+    .btn-sm {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.75rem;
+    }
+    
+    .alert {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+    }
+}
+</style>
+
+<div id="instituciones-container" class="wrapper">
+    <div id="main-content" class="main-content">
+        {{-- Header con búsqueda y botón agregar --}}
+        <div id="header-section" class="row align-items-end mb-4">
+            <div id="search-wrapper" class="search-bar-wrapper mb-4 d-flex align-items-center">
+                <div id="search-bar-container" class="search-bar flex-grow-1">
+                    <form id="busquedaForm" method="GET" action="{{ route('institucion.index') }}" class="w-100 position-relative">
+                        <span class="search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input type="text" id="inputBusqueda" class="form-control" placeholder="Buscar institución..." 
+                               name="busquedaInstitucion" value="{{ request('busquedaInstitucion') }}" autocomplete="off">
+                        @if(request('busquedaInstitucion'))
+                        <button type="button" id="limpiarBusqueda" class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2" 
+                                title="Limpiar búsqueda" style="background: transparent;">
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                        @endif
+                    </form>
+                </div>
+                @can('create_institucion')
+                    <button id="btn-agregar-institucion" class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar" 
+                        data-bs-toggle="modal" data-bs-target="#modalAgregarInstitucion" 
+                        title="Agregar Institución" style="background-color: #134496; font-size: 1.2rem;">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
                     </button>
-                    @endif
-                </form>
+                @endcan
             </div>
-            @can('create_institucion')
-            <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar" 
-                data-bs-toggle="modal" data-bs-target="#modalAgregarInstitucion" 
-                title="Agregar Institución" style="background-color: #134496; font-size: 1.2rem;">
-                Agregar <i class="bi bi-plus-circle ms-2"></i>
-            </button>
-            @endcan
         </div>
-        {{-- Fin búsqueda + botón agregar --}}
-        <a href="{{ route('institucion.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
-            Mostrar inactivos
-        </a>
-        <a href="{{ route('institucion.index', ['activos' => 1]) }}" class="btn btn-primary mb-3">
-            Mostrar activos
-        </a>
+
+        {{-- Botones de filtros --}}
+        <div id="filter-buttons" class="filter-buttons mb-3">
+            <div class="d-flex flex-column flex-md-row gap-2">
+                <a href="{{ route('institucion.index', ['inactivos' => 1]) }}" class="btn btn-warning">
+                    Mostrar inactivos
+                </a>
+                <a href="{{ route('institucion.index', ['activos' => 1]) }}" class="btn btn-primary">
+                    Mostrar activos
+                </a>
+            </div>
+        </div>
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaInstitucion'))
-            <div class="alert alert-info d-flex align-items-center" role="alert">
+            <div id="search-results" class="alert alert-info d-flex align-items-center" role="alert">
                 <i class="bi bi-info-circle me-2"></i>
                 <span>
                     Mostrando {{ $instituciones->count() }} resultado(s) para "<strong>{{ request('busquedaInstitucion') }}</strong>"
@@ -63,79 +126,65 @@
             </div>
         @endif
 
-        <!-- Modal Crear Institución -->
-        <div class="modal fade" id="modalAgregarInstitucion" tabindex="-1" aria-labelledby="modalAgregarInstitucionLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header modal-header-custom">
-                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                            <i class="bi bi-arrow-left"></i>
-                        </button>
-                        <h5 class="modal-title">Crear Nueva Institución</h5>
-                    </div>
-                    <div class="modal-body px-4 py-4">
-                        <form action="{{ route('institucion.store') }}" method="POST">
-                            @csrf
-                            <div class="mb-3">
-                                <label for="nombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
-                                <input type="text" name="nombre" id="nombreInstitucion" class="form-control" placeholder="Ingrese el Nombre de la Institución" required>
-                            </div>
-                            <div class="text-center mt-4">
-                                <button type="submit" class="btn btn-crear">Crear</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-       
-        <!-- Modal Editar Institución -->
-        <div class="table-responsive">
+        {{-- Tabla de Instituciones --}}
+        <div id="tabla-instituciones" class="table-responsive">
             <table class="table align-middle table-hover">
                 <thead>
-                    <tr>
-                        <th class="text-center" style="width: 90%;">Nombre de la Institución</th>
-                        <th class="text-center" style="width: 10%;">Acciones</th>
+                    <tr id="instituciones-header-row">
+                        <th class="text-center">Nombre de la Institución</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="instituciones-tbody">
                     @php
                         $mostrarActivos = request('activos') == 1 || !request('inactivos');
                         $mostrarInactivos = request('inactivos') == 1;
                     @endphp
-                    @foreach ($instituciones as $institucion)
-
+                    @forelse ($instituciones as $institucion)
                         @if (($mostrarActivos && $institucion->condicion == 1) || ($mostrarInactivos && $institucion->condicion == 0))
-                        <tr>
-                            @can('view_institucion')
-                                <td class="text-center">{{ $institucion->nombre }}</td>
-                                <td class="text-center">
-                            @endcan
-                                    @if($mostrarActivos && $institucion->condicion == 1)
-                                    @can('edit_institucion')
-                                        <button type="button" class="btn btn-link text-info p-0 me-2 btn-editar"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                    @endcan
-                                    @can('delete_institucion')
-                                        <button type="button" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Eliminar Institución">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    @endcan
-                                    @elseif($mostrarInactivos && $institucion->condicion == 0)
-                                        @can('restore_institucion')
-                                            <button type="button" class="btn btn-link text-success p-0" data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" aria-label="Restaurar Institución">
-                                                <i class="bi bi-arrow-counterclockwise"></i>
-                                            </button>
-                                        @endcan        
-                                    @endif
-                            </td>
-                        </tr>
+                            <tr id="institucion-row-{{ $institucion->id }}">
+                                @can('view_institucion')
+                                    <td class="text-center">{{ $institucion->nombre }}</td>
+                                    <td class="text-center">
+                                        <span id="estado-badge-{{ $institucion->id }}" class="badge {{ $institucion->condicion == 1 ? 'bg-success' : 'bg-secondary' }}">
+                                            {{ $institucion->condicion == 1 ? 'Activa' : 'Inactiva' }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <div id="actions-{{ $institucion->id }}" class="d-flex flex-column flex-md-row justify-content-center gap-1">
+                                            @if($mostrarActivos && $institucion->condicion == 1)
+                                                @can('edit_institucion')
+                                                    <button id="btn-edit-{{ $institucion->id }}" type="button" class="btn btn-link text-info p-0"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#modalEditarInstitucion-{{ $institucion->id }}"
+                                                        title="Editar institución">
+                                                        <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
+                                                    </button>
+                                                @endcan
+                                                @can('delete_institucion')
+                                                    <button id="btn-delete-{{ $institucion->id }}" type="button" class="btn btn-link text-danger p-0" 
+                                                            data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" 
+                                                            title="Eliminar institución">
+                                                        <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
+                                                    </button>
+                                                @endcan
+                                            @elseif($mostrarInactivos && $institucion->condicion == 0)
+                                                @can('restore_institucion')
+                                                    <button id="btn-restore-{{ $institucion->id }}" type="button" class="btn btn-link text-success p-0" 
+                                                            data-bs-toggle="modal" data-bs-target="#modalConfirmacionEliminar-{{ $institucion->id }}" 
+                                                            title="Restaurar institución">
+                                                        <i class="bi bi-arrow-counterclockwise" style="font-size: 1.5rem;"></i>
+                                                    </button>
+                                                @endcan        
+                                            @endif
+                                        </div>
+                                    </td>
+                                @endcan
+                            </tr>
                         @endif
 
+                        {{-- Modal Editar Institución --}}
                         <div class="modal fade" id="modalEditarInstitucion-{{ $institucion->id }}" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content">
@@ -155,14 +204,15 @@
                                             </div>
                                         @endif
                                         
-                                        <form action="{{ route('institucion.update', $institucion->id) }}" method="POST">
+                                        <form id="formEditarInstitucion-{{ $institucion->id }}" action="{{ route('institucion.update', $institucion->id) }}" method="POST">
                                             @csrf
                                             @method('PATCH')
                                             <input type="hidden" name="form_type" value="edit">
                                             <input type="hidden" name="institucion_id" value="{{ $institucion->id }}">
+                                            
                                             <div class="mb-3">
-                                                <label class="form-label fw-bold">Nombre de la Institución</label>
-                                                <input type="text" name="nombre" class="form-control"
+                                                <label for="nombre-edit-{{ $institucion->id }}" class="form-label fw-bold">Nombre de la Institución</label>
+                                                <input type="text" id="nombre-edit-{{ $institucion->id }}" name="nombre" class="form-control"
                                                     value="{{ old('nombre', $institucion->nombre) }}" required>
                                             </div>
                                             <div class="text-center mt-4">
@@ -174,19 +224,19 @@
                             </div>
                         </div>
 
-                            <!-- Modal eliminar -->
-                        <div class="modal fade" id="modalConfirmacionEliminar-{{ $institucion->id }}" tabindex="-1" aria-labelledby="modalInstitucionEliminarLabel-{{ $institucion->id }}" 
-                        aria-hidden="true">
+                        {{-- Modal eliminar/restaurar --}}
+                        <div class="modal fade" id="modalConfirmacionEliminar-{{ $institucion->id }}" tabindex="-1" 
+                             aria-labelledby="modalInstitucionEliminarLabel-{{ $institucion->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
                                 <div class="modal-content custom-modal">
                                     <div class="modal-body text-center">
                                         <div class="icon-container">
-                                            <div class="circle-icon">
-                                            @if($institucion->condicion == 1)
-                                                <i class="bi bi-exclamation-circle"></i>
-                                            @else
-                                                <i class="bi bi-arrow-counterclockwise"></i>
-                                            @endif
+                                            <div class="circle-icon {{ $institucion->condicion == 1 ? '' : 'bg-success text-white' }}">
+                                                @if($institucion->condicion == 1)
+                                                    <i class="bi bi-exclamation-circle"></i>
+                                                @else
+                                                    <i class="bi bi-arrow-counterclockwise text-white"></i>
+                                                @endif
                                             </div>
                                         </div>
                                         <p class="modal-text">
@@ -196,11 +246,11 @@
                                                 ¿Desea restaurar la Institución?
                                             @endif
                                         </p>
-                                        <div class="btn-group-custom">
+                                        <div class="btn-group-custom d-flex justify-content-center gap-2">
                                             <form action="{{ route('institucion.destroy', ['institucion' => $institucion->id]) }}" method="post">
                                                 @method('DELETE')
                                                 @csrf
-                                                <button type="submit" class="btn btn-custom">Sí</button>
+                                                <button type="submit" class="btn btn-custom {{ $institucion->condicion == 1 ? '' : 'bg-success text-white' }}">Sí</button>
                                                 <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
                                             </form>
                                         </div>
@@ -208,55 +258,70 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
-                        <!-- Modal Éxito Eliminar -->
-                        <div class="modal fade" id="modalExitoEliminar" tabindex="-1" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content text-center">
-                                <div class="modal-body d-flex flex-column align-items-center gap-3 p-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 256 256">
-                                    <g fill="#efc737" fill-rule="nonzero">
-                                        <g transform="scale(5.12,5.12)">
-                                        <path d="M25,2c-12.683,0 -23,10.317 -23,23c0,12.683 10.317,23 23,23c12.683,0 23,-10.317 23,-23c0,-4.56 -1.33972,-8.81067 -3.63672,-12.38867l-1.36914,1.61719c1.895,3.154 3.00586,6.83148 3.00586,10.77148c0,11.579 -9.421,21 -21,21c-11.579,0 -21,-9.421 -21,-21c0,-11.579 9.421,-21 21,-21c5.443,0 10.39391,2.09977 14.12891,5.50977l1.30859,-1.54492c-4.085,-3.705 -9.5025,-5.96484 -15.4375,-5.96484zM43.23633,7.75391l-19.32227,22.80078l-8.13281,-7.58594l-1.36328,1.46289l9.66602,9.01563l20.67969,-24.40039z"/>
-                                        </g>
-                                    </g>
-                                    </svg>
-                                    <p class="mb-0">Institución eliminada con éxito</p>
-                                </div>
-                                </div>
+                    @empty
+                    <tr id="no-instituciones-row">
+                        <td class="text-center" colspan="3">
+                            <div class="text-muted py-4">
+                                <i class="bi bi-building display-4 mb-3"></i>
+                                <h5>No hay instituciones registradas</h5>
+                                <p>Las instituciones aparecerán aquí cuando se registren.</p>
                             </div>
-                        </div>
-                    @endforeach
+                        </td>
+                    </tr>
+                    @endforelse
                 </tbody>
             </table>
-        </div> 
+        </div>
     </div>
 </div>
 
-
-
-
+{{-- Modal Crear Institución --}}
+<div class="modal fade" id="modalAgregarInstitucion" tabindex="-1" aria-labelledby="modalAgregarInstitucionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header modal-header-custom">
+                <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <h5 class="modal-title">Crear Nueva Institución</h5>
+            </div>
+            <div class="modal-body px-4 py-4">
+                <form id="formCrearInstitucion" action="{{ route('institucion.store') }}" method="POST">
+                    @csrf
+                    <input type="hidden" name="form_type" value="create">
+                    <div class="mb-3">
+                        <label for="nombreInstitucion" class="form-label fw-bold">Nombre de la Institución</label>
+                        <input type="text" name="nombre" id="nombreInstitucion" class="form-control" 
+                               placeholder="Ingrese el Nombre de la Institución" value="{{ old('nombre') }}" required>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-crear">Crear</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 @endsection
 
 @push('scripts')
 <script>
-    // Funcionalidad de búsqueda en tiempo real
+document.addEventListener('DOMContentLoaded', function() {
+    // Búsqueda en tiempo real
     let timeoutId;
     const inputBusqueda = document.getElementById('inputBusqueda');
     const formBusqueda = document.getElementById('busquedaForm');
     const btnLimpiar = document.getElementById('limpiarBusqueda');
     
-    if (inputBusqueda) {
+    if (inputBusqueda && formBusqueda) {
         inputBusqueda.addEventListener('input', function() {
             clearTimeout(timeoutId);
             timeoutId = setTimeout(function() {
                 formBusqueda.submit();
-            }, 500); // Espera 500ms después de que el usuario deje de escribir
+            }, 500);
         });
         
-        // También permitir búsqueda al presionar Enter
         inputBusqueda.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -265,36 +330,34 @@
         });
     }
     
-    // Funcionalidad del botón limpiar
     if (btnLimpiar) {
         btnLimpiar.addEventListener('click', function() {
-            inputBusqueda.value = '';
+            if (inputBusqueda) {
+                inputBusqueda.value = '';
+            }
             window.location.href = '{{ route("institucion.index") }}';
         });
     }
 
     // Mantener modal abierto si hay errores
     @if ($errors->any())
-        document.addEventListener('DOMContentLoaded', function() {
-            // Detectar qué tipo de formulario fue enviado para abrir el modal correcto
-            const formType = '{{ old("form_type") }}';
-            const institucionId = '{{ old("institucion_id") }}';
-            
-            if (formType === 'create') {
-                var modal = new bootstrap.Modal(document.getElementById('modalAgregarInstitucion'));
-                modal.show();
-            } else if (formType === 'edit' && institucionId) {
-                var modal = new bootstrap.Modal(document.getElementById('modalEditarInstitucion-' + institucionId));
-                modal.show();
-            }
-        });
+        const formType = '{{ old("form_type") }}';
+        const institucionId = '{{ old("institucion_id") }}';
+        
+        if (formType === 'create') {
+            var modal = new bootstrap.Modal(document.getElementById('modalAgregarInstitucion'));
+            modal.show();
+        } else if (formType === 'edit' && institucionId) {
+            var modal = new bootstrap.Modal(document.getElementById('modalEditarInstitucion-' + institucionId));
+            modal.show();
+        }
     @endif
 
-    // Obtener todos los nombres de instituciones existentes en la tabla
+    // Obtener nombres de instituciones existentes
     function obtenerNombresInstituciones() {
         const nombres = [];
         document.querySelectorAll('tbody tr td.text-center:first-child').forEach(function(td) {
-            if (td.textContent) {
+            if (td.textContent && td.textContent.trim() !== 'No hay instituciones registradas') {
                 nombres.push(td.textContent.trim().toLowerCase());
             }
         });
@@ -302,51 +365,54 @@
     }
 
     // Validación para el formulario de agregar institución
-    document.addEventListener('DOMContentLoaded', function() {
-        var formAgregar = document.querySelector('#modalAgregarInstitucion form');
-        if (formAgregar) {
-            formAgregar.addEventListener('submit', function(e) {
-                var nombre = formAgregar.querySelector('[name="nombre"]');
-                var nombreValor = nombre.value.trim().toLowerCase();
-                var nombresExistentes = obtenerNombresInstituciones();
-                if (!nombre.value.trim() || nombre.value.trim().length < 3) {
-                    e.preventDefault();
-                    alert('El nombre de la institución es obligatorio y debe tener al menos 3 caracteres.');
-                    nombre.focus();
-                    return;
-                }
-                if (nombresExistentes.includes(nombreValor)) {
-                    e.preventDefault();
-                    alert('Ya existe una institución con ese nombre.');
-                    nombre.focus();
-                }
-            });
-        }
+    var formAgregar = document.querySelector('#modalAgregarInstitucion form');
+    if (formAgregar) {
+        formAgregar.addEventListener('submit', function(e) {
+            var nombre = formAgregar.querySelector('[name="nombre"]');
+            var nombreValor = nombre.value.trim().toLowerCase();
+            var nombresExistentes = obtenerNombresInstituciones();
+            
+            if (!nombre.value.trim() || nombre.value.trim().length < 3) {
+                e.preventDefault();
+                alert('El nombre de la institución es obligatorio y debe tener al menos 3 caracteres.');
+                nombre.focus();
+                return;
+            }
+            
+            if (nombresExistentes.includes(nombreValor)) {
+                e.preventDefault();
+                alert('Ya existe una institución con ese nombre.');
+                nombre.focus();
+            }
+        });
+    }
 
-        // Validación para los formularios de editar institución
-        document.querySelectorAll('[id^="modalEditarInstitucion-"] form').forEach(function(formEditar) {
-            formEditar.addEventListener('submit', function(e) {
-                var nombre = formEditar.querySelector('[name="nombre"]');
-                var nombreValor = nombre.value.trim().toLowerCase();
-                var nombresExistentes = obtenerNombresInstituciones();
+    // Validación para los formularios de editar institución
+    document.querySelectorAll('[id^="modalEditarInstitucion-"] form').forEach(function(formEditar) {
+        formEditar.addEventListener('submit', function(e) {
+            var nombre = formEditar.querySelector('[name="nombre"]');
+            var nombreValor = nombre.value.trim().toLowerCase();
+            var nombresExistentes = obtenerNombresInstituciones();
 
-                // Excluir el nombre actual de la institución editada
-                var nombreActual = nombre.getAttribute('value') ? nombre.getAttribute('value').trim().toLowerCase() : '';
-                var nombresSinActual = nombresExistentes.filter(function(n) { return n !== nombreActual; });
+            // Excluir el nombre actual de la institución editada
+            var nombreActual = nombre.getAttribute('value') ? nombre.getAttribute('value').trim().toLowerCase() : 
+                               nombre.defaultValue ? nombre.defaultValue.trim().toLowerCase() : '';
+            var nombresSinActual = nombresExistentes.filter(function(n) { return n !== nombreActual; });
 
-                if (!nombre.value.trim() || nombre.value.trim().length < 3) {
-                    e.preventDefault();
-                    alert('El nombre de la institución es obligatorio y debe tener al menos 3 caracteres.');
-                    nombre.focus();
-                    return;
-                }
-                if (nombresSinActual.includes(nombreValor)) {
-                    e.preventDefault();
-                    alert('Ya existe una institución con ese nombre.');
-                    nombre.focus();
-                }
-            });
+            if (!nombre.value.trim() || nombre.value.trim().length < 3) {
+                e.preventDefault();
+                alert('El nombre de la institución es obligatorio y debe tener al menos 3 caracteres.');
+                nombre.focus();
+                return;
+            }
+            
+            if (nombresSinActual.includes(nombreValor)) {
+                e.preventDefault();
+                alert('Ya existe una institución con ese nombre.');
+                nombre.focus();
+            }
         });
     });
+});
 </script>
 @endpush

@@ -1,13 +1,138 @@
 @extends('Template-administrador')
 
-
 @section('title', 'Sistema de Bitácoras')
-
 
 @section('content')
 
+<style>
+/* Estilos responsive para móviles */
+@media (max-width: 768px) {
+    .search-bar-wrapper {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .search-bar {
+        width: 100% !important;
+    }
+    
+    .btn-agregar {
+        width: 100%;
+        justify-content: center;
+        margin: 0 !important;
+    }
+    
+    .table-responsive {
+        margin: 0 -15px;
+        padding: 0 15px;
+    }
+    
+    .table {
+        font-size: 0.85rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 10px 8px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 150px;
+    }
+    
+    .table th:first-child,
+    .table td:first-child {
+        max-width: 120px;
+    }
+    
+    .table th:last-child,
+    .table td:last-child {
+        width: 80px;
+        max-width: 80px;
+    }
+    
+    .modal-dialog {
+        margin: 10px;
+        max-width: calc(100% - 20px);
+    }
+    
+    .modal-body {
+        padding: 20px 15px;
+    }
+    
+    .btn {
+        padding: 8px 16px;
+    }
+    
+    .badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    .icon-editar,
+    .icon-eliminar,
+    .icon-activar {
+        font-size: 1.1rem;
+    }
+    
+    .alert {
+        font-size: 0.9rem;
+        padding: 12px;
+        margin-bottom: 20px;
+    }
+    
+    .btn.mb-3 {
+        margin-bottom: 10px !important;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}
 
-
+@media (max-width: 480px) {
+    .table {
+        font-size: 0.8rem;
+    }
+    
+    .table th,
+    .table td {
+        padding: 8px 5px;
+        max-width: 100px;
+    }
+    
+    .table th:first-child,
+    .table td:first-child {
+        max-width: 80px;
+    }
+    
+    .table th:last-child,
+    .table td:last-child {
+        width: 60px;
+        max-width: 60px;
+    }
+    
+    .badge {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+    }
+    
+    .btn-agregar {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+    
+    .modal-title {
+        font-size: 1.1rem;
+    }
+    
+    .form-label {
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        font-size: 0.9rem;
+    }
+}
+</style>
 
 <div class="wrapper">
     <div class="main-content">

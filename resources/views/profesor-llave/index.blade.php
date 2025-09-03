@@ -373,15 +373,17 @@ $(document).ready(function() {
 
 @push('styles')
 <style>
+/* Estilos base */
 .card {
-    transition: transform 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
-
 
 .card:hover {
     transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
 }
-
 
 .wrapper {
     padding: 20px;
@@ -389,12 +391,381 @@ $(document).ready(function() {
     margin: 0 auto;
 }
 
-
 .main-content {
     background: #f8f9fa;
     min-height: 100vh;
     padding: 20px;
     border-radius: 10px;
+}
+
+.btn-primary {
+    background-color: #134496;
+    border-color: #134496;
+}
+
+.btn-primary:hover {
+    background-color: #0e326c;
+    border-color: #0e326c;
+}
+
+.btn-warning {
+    background-color: #f5c002;
+    border-color: #f5c002;
+    color: #134496;
+    font-weight: bold;
+}
+
+.btn-warning:hover {
+    background-color: #dba600;
+    border-color: #dba600;
+    color: #134496;
+}
+
+.text-primary {
+    color: #134496 !important;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+.alert {
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.form-control:focus {
+    border-color: #f5c002;
+    box-shadow: 0 0 0 0.2rem rgba(245, 192, 2, 0.25);
+}
+
+.card-header {
+    background: linear-gradient(135deg, #134496 0%, #1e5bb3 100%);
+    color: white;
+    border-radius: 10px 10px 0 0 !important;
+    border: none;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.table th {
+    background-color: #134496;
+    color: white;
+    border: none;
+    font-weight: 600;
+}
+
+.table td {
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgba(19, 68, 150, 0.05);
+}
+
+/* Estilos para QR codes */
+.qr-container {
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    margin: 10px 0;
+}
+
+.qr-code {
+    margin: 10px auto;
+    display: block;
+}
+
+/* Estilos móviles específicos */
+@media (max-width: 768px) {
+    .wrapper {
+        padding: 10px;
+        margin: 0;
+    }
+
+    .main-content {
+        padding: 15px;
+        border-radius: 0;
+        margin: 0;
+    }
+
+    .card {
+        margin-bottom: 15px;
+        border-radius: 10px;
+    }
+
+    .card-header {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+
+    .card-body {
+        padding: 15px;
+    }
+
+    .btn {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+        margin: 2px;
+    }
+
+    .btn-block {
+        width: 100%;
+        margin-bottom: 10px;
+    }
+
+    /* Tabla responsive */
+    .table-responsive {
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .table {
+        font-size: 0.85rem;
+        margin-bottom: 0;
+    }
+
+    .table th,
+    .table td {
+        padding: 8px 6px;
+        text-align: center;
+    }
+
+    .table th {
+        font-size: 0.8rem;
+        font-weight: 600;
+    }
+
+    /* Columnas específicas para móvil */
+    .table .col-recinto {
+        min-width: 120px;
+    }
+
+    .table .col-estado {
+        min-width: 80px;
+    }
+
+    .table .col-acciones {
+        min-width: 100px;
+    }
+
+    /* QR codes en móvil */
+    .qr-container {
+        padding: 10px;
+        margin: 5px 0;
+    }
+
+    .qr-code {
+        max-width: 150px;
+        height: auto;
+    }
+
+    /* Alertas y mensajes */
+    .alert {
+        font-size: 0.9rem;
+        padding: 12px 15px;
+        margin-bottom: 15px;
+    }
+
+    .alert h5 {
+        font-size: 1rem;
+        margin-bottom: 8px;
+    }
+
+    /* Formularios en móvil */
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-control {
+        font-size: 1rem;
+        padding: 12px 15px;
+    }
+
+    .form-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    /* Badges y estados */
+    .badge {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+
+    /* Espaciado general */
+    .mb-3 {
+        margin-bottom: 15px !important;
+    }
+
+    .mt-3 {
+        margin-top: 15px !important;
+    }
+
+    /* Headers */
+    h1 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    h4 {
+        font-size: 1.2rem;
+        margin-bottom: 12px;
+    }
+
+    h5 {
+        font-size: 1.1rem;
+        margin-bottom: 10px;
+    }
+
+    /* Contenedor de botones */
+    .btn-group-mobile {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+
+    .btn-group-mobile .btn {
+        width: 100%;
+        margin: 0;
+    }
+
+    /* Toast y modales móviles */
+    .toast {
+        font-size: 0.9rem;
+    }
+
+    .modal-content {
+        margin: 10px;
+        border-radius: 15px;
+    }
+
+    .modal-header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
+    .modal-footer {
+        padding: 15px 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    /* Scroll horizontal para tablas grandes */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table-container::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .table-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+        background: #134496;
+        border-radius: 4px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb:hover {
+        background: #0e326c;
+    }
+}
+
+/* Estilos para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .wrapper {
+        padding: 5px;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    .card-body {
+        padding: 12px;
+    }
+
+    .btn {
+        font-size: 0.85rem;
+        padding: 6px 12px;
+    }
+
+    .table {
+        font-size: 0.8rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 6px 4px;
+    }
+
+    h1 {
+        font-size: 1.3rem;
+    }
+
+    h4 {
+        font-size: 1.1rem;
+    }
+
+    .alert {
+        font-size: 0.85rem;
+        padding: 10px 12px;
+    }
+
+    .qr-code {
+        max-width: 120px;
+    }
+}
+
+/* Animaciones y transiciones */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #134496;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
 </style>
 @endpush

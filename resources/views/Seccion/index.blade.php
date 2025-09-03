@@ -26,52 +26,125 @@
         position: relative;
         z-index: 1;
     }
+
+    /* Responsive adjustments for Secciones */
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 0.5rem !important;
+        }
+        
+        .search-bar-wrapper {
+            flex-direction: column !important;
+            gap: 0.75rem;
+        }
+        
+        .search-bar {
+            width: 100% !important;
+        }
+        
+        .btn-agregar {
+            width: 100% !important;
+            justify-content: center !important;
+            margin-left: 0 !important;
+            font-size: 1rem !important;
+        }
+        
+        .table-responsive {
+            font-size: 0.85rem;
+        }
+        
+        .table th, .table td {
+            padding: 0.5rem !important;
+            vertical-align: middle;
+        }
+        
+        .modal-dialog {
+            margin: 0.5rem !important;
+            max-width: calc(100% - 1rem) !important;
+        }
+        
+        .btn-group {
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .filter-buttons .btn {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .table {
+            font-size: 0.8rem;
+        }
+        
+        .badge {
+            font-size: 0.7rem;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.4rem;
+            font-size: 0.75rem;
+        }
+        
+        .alert {
+            font-size: 0.85rem;
+            padding: 0.5rem;
+        }
+    }
 </style>
-<div class="wrapper">
-    <div class="main-content">
-
-
-        <div class="search-bar-wrapper mb-4">
-            <div class="search-bar">
-                <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="w-100 position-relative">
-                    <span class="search-icon">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input
-                        type="text"
-                        class="form-control"
-                        placeholder="Buscar sección..."
-                        name="busquedaSeccion"
-                        value="{{ request('busquedaSeccion') }}"
-                        id="inputBusqueda"
-                        autocomplete="off"
-                    >
-                    @if(request('busquedaSeccion'))
-                    <button
-                        type="button"
-                        class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
-                        id="limpiarBusqueda"
-                        title="Limpiar búsqueda"
-                        style="background: transparent;"
-                    >
-                        <i class="bi bi-x-circle"></i>
+<div id="secciones-container" class="wrapper">
+    <div id="main-content" class="main-content">
+        {{-- Header con búsqueda y botón agregar --}}
+        <div id="header-section" class="row align-items-end mb-4">
+            <div id="search-wrapper" class="search-bar-wrapper mb-4 d-flex align-items-center">
+                <div id="search-bar-container" class="search-bar flex-grow-1">
+                    <form id="busquedaForm" method="GET" action="{{ route('seccion.index') }}" class="w-100 position-relative">
+                        <span class="search-icon">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Buscar sección..."
+                            name="busquedaSeccion"
+                            value="{{ request('busquedaSeccion') }}"
+                            id="inputBusqueda"
+                            autocomplete="off"
+                        >
+                        @if(request('busquedaSeccion'))
+                        <button
+                            type="button"
+                            class="btn btn-outline-secondary border-0 position-absolute end-0 top-50 translate-middle-y me-2"
+                            id="limpiarBusqueda"
+                            title="Limpiar búsqueda"
+                            style="background: transparent;"
+                        >
+                            <i class="bi bi-x-circle"></i>
+                        </button>
+                        @endif
+                    </form>
+                </div>
+                @if(Auth::user() && !Auth::user()->hasRole('director'))
+                    <button id="btn-agregar-seccion" class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
+                        data-bs-toggle="modal" data-bs-target="#modalAgregarSeccion"
+                        title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem;">
+                        Agregar <i class="bi bi-plus-circle ms-2"></i>
                     </button>
-                    @endif
-                </form>
+                @endif
             </div>
-            @if(Auth::user() && !Auth::user()->hasRole('director'))
-                <button class="btn btn-primary rounded-pill px-4 d-flex align-items-center ms-3 btn-agregar"
-                    data-bs-toggle="modal" data-bs-target="#modalAgregarSeccion"
-                    title="Agregar Sección" style="background-color: #134496; font-size: 1.2rem;">
-                    Agregar <i class="bi bi-plus-circle ms-2"></i>
-                </button>
-            @endif
         </div>
 
 
         {{-- Indicador de resultados de búsqueda --}}
         @if(request('busquedaSeccion'))
-            <div class="alert alert-info d-flex align-items-center" role="alert">
+            <div id="search-results" class="alert alert-info d-flex align-items-center" role="alert">
                 <i class="bi bi-info-circle me-2"></i>
                 <span>
                     Mostrando {{ $secciones->count() }} resultado(s) para "<strong>{{ request('busquedaSeccion') }}</strong>"
@@ -81,11 +154,21 @@
         @endif
 
 
-       
+        {{-- Botones de filtros --}}
+        <div id="filter-buttons" class="filter-buttons mb-3">
+            <div class="d-flex flex-column flex-md-row gap-2">
+                <a href="{{ route('seccion.index', ['inactivos' => 1]) }}" class="btn btn-warning">
+                    Mostrar inactivas
+                </a>
+                <a href="{{ route('seccion.index') }}" class="btn btn-primary">
+                    Mostrar activas
+                </a>
+            </div>
+        </div>
 
 
         {{-- Tabla --}}
-        <div class="table-responsive">
+        <div id="tabla-secciones" class="table-responsive">
             {{-- Botones para mostrar/ocultar secciones inactivas --}}
             <a href="{{ route('seccion.index', ['inactivos' => 1]) }}" class="btn btn-warning mb-3">
                 Mostrar inactivas
@@ -95,20 +178,20 @@
             </a>
             <table class="table table-striped">
                 <thead>
-                    <tr class="header-row">
+                    <tr id="header-row" class="header-row">
                         <th class="text-center">Sección</th>
                         <th class="text-center">Especialidad</th>
                         <th class="text-center">Estado</th>
                         <th class="text-center">Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="tabla-body">
                     @php
                         $mostrarInactivas = request('inactivos') == 1;
                     @endphp
                     @forelse($secciones as $seccion)
                         @if(($mostrarInactivas && $seccion->condicion == 0) || (!$mostrarInactivas && $seccion->condicion == 1))
-                        <tr class="record-row">
+                        <tr id="seccion-row-{{ $seccion->id }}" class="record-row">
                             <td class="text-center">{{ $seccion->nombre }}</td>
                             <td class="text-center">
                                 @if($seccion->especialidades->count() > 0)
@@ -120,32 +203,108 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <span class="badge {{ isset($seccion->condicion) && $seccion->condicion ? 'bg-success' : 'bg-danger' }}">
+                                <span id="estado-badge-{{ $seccion->id }}" class="badge {{ isset($seccion->condicion) && $seccion->condicion ? 'bg-success' : 'bg-danger' }}">
                                     {{ isset($seccion->condicion) && $seccion->condicion ? 'Activa' : 'Inactiva' }}
                                 </span>
                             </td>
                             <td class="text-center">
-                                @can('edit_seccion')
-                                    @if($seccion->condicion == 1)
-                                        <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarSeccion-{{ $seccion->id }}">
-                                            <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
-                                        </button>
-                                @endcan
-                                @can('delete_seccion')
-                                        <button class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarSeccion-{{ $seccion->id }}">
-                                            <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
-                                        </button>
+                                <div id="actions-{{ $seccion->id }}" class="d-flex flex-column flex-md-row justify-content-center gap-1">
+                                    @can('edit_seccion')
+                                        @if($seccion->condicion == 1)
+                                            <button id="btn-edit-{{ $seccion->id }}" class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarSeccion-{{ $seccion->id }}">
+                                                <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
+                                            </button>
                                     @endcan
-                                @else
-                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarSeccion-{{ $seccion->id }}" title="Reactivar sección">
-                                        <i class="bi bi-arrow-counterclockwise icon-eliminar" style="font-size: 1.5rem; color: #28a745;"></i>
-                                    </button>
-                                @endif
+                                    @can('delete_seccion')
+                                            <button id="btn-delete-{{ $seccion->id }}" class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarSeccion-{{ $seccion->id }}">
+                                                <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
+                                            </button>
+                                        @endcan
+                                    @else
+                                        <button id="btn-reactivate-{{ $seccion->id }}" class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarSeccion-{{ $seccion->id }}" title="Reactivar sección">
+                                            <i class="bi bi-arrow-counterclockwise icon-eliminar" style="font-size: 1.5rem; color: #28a745;"></i>
+                                        </button>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                         {{-- Modal Editar --}}
                         <div class="modal fade" id="modalEditarSeccion-{{ $seccion->id }}" tabindex="-1" aria-hidden="true">
-                            ...existing code...
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header modal-header-custom">
+                                        <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
+                                            <i class="bi bi-arrow-left"></i>
+                                        </button>
+                                        <h5 class="modal-title">Editar sección</h5>
+                                    </div>
+                                    <div class="modal-body px-4 py-4">
+                                        <form id="formEditarSeccion-{{ $seccion->id }}" action="{{ route('seccion.update', $seccion->id) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="id" value="{{ $seccion->id }}">
+                                            
+                                            <div class="mb-3">
+                                                <label for="nombre-{{ $seccion->id }}" class="form-label fw-bold">Sección</label>
+                                                <input type="text" id="nombre-{{ $seccion->id }}" name="nombre" 
+                                                       class="form-control" value="{{ $seccion->nombre }}" required>
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label class="form-label fw-bold">Especialidades</label>
+                                                <div id="mensajeValidacion-{{ $seccion->id }}" class="alert alert-danger d-none" role="alert">
+                                                    <i class="bi bi-exclamation-triangle"></i> 
+                                                    <span id="textoMensaje-{{ $seccion->id }}"></span>
+                                                </div>
+                                                
+                                                <div class="input-group dynamic-group">
+                                                    <select id="selectEspecialidadEdit-{{ $seccion->id }}" class="form-select">
+                                                        <option value="">Seleccione una especialidad</option>
+                                                        @foreach ($especialidades as $especialidad)
+                                                            <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">
+                                                                {{ $especialidad->nombre }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" 
+                                                            onclick="agregarEspecialidadSimple('{{ $seccion->id }}')" 
+                                                            style="min-width: 38px; padding: 0;">
+                                                        <i class="bi bi-plus"></i>
+                                                    </button>
+                                                </div>
+                                                
+                                                <!-- Especialidades actuales con checkboxes ocultos -->
+                                                <div style="display: none;">
+                                                    @foreach ($especialidades as $especialidad)
+                                                        <input type="checkbox" 
+                                                               id="esp-{{ $seccion->id }}-{{ $especialidad->id }}" 
+                                                               name="especialidades[]" 
+                                                               value="{{ $especialidad->id }}"
+                                                               {{ $seccion->especialidades->contains('id', $especialidad->id) ? 'checked' : '' }}>
+                                                    @endforeach
+                                                </div>
+                                                
+                                                <!-- Contenedor visual de especialidades -->
+                                                <div id="especialidadesVisuales-{{ $seccion->id }}" class="mt-2">
+                                                    @foreach($seccion->especialidades as $especialidad)
+                                                        <div class="input-group mt-2 especialidad-visual" data-id="{{ $especialidad->id }}">
+                                                            <input type="text" class="form-control" value="{{ $especialidad->nombre }}" readonly>
+                                                            <button type="button" class="btn btn-danger" 
+                                                                    onclick="eliminarEspecialidadSimple('{{ $seccion->id }}', '{{ $especialidad->id }}')">
+                                                                <i class="bi bi-x"></i>
+                                                            </button>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="text-center mt-4">
+                                                <button type="submit" class="btn btn-primary">Actualizar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         {{-- Modal Eliminar --}}
                         <div class="modal fade" id="modalEliminarSeccion-{{ $seccion->id }}" tabindex="-1" aria-labelledby="modalSeccionEliminarLabel-{{ $seccion->id }}" aria-hidden="true">
@@ -158,7 +317,7 @@
                                             </div>
                                         </div>
                                         <p class="modal-text">¿Desea eliminar la sección?</p>
-                                        <div class="btn-group-custom">
+                                        <div class="btn-group-custom d-flex justify-content-center gap-2">
                                             <form action="{{ route('seccion.destroy', ['seccion' => $seccion->id]) }}" method="post">
                                                 @method('DELETE')
                                                 @csrf
@@ -181,7 +340,7 @@
                                             </div>
                                         </div>
                                         <p class="modal-text">¿Desea reactivar la sección?</p>
-                                        <div class="btn-group-custom">
+                                        <div class="btn-group-custom d-flex justify-content-center gap-2">
                                             <form action="{{ route('seccion.destroy', ['seccion' => $seccion->id]) }}" method="post">
                                                 @method('DELETE')
                                                 @csrf
@@ -195,7 +354,7 @@
                         </div>
                         @endif
                     @empty
-                    <tr class="record-row">
+                    <tr id="no-results-row" class="record-row">
                         <td class="text-center" colspan="4">No hay secciones registradas.</td>
                     </tr>
                     @endforelse
@@ -222,9 +381,10 @@
                 <form id="formCrearSeccion" action="{{ route('seccion.store') }}" method="POST">
                     @csrf
                     <div class="mb-3">
-                        <label class="form-label fw-bold">Sección</label>
-                        <input type="text" name="nombre" class="form-control @if(session('modal_crear') && $errors->has('nombre')) is-invalid @endif"
-                               value="{{ old('nombre') }}">
+                        <label for="nombre-crear" class="form-label fw-bold">Sección</label>
+                        <input type="text" id="nombre-crear" name="nombre" 
+                               class="form-control @if(session('modal_crear') && $errors->has('nombre')) is-invalid @endif"
+                               value="{{ old('nombre') }}" required>
                         @if(session('modal_crear') && $errors->has('nombre'))
                             <div class="invalid-feedback">{{ $errors->first('nombre') }}</div>
                         @endif
