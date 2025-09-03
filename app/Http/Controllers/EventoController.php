@@ -245,6 +245,9 @@ class EventoController extends Controller
             $bitacora = Bitacora::where('id_recinto', $horario->recinto->id)->first();
             if (!$bitacora) {
                 throw new Exception('No se encontró una bitácora para el recinto de este horario.');
+            }        
+            if ($bitacora->condicion == 0){
+                return back()->withErrors(['error' => 'La bitácora seleccionada no está activa.']);
             }
             $evento->id_bitacora = $bitacora->id;
             $evento->id_seccion = $request->id_seccion;
