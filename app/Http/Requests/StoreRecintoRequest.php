@@ -22,8 +22,9 @@ class StoreRecintoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:55|unique:recinto,nombre',
-            'institucion_id' => 'required|exists:institucione,id',
+            'nombre' => 'required|string|max:55',
+            'institucion_id' => 'required|array|min:1',
+            'institucion_id.*' => 'required|exists:institucione,id',
             'llave_id' => 'required|exists:llave,id|unique:recinto,llave_id',
             'estadoRecinto_id' => 'required|exists:estadorecinto,id',
             'tipoRecinto_id' => 'required|exists:tiporecinto,id',
