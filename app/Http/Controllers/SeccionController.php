@@ -6,6 +6,7 @@ use DB;
 use Illuminate\Http\Request;
 use App\Models\Seccione; 
 use App\Models\Especialidade;
+use App\Models\Institucione;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreSeccionRequest;
 use App\Http\Requests\UpdateSeccionRequest;
@@ -30,11 +31,25 @@ class SeccionController extends Controller
         }
         
         $secciones = $query->get();
-        
-        // Obtener todas las especialidades activas para el dropdown
-        $especialidades = Especialidade::where('condicion', 1)->get();
-        
-        return view('Seccion.index', compact('secciones', 'especialidades'));
+
+        // Catálogos: instituciones y especialidades activas
+        $instituciones = Institucione::orderBy('nombre')->get();
+        $especialidades = Especialidade::where('condicion', 1)->orderBy('nombre')->get();
+
+        // Agrupar especialidades por institución para el filtrado en el front
+        $especialidadesPorInstitucion = $especialidades
+            ->groupBy('id_institucion')
+            ->map(function ($items) {
+                return $items->map(function ($esp) {
+                    return [
+                        'id' => $esp->id,
+                        'nombre' => $esp->nombre,
+                        'id_institucion' => $esp->id_institucion,
+                    ];
+                })->values();
+            });
+
+        return view('Seccion.index', compact('secciones', 'especialidades', 'instituciones', 'especialidadesPorInstitucion'));
     }
 
     /**
@@ -55,7 +70,11 @@ class SeccionController extends Controller
             DB::beginTransaction();
             
             // Crear la sección
-            $seccion = Seccione::create($request->validated());
+            $data = $request->validated();
+            $seccion = Seccione::create([
+                'nombre' => $data['nombre'],
+                'id_institucion' => $data['id_institucion'] ?? null,
+            ]);
             
             // Asociar especialidades si existen
             if ($request->has('especialidades') && is_array($request->especialidades)) {
@@ -107,7 +126,11 @@ class SeccionController extends Controller
             DB::beginTransaction();
             
             // Actualizar la sección
-            $seccion->update($request->validated());
+            $data = $request->validated();
+            $seccion->update([
+                'nombre' => $data['nombre'],
+                'id_institucion' => $data['id_institucion'] ?? $seccion->id_institucion,
+            ]);
             
             // Sincronizar especialidades
             if ($request->has('especialidades') && is_array($request->especialidades)) {

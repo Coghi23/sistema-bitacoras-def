@@ -230,6 +230,18 @@
                         @endif
                     </div>
 
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Institución</label>
+                        <select id="selectInstitucion" name="id_institucion" class="form-select @if(session('modal_crear') && $errors->has('id_institucion')) is-invalid @endif">
+                            <option value="">Seleccione una institución</option>
+                            @foreach(($instituciones ?? collect()) as $inst)
+                                <option value="{{ $inst->id }}" {{ old('id_institucion') == $inst->id ? 'selected' : '' }}>{{ $inst->nombre }}</option>
+                            @endforeach
+                        </select>
+                        @if(session('modal_crear') && $errors->has('id_institucion'))
+                            <div class="invalid-feedback">{{ $errors->first('id_institucion') }}</div>
+                        @endif
+                    </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-bold">Especialidad</label>
@@ -241,11 +253,8 @@
                         @endif
                         <div id="especialidades">
                             <div class="input-group dynamic-group">
-                                <select id="selectEspecialidad" class="form-select">
-                                    <option value="">Seleccione una especialidad</option>
-                                    @foreach ($especialidades as $especialidad)
-                                        <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
-                                    @endforeach
+                                <select id="selectEspecialidad" class="form-select" {{ empty($instituciones) ? 'disabled' : '' }}>
+                                    <option value="">Seleccione primero una institución</option>
                                 </select>
                                 <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidad()" style="height: 9%; min-width: 38px; padding: 0;">
                                     <i class="bi bi-plus" style="height: 49px;"></i>
@@ -273,6 +282,8 @@
 <script>
     // Variables globales para crear sección
     let especialidadesAgregadas = [];
+    // Catálogo de especialidades por institución inyectado desde el servidor
+    const ESPECIALIDADES_POR_INST = @json(($especialidadesPorInstitucion ?? collect())->toArray());
 
     // Recargar la página al cerrar cualquier modal de crear o editar sección
     document.addEventListener('DOMContentLoaded', function() {
@@ -345,6 +356,13 @@
         // Ocultar mensaje de validación anterior
         ocultarMensajeValidacionCrear();
        
+        const instSelect = document.getElementById('selectInstitucion');
+        const institucionId = instSelect ? instSelect.value : '';
+        if (!institucionId) {
+            mostrarMensajeValidacionCrear('Primero seleccione una institución');
+            return;
+        }
+
         const select = document.getElementById('selectEspecialidad');
         const selectedOption = select.options[select.selectedIndex];
        
@@ -480,6 +498,11 @@
                     }
                 });
             @endif
+            // Si hay institución previa, cargar sus especialidades en el select
+            const oldInst = '{{ old('id_institucion') }}';
+            if (oldInst) {
+                cargarEspecialidadesPorInstitucion(oldInst);
+            }
         });
     @endif
 
@@ -502,6 +525,8 @@
         const inputBusqueda = document.getElementById('inputBusqueda');
         const formBusqueda = document.getElementById('busquedaForm');
         const btnLimpiar = document.getElementById('limpiarBusqueda');
+        const selectInstitucion = document.getElementById('selectInstitucion');
+        const selectEspecialidad = document.getElementById('selectEspecialidad');
        
         if (inputBusqueda && formBusqueda) {
             inputBusqueda.addEventListener('input', function() {
@@ -527,8 +552,45 @@
                 window.location.href = '{{ route("seccion.index") }}';
             });
         }
+
+        // Cambio de institución: cargar opciones de especialidades
+        if (selectInstitucion && selectEspecialidad) {
+            selectInstitucion.addEventListener('change', function() {
+                const instId = this.value;
+                especialidadesAgregadas = []; // reset selección previa
+                document.getElementById('especialidadesSeleccionadas').innerHTML = '';
+                cargarEspecialidadesPorInstitucion(instId);
+            });
+        }
        
     });
+
+    function cargarEspecialidadesPorInstitucion(instId) {
+        const selectEspecialidad = document.getElementById('selectEspecialidad');
+        // Limpiar
+        selectEspecialidad.innerHTML = '';
+        if (!instId) {
+            const opt = document.createElement('option');
+            opt.value = '';
+            opt.textContent = 'Seleccione primero una institución';
+            selectEspecialidad.appendChild(opt);
+            selectEspecialidad.disabled = true;
+            return;
+        }
+        const opciones = ESPECIALIDADES_POR_INST[instId] || [];
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        placeholder.textContent = opciones.length ? 'Seleccione una especialidad' : 'No hay especialidades para la institución';
+        selectEspecialidad.appendChild(placeholder);
+        opciones.forEach(esp => {
+            const option = document.createElement('option');
+            option.value = esp.id;
+            option.setAttribute('data-nombre', esp.nombre);
+            option.textContent = esp.nombre;
+            selectEspecialidad.appendChild(option);
+        });
+        selectEspecialidad.disabled = opciones.length === 0;
+    }
 
 
     // Función simplificada para agregar especialidad
@@ -641,6 +703,13 @@
                 // Ocultar mensajes de validación anteriores
                 ocultarMensajeValidacionCrear();
                
+                const instSelect = document.getElementById('selectInstitucion');
+                if (!instSelect || !instSelect.value) {
+                    e.preventDefault();
+                    mostrarMensajeValidacionCrear('Debe seleccionar una institución');
+                    return false;
+                }
+
                 // Validar que haya al menos una especialidad
                 if (especialidadesAgregadas.length === 0) {
                     e.preventDefault();

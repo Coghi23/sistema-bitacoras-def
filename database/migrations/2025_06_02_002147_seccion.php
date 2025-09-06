@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create("seccione", function (Blueprint $table) {
             $table->id();
+            $table->foreignId('id_institucion')->nullable()->constrained('institucione')->nullOnDelete();
             $table->string('nombre',55);
             $table->tinyInteger('condicion')->default(1);
             $table->timestamps();
