@@ -56,10 +56,4 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profesor::class, 'usuario_id');
     }
-
-    public function instituciones(){
-        return $this->belongsToMany(Institucione::class, 'usuario__institucion', 'usuario_id', 'institucion_id')
-            ->withPivot('condicion')
-            ->withTimestamps();
-    }
 }
