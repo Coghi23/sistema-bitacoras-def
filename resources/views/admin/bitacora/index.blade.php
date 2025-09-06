@@ -52,7 +52,7 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <i class="bi bi-check-circle text-success" style="font-size: 2rem;"></i>
-                        <h3 class="mt-2">{{ $todasLasBitacoras->where('condicion', 1)->count() }}</h3>
+                        <h3 class="mt-2">{{ $todasLasBitacoras->where('estado', 1)->count() }}</h3>
                         <p class="text-muted">Activas</p>
                     </div>
                 </div>
@@ -61,7 +61,7 @@
                 <div class="card text-center">
                     <div class="card-body">
                         <i class="bi bi-exclamation-triangle text-warning" style="font-size: 2rem;"></i>
-                        <h3 class="mt-2">{{ $todasLasBitacoras->where('condicion', 0)->count() }}</h3>
+                        <h3 class="mt-2">{{ $todasLasBitacoras->where('estado', 0)->count() }}</h3>
                         <p class="text-muted">Inactivas</p>
                     </div>
                 </div>
@@ -73,8 +73,8 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <div class="d-flex align-items-center gap-2">
                     <h2 class="h5 mb-0">Bitácora - {{ $bitacora->recinto->nombre ?? 'Sin Recinto Asociado' }}</h2>
-                    <span class="badge {{ $bitacora->condicion == 1 ? 'bg-success' : 'bg-secondary' }}">
-                        {{ $bitacora->condicion == 1 ? 'Activa' : 'Inactiva' }}
+                    <span class="badge {{ $bitacora->estado == 1 ? 'bg-success' : 'bg-secondary' }}">
+                        {{ $bitacora->estado == 1 ? 'Activa' : 'Inactiva' }}
                     </span>
                 </div>
                 @if ($bitacora->evento && $bitacora->evento->isNotEmpty())

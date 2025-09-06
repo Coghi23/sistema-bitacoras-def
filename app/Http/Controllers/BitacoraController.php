@@ -75,9 +75,9 @@ class BitacoraController extends Controller
         
         // Aplicar filtro de estado (activas/inactivas)
         if ($request->has('inactivas') && $request->inactivas == '1') {
-            $query->where('condicion', 0); // Bitácoras inactivas
+            $query->where('estado', 0); // Bitácoras inactivas
         } else {
-            $query->where('condicion', 1); // Bitácoras activas por defecto
+            $query->where('estado', 1); // Bitácoras activas por defecto
         }
         
         $bitacoras = $query->orderBy('created_at', 'desc')->get();
@@ -123,9 +123,9 @@ class BitacoraController extends Controller
                 
                 // Aplicar filtro de estado (activas/inactivas)
                 if ($request->has('inactivas') && $request->inactivas == '1') {
-                    $query->where('condicion', 0); // Bitácoras inactivas
+                    $query->where('estado', 0); // Bitácoras inactivas
                 } else {
-                    $query->where('condicion', 1); // Bitácoras activas por defecto
+                    $query->where('estado', 1); // Bitácoras activas por defecto
                 }
                 
                 $bitacoras = $query->orderBy('created_at', 'desc')->get();

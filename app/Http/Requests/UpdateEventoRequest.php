@@ -28,15 +28,25 @@ class UpdateEventoRequest extends FormRequest
             'user_id' => 'required|exists:users,id',
             'fecha' => 'required|date',
             'observacion' => 'required|string|max:255',
-            'prioridad' => 'required|integer',
+            'prioridad' => 'required|string|in:baja,regular,media,alta',
             'confirmacion' => 'required|boolean',
             'descripcion' => 'required|string|max:255',
             'condicion' => 'required|boolean',
+            'estado' => 'sometimes|string|in:en_espera,en_proceso,completado',
         ];
-    
-        $messages = [
-            'id_prioridad' => 'La prioridad debe ser baja, regular, media o alta'
-            'id_observacion' => 'La observacion es obligatoria',
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'prioridad.in' => 'La prioridad debe ser baja, regular, media o alta',
+            'observacion.required' => 'La observación es obligatoria',
+            'estado.in' => 'El estado debe ser en_espera, en_proceso o completado',
         ];
     }
 }
