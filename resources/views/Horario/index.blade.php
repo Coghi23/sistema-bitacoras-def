@@ -295,14 +295,25 @@
                         {{-- Lecciones --}}
                         <div class="mb-3">
                             <label class="fw-bold mb-3">Lecciones:</label>
+                            
+                            {{-- Botones de modalidad --}}
+                            <div class="mb-3 d-flex gap-2">
+                                <button type="button" class="btn btn-primary" id="btnDiurnoCrear">
+                                    Diurno (7:00 AM - 4:20 PM)
+                                </button>
+                                <button type="button" class="btn btn-outline-warning" id="btnNocturnoCrear">
+                                    Nocturno (5:50 PM - 9:55 PM)
+                                </button>
+                            </div>
+                            
                             <div class="border rounded-4 p-3 {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
                                 {{-- Lecciones Académicas --}}
-                                <div class="mb-3">
+                                <div class="mb-3" id="leccionesAcademicasCrear">
                                     <h6 class="text-primary mb-2">Lecciones Académicas</h6>
                                     <div class="row">
                                         @foreach($lecciones as $leccion)
                                             @if(strtolower($leccion->tipoLeccion) == 'academica')
-                                                <div class="col-12 col-md-6 mb-2">
+                                                <div class="col-12 col-md-6 mb-2 leccion-item" data-modalidad="diurno">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="lecciones[]" 
                                                             value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}"
@@ -317,19 +328,50 @@
                                     </div>
                                 </div>
 
-                                {{-- Lecciones Tecnicas --}}
+                                {{-- Lecciones Técnicas --}}
                                 <div>
                                     <h6 class="text-success mb-2">Lecciones Técnicas</h6>
                                     <div class="row">
                                         @foreach($lecciones as $leccion)
                                             @if(strtolower($leccion->tipoLeccion) == 'tecnica')
-                                                <div class="col-12 col-md-6 mb-2">
+                                                @php
+                                                    // Lógica más simple para determinar modalidad
+                                                    $horaInicio = $leccion->hora_inicio;
+                                                    $periodo = $leccion->hora_inicio_periodo ?? 'AM';
+                                                    
+                                                    list($hora, $minuto) = explode(':', $horaInicio);
+                                                    $hora = (int)$hora;
+                                                    $minuto = (int)$minuto;
+                                                    
+                                                    if ($periodo == 'AM') {
+                                                        $modalidad = 'diurno';
+                                                    } else { // PM
+                                                        if ($hora == 12) {
+                                                            // 12:xx PM es mediodía (diurno)
+                                                            $modalidad = 'diurno';
+                                                        } elseif ($hora >= 1 && $hora <= 4) {
+                                                            // 1:xx PM - 4:xx PM es diurno
+                                                            $modalidad = 'diurno';
+                                                        } elseif ($hora == 4 && $minuto <= 20) {
+                                                            // Hasta 4:20 PM es diurno
+                                                            $modalidad = 'diurno';
+                                                        } elseif ($hora >= 6 || ($hora == 5 && $minuto >= 50)) {
+                                                            // 5:50 PM en adelante es nocturno
+                                                            $modalidad = 'nocturno';
+                                                        } else {
+                                                            // Entre 4:21 PM y 5:49 PM (brecha) - tratar como diurno
+                                                            $modalidad = 'diurno';
+                                                        }
+                                                    }
+                                                @endphp
+                                                
+                                                <div class="col-12 col-md-6 mb-2 leccion-item" data-modalidad="{{ $modalidad }}">
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="lecciones[]" 
                                                             value="{{ $leccion->id }}" id="leccion_create_{{ $leccion->id }}"
                                                             {{ (old('lecciones') && in_array($leccion->id, old('lecciones'))) ? 'checked' : '' }}>
                                                         <label class="form-check-label small" for="leccion_create_{{ $leccion->id }}">
-                                                            {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} - {{ $leccion->hora_final }})
+                                                            {{ $leccion->leccion }} ({{ $leccion->hora_inicio }} {{ $periodo }} - {{ $leccion->hora_final }} {{ $leccion->hora_final_periodo ?? $periodo }})
                                                         </label>
                                                     </div>
                                                 </div>
@@ -506,14 +548,29 @@
                                             {{-- Lecciones --}}
                                             <div class="mb-3">
                                                 <label class="fw-bold mb-3">Lecciones:</label>
+                                                
+
+                                                {{-- Botones de modalidad --}}
+                                                <div class="mb-3 d-flex gap-2">
+                                                    <button type="button" class="btn btn-primary" id="btnDiurnoEditar{{ $horario->id }}">
+                                                        Diurno (7:00 AM - 4:20 PM)
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-warning" id="btnNocturnoEditar{{ $horario->id }}">
+                                                        Nocturno (5:50 PM - 9:55 PM)
+                                                    </button>
+                                                    <button type="button" class="btn btn-outline-success" id="btnTodosEditar{{ $horario->id }}">
+                                                        Todas las lecciones
+                                                    </button>
+                                                </div>
+                                                
                                                 <div class="border rounded-4 p-3 {{ $errors->has('lecciones') ? 'border-danger' : '' }}" style="max-height: 300px; overflow-y: auto;">
                                                     {{-- Lecciones Académicas --}}
-                                                    <div class="mb-3">
+                                                    <div class="mb-3" id="leccionesAcademicasEditar{{ $horario->id }}">
                                                         <h6 class="text-primary mb-2">Lecciones Académicas</h6>
                                                         <div class="row">
                                                             @foreach($lecciones as $leccion)
                                                                 @if(strtolower($leccion->tipoLeccion) == 'academica')
-                                                                    <div class="col-12 col-md-6 mb-2">
+                                                                    <div class="col-12 col-md-6 mb-2 leccion-item" data-modalidad="diurno">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
                                                                                 value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
@@ -528,13 +585,13 @@
                                                         </div>
                                                     </div>
 
-                                                    {{-- Lecciones Tecnicas --}}
+                                                    {{-- Lecciones Técnicas --}}
                                                     <div>
                                                         <h6 class="text-success mb-2">Lecciones Técnicas</h6>
                                                         <div class="row">
                                                             @foreach($lecciones as $leccion)
                                                                 @if(strtolower($leccion->tipoLeccion) == 'tecnica')
-                                                                    <div class="col-12 col-md-6 mb-2">
+                                                                    <div class="col-12 col-md-6 mb-2 leccion-item" data-modalidad="diurno">
                                                                         <div class="form-check">
                                                                             <input class="form-check-input" type="checkbox" name="lecciones[]" 
                                                                                 value="{{ $leccion->id }}" id="leccion_edit_{{ $horario->id }}_{{ $leccion->id }}"
@@ -854,7 +911,73 @@ function deseleccionarTodasLecciones() {
     checkboxes.forEach(checkbox => checkbox.checked = false);
 }
 
+document.addEventListener('DOMContentLoaded', function() {
+    // Funcionalidad de filtrado de lecciones en modal crear
+    const btnDiurnoCrear = document.getElementById('btnDiurnoCrear');
+    const btnNocturnoCrear = document.getElementById('btnNocturnoCrear');
 
+    function filtrarLeccionesCrear(modalidad) {
+        const leccionItems = document.querySelectorAll('#modalHorario .leccion-item');
+        const leccionesAcademicas = document.getElementById('leccionesAcademicasCrear');
+        
+        // Resetear estilos de botones
+        btnDiurnoCrear.className = 'btn btn-outline-primary';
+        btnNocturnoCrear.className = 'btn btn-outline-warning';
+        
+        if (modalidad === 'diurno') {
+            btnDiurnoCrear.className = 'btn btn-primary';
+            
+            // Mostrar lecciones académicas (son diurnas)
+            leccionesAcademicas.style.display = 'block';
+            
+            // Filtrar lecciones técnicas
+            leccionItems.forEach(item => {
+                if (item.dataset.modalidad === 'diurno') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                    // Desmarcar checkboxes ocultos
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox) checkbox.checked = false;
+                }
+            });
+            
+        } else if (modalidad === 'nocturno') {
+            btnNocturnoCrear.className = 'btn btn-warning';
+            
+            // Ocultar lecciones académicas (no son nocturnas)
+            leccionesAcademicas.style.display = 'none';
+            
+            // Desmarcar todas las lecciones académicas
+            leccionesAcademicas.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Filtrar lecciones técnicas
+            leccionItems.forEach(item => {
+                if (item.dataset.modalidad === 'nocturno') {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                    // Desmarcar checkboxes ocultos
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox) checkbox.checked = false;
+                }
+            });
+        }
+    }
 
+    // Event listeners para los botones
+    if (btnDiurnoCrear) {
+        btnDiurnoCrear.addEventListener('click', () => filtrarLeccionesCrear('diurno'));
+    }
+    if (btnNocturnoCrear) {
+        btnNocturnoCrear.addEventListener('click', () => filtrarLeccionesCrear('nocturno'));
+    }
 
+    // Estado inicial: mostrar diurno por defecto
+    filtrarLeccionesCrear('diurno');
+
+    // ... resto de tu JavaScript existente ...
+});
 </script>
