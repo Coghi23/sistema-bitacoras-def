@@ -22,7 +22,7 @@ class UsuarioController extends Controller
     public function index(Request $request)
     {
         $inactivos = $request->query('inactivos');
-        $query = User::with('roles');
+        $query = User::with(['roles', 'instituciones', 'especialidades']);
         
         if ($inactivos) {
             $query->where('condicion', false);
@@ -42,14 +42,35 @@ class UsuarioController extends Controller
 
         $usuarios = $query->get();
         $roles = Role::all();
-        
-        return view('Usuario.index', compact('usuarios', 'roles'));
+        $instituciones = Institucione::all();
+        $especialidades = Especialidade::all();
+
+        return view('Usuario.index', compact('usuarios', 'roles', 'instituciones', 'especialidades'));
     }
 
     public function create()
     {
         $roles = Role::all();
         return view('Usuario.index', compact('roles'));
+    }
+
+    /**
+     * Get especialidades by instituciones
+     */
+    public function getEspecialidadesByInstituciones(Request $request)
+    {
+        $institucionesIds = $request->input('instituciones', []);
+        
+        if (empty($institucionesIds)) {
+            return response()->json([]);
+        }
+        
+        $especialidades = Especialidade::whereIn('id_institucion', $institucionesIds)
+                                     ->where('condicion', true)
+                                     ->orderBy('nombre')
+                                     ->get(['id', 'nombre', 'id_institucion']);
+        
+        return response()->json($especialidades);
     }
 
     /**
@@ -62,6 +83,10 @@ class UsuarioController extends Controller
             'cedula' => 'required|unique:users,cedula',
             'email' => 'required|email|unique:users,email',
             'role' => 'required|exists:roles,name',
+            'instituciones' => 'nullable|array',
+            'instituciones.*' => 'exists:institucione,id',
+            'especialidades' => 'nullable|array',
+            'especialidades.*' => 'exists:especialidad,id',
         ], [
             'cedula.unique' => 'La cédula ya está registrada.',
             'email.unique' => 'El correo ya está registrado.',
@@ -80,6 +105,16 @@ class UsuarioController extends Controller
 
             // Asignar el rol
             $usuario->assignRole($request->role);
+
+            // Asignar instituciones si es profesor
+            if ($request->role === 'profesor' && $request->has('instituciones')) {
+                $usuario->instituciones()->sync($request->instituciones);
+            }
+
+            // Asignar especialidades si es profesor
+            if ($request->role === 'profesor' && $request->has('especialidades')) {
+                $usuario->especialidades()->sync($request->especialidades);
+            }
 
             // Enviar email de reset password automáticamente
             $status = Password::sendResetLink(['email' => $usuario->email]);
@@ -111,6 +146,10 @@ class UsuarioController extends Controller
             'cedula' => 'required|unique:users,cedula,' . $usuario->id,
             'email' => 'required|email|unique:users,email,' . $usuario->id,
             'role' => 'required|exists:roles,name',
+            'instituciones' => 'nullable|array',
+            'instituciones.*' => 'exists:institucione,id',
+            'especialidades' => 'nullable|array',
+            'especialidades.*' => 'exists:especialidad,id',
         ], [
             'cedula.unique' => 'La cédula ya está registrada.',
             'email.unique' => 'El correo ya está registrado.',
@@ -130,6 +169,23 @@ class UsuarioController extends Controller
             $usuario->update($requestData);
             //actualiza el rol
             $usuario->syncRoles($request->role);
+
+            // Actualizar instituciones si es profesor
+            if ($request->role === 'profesor' && $request->has('instituciones')) {
+                $usuario->instituciones()->sync($request->instituciones);
+            } else {
+                // Si no es profesor, eliminar todas las instituciones
+                $usuario->instituciones()->detach();
+            }
+
+            // Actualizar especialidades si es profesor
+            if ($request->role === 'profesor' && $request->has('especialidades')) {
+                $usuario->especialidades()->sync($request->especialidades);
+            } else {
+                // Si no es profesor, eliminar todas las especialidades
+                $usuario->especialidades()->detach();
+            }
+
             DB::commit();
         }
         catch (\Exception $e) {

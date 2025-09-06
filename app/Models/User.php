@@ -56,4 +56,20 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profesor::class, 'usuario_id');
     }
+
+    /**
+     * Relación many-to-many con Instituciones
+     */
+    public function instituciones()
+    {
+        return $this->belongsToMany(Institucione::class, 'user_institucione', 'user_id', 'institucione_id');
+    }
+
+    /**
+     * Relación many-to-many con Especialidades
+     */
+    public function especialidades()
+    {
+        return $this->belongsToMany(Especialidade::class, 'user_especialidade', 'user_id', 'especialidade_id');
+    }
 }

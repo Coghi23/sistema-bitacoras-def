@@ -47,6 +47,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/usuario/{usuario}/resend-password-setup', [UsuarioController::class, 'resendPasswordSetup'])
         ->name('usuario.resend-password-setup')
         ->middleware('director.readonly');
+    
+    // Ruta para obtener especialidades por instituciones
+    Route::post('/usuario/especialidades-por-instituciones', [UsuarioController::class, 'getEspecialidadesByInstituciones'])
+        ->name('usuario.especialidades-por-instituciones');
 
     Route::resource('institucion', InstitucionController::class)->except(['store', 'update', 'destroy']);
     Route::resource('institucion', InstitucionController::class)->only(['store', 'update', 'destroy'])->middleware('director.readonly');
