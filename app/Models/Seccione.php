@@ -11,6 +11,8 @@ class Seccione extends Model
 
     protected $table = 'seccione';
 
+    protected $fillable =['nombre', 'id_institucion'];
+
     public function especialidades(){
         return $this->belongsToMany(Especialidade::class, 'especialidad_seccion', 'seccion_id', 'especialidad_id')
             ->withPivot('condicion')
@@ -23,5 +25,8 @@ class Seccione extends Model
             ->withTimestamps();
     }
 
-    protected $fillable =['nombre'];
+    public function institucion()
+    {
+        return $this->belongsTo(Institucione::class, 'id_institucion');
+    }
 }
