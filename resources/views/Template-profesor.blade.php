@@ -9,6 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="{{ asset('Css/Sidebar.css') }}">
     <link rel="stylesheet" href="{{ asset('Css/inicio.css') }}">
+    
+    <link rel="stylesheet" href="{{ asset('Css/delete-alerts.css') }}">
     @stack('styles')
 </head>
 

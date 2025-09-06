@@ -135,7 +135,7 @@
             <div class="modal-body text-center">
                 <div class="icon-container">
                     <div class="circle-icon">
-                        <i class="bi bi-question-circle"></i>
+                        <i class="bi bi-exclamation-circle"></i>
                     </div>
                 </div>
                 <p class="modal-text">¿Está seguro de enviar este evento?</p>
@@ -147,6 +147,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal de Éxito -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-hidden="true">
@@ -233,63 +234,6 @@ function confirmarCancelar() {
 @endpush
 
 @push('styles')
-<style>
-.custom-modal .icon-container {
-    margin-bottom: 1rem;
-}
 
-.custom-modal .circle-icon {
-    width: 60px;
-    height: 60px;
-    background-color: #f8f9fa;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto;
-}
-
-.custom-modal .circle-icon i {
-    font-size: 2rem;
-    color: #0d6efd;
-}
-
-.custom-modal .modal-text {
-    font-size: 1.1rem;
-    margin: 1rem 0;
-}
-
-.custom-modal .btn-group-custom {
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-}
-
-.custom-modal .btn-custom {
-    min-width: 100px;
-    padding: 0.5rem 1rem;
-}
-
-.form-floating > label {
-    font-size: 0.9rem;
-}
-
-.btn {
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.btn:hover {
-    transform: translateY(-1px);
-}
-
-.card {
-    border-radius: 10px;
-}
-
-.card-header {
-    border-radius: 10px 10px 0 0 !important;
-}
-</style>
 @endpush
 @endsection
