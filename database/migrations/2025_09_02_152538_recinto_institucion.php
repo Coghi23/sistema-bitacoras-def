@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('recinto', function (Blueprint $table) {
+        Schema::create('recinto_institucion', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('llave_id')->constrained('llave');
-            $table->string('nombre');
-            $table->foreignId('tiporecinto_id')->constrained('tiporecinto');
-            $table->foreignId('estadorecinto_id')->constrained('estadorecinto');
-            $table->tinyInteger('condicion')->default(1);
+            $table->foreignId('recinto_id')->constrained('recinto');
+            $table->foreignId('institucion_id')->constrained('institucione');
             $table->timestamps();
+            $table->tinyInteger('condicion')->default(1);
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('recinto');
+        Schema::dropIfExists('recinto_institucion');
     }
 };

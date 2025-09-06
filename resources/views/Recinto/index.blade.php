@@ -73,22 +73,24 @@
                     <div class="col d-flex">
                         <div class="card flex-fill h-100 border rounded-4 p-2" style="font-size: 0.92em; min-width: 0;">
                             <div class="card-body pb-2 p-2">
-                                <div class="d-flex align-items-center mb-2 gap-2 flex-wrap">
-                                <span class="badge bg-light text-dark border border-secondary d-flex align-items-center gap-1 px-2 py-1 rounded-pill" style="font-size:0.9em;">
-                                {{ ucfirst($recinto->tipo) }}
-                                </span>
-                                <span class="badge px-2 py-1 rounded-pill text-dark"
-                                        style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
-                                        {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
-                                </span>
-                                
-                                </div>
                                 <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
+                                <div class="mb-1 d-flex align-items-center gap-2">
+                                    <span class="text-secondary" style="font-size:0.93em;">Estado:</span>
+                                    <span class="badge px-2 py-1 rounded-pill text-dark"
+                                            style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
+                                            {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
+                                    </span>
+                                </div>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
                                 <i class="fas fa-key me-1"></i>Número de llave: {{ $recinto->llave->nombre}}
                                 </div>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                                <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
+                                <i class="fas fa-building me-1"></i>Instituciones: 
+                                @if($recinto->instituciones->count() > 0)
+                                    {{ $recinto->instituciones->pluck('nombre')->join(', ') }}
+                                @else
+                                    Sin instituciones
+                                @endif
                                 </div>
                                 <div class="mb-1 text-secondary" style="font-size:0.93em;">
                                 <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto ? $recinto->tipoRecinto->nombre : 'Sin tipo' }}                                
@@ -125,13 +127,19 @@
                             <span class="badge px-2 py-1 rounded-pill text-dark"
                                     style="font-size:0.9em; background-color: {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->color : '#ccc' }};">
                                     {{ $recinto->estadoRecinto ? $recinto->estadoRecinto->nombre : 'Sin estado' }}
+                            </span>
                             </div>
                             <h5 class="card-title fw-bold mb-2" style="font-size:1em;">{{ $recinto->nombre }}</h5>
                             <div class="mb-1 text-secondary" style="font-size:0.93em;">
                             <i class="fas fa-key me-1"></i>Número de llave: {{ $recinto->llave->nombre}}
                             </div>
                             <div class="mb-1 text-secondary" style="font-size:0.93em;">
-                            <i class="fas fa-building me-1"></i>Institución: {{ $recinto->institucion->nombre }}
+                            <i class="fas fa-building me-1"></i>Instituciones: 
+                            @if($recinto->instituciones->count() > 0)
+                                {{ $recinto->instituciones->pluck('nombre')->join(', ') }}
+                            @else
+                                Sin instituciones
+                            @endif
                             </div>
                             <div class="mb-1 text-secondary" style="font-size:0.93em;">
                             <i class="fas fa-building me-1"></i>Tipo: {{ $recinto->tipoRecinto ? $recinto->tipoRecinto->nombre : 'Sin tipo' }}                                
@@ -267,17 +275,39 @@
                         </select>
                     </div>
                     <div class="mb-3">
-                        <label for="institucionRecinto-{{ $recinto->id }}" class="form-label mb-1">Institución</label>
-                        <select data-size="4" title="Seleccione una Institución" data-live-search="true" name="institucion_id" id="editarInstitucion" class="form-control selectpicker show-tick">
-                            @if(isset($instituciones))
-                                @foreach ($instituciones as $institucion)
-                                    <option value="{{$institucion->id}}"
-                                        {{ (isset($recinto) && $recinto->institucion_id == $institucion->id) || old('institucion_id') == $institucion->id ? 'selected' : '' }}>
-                                        {{$institucion->nombre}}
-                                    </option>
+                        <label for="institucionRecinto-{{ $recinto->id }}" class="form-label mb-1">Instituciones</label>
+                        
+                        <div id="instituciones-editar-{{ $recinto->id }}">
+                            <div class="input-group dynamic-group">
+                                <select id="selectInstitucionEditar-{{ $recinto->id }}" class="form-select">
+                                    <option value="">Seleccione una institución</option>
+                                    @foreach ($instituciones as $institucion)
+                                        <option value="{{ $institucion->id }}" data-nombre="{{ $institucion->nombre }}">{{ $institucion->nombre }}</option>
+                                    @endforeach
+                                </select>
+                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarInstitucionEditar('{{ $recinto->id }}')" style="height: 9%; min-width: 38px; padding: 0;">
+                                    <i class="bi bi-plus" style="height: 49px;"></i>
+                                </button>
+                            </div>
+
+                            <!-- Instituciones seleccionadas -->
+                            <div id="institucionesSeleccionadasEditar-{{ $recinto->id }}" class="mt-2">
+                                @foreach($recinto->instituciones as $institucion)
+                                    <div class="input-group mb-2">
+                                        <input type="hidden" name="institucion_id[]" value="{{ $institucion->id }}">
+                                        <input type="text" class="form-control" value="{{ $institucion->nombre }}" readonly>
+                                        <button type="button" class="btn btn-outline-danger" onclick="quitarInstitucionEditar('{{ $institucion->id }}', '{{ $recinto->id }}')">
+                                            <i class="bi bi-dash"></i>
+                                        </button>
+                                    </div>
                                 @endforeach
-                            @endif
-                        </select>
+                            </div>
+
+                            <!-- Validación -->
+                            <div id="mensajeValidacionInstitucionEditar-{{ $recinto->id }}" class="alert alert-danger d-none mt-2" role="alert">
+                                <i class="bi bi-exclamation-triangle"></i> <span id="textoMensajeInstitucionEditar-{{ $recinto->id }}"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
                         <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
@@ -354,15 +384,37 @@
 
  
                         <div class="mb-3">
-                            <label for="institucionRecinto" class="form-label mb-1">Institución</label>
-                           
-                            <select data-size="4" title="Seleccione una Institución" data-live-search="true" name="institucion_id" id="institucion_id" class="form-control selectpicker show-tick" required>
-                                <option value="">Seleccione una Institución</option>
-                                @foreach ($instituciones as $institucion)
-                                    <option value="{{$institucion->id}}" {{ old('institucion_id') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
-                                @endforeach
-                            </select>
-                        </div>
+    <label class="form-label fw-bold">Instituciones</label>
+    
+    @if(session('modal_crear') && $errors->has('institucion_id'))
+        <div class="text-danger small mb-2">
+            {{ $errors->first('institucion_id') }}
+            <br><small><i class="bi bi-info-circle"></i> Debe asignar al menos una institución.</small>
+        </div>
+    @endif
+
+    <div id="instituciones">
+        <div class="input-group dynamic-group">
+            <select id="selectInstitucion" class="form-select">
+                <option value="">Seleccione una institución</option>
+                @foreach ($instituciones as $institucion)
+                    <option value="{{ $institucion->id }}" data-nombre="{{ $institucion->nombre }}">{{ $institucion->nombre }}</option>
+                @endforeach
+            </select>
+            <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarInstitucion()" style="height: 9%; min-width: 38px; padding: 0;">
+                <i class="bi bi-plus" style="height: 49px;"></i>
+            </button>
+        </div>
+
+        <!-- Instituciones seleccionadas -->
+        <div id="institucionesSeleccionadas" class="mt-2"></div>
+
+        <!-- Validación -->
+        <div id="mensajeValidacionInstitucion" class="alert alert-danger d-none mt-2" role="alert">
+            <i class="bi bi-exclamation-triangle"></i> <span id="textoMensajeInstitucion"></span>
+        </div>
+    </div>
+</div>
                         <div class="d-flex justify-content-end gap-2 mt-4 mb-2">
                             <button type="button" class="btn btn-outline-danger rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
                             <button type="submit" class="btn btn-guardar rounded-pill px-4">Crear</button>
@@ -417,13 +469,296 @@
 @endforeach
 
 
+<style>
+/* Remover flechas azules de los botones de quitar institución */
+.btn-outline-danger .bi-dash::before {
+    color: #dc3545 !important;
+}
+
+/* Estilo para las instituciones seleccionadas */
+#institucionesSeleccionadas .input-group {
+    margin-bottom: 0.5rem;
+}
+
+#institucionesSeleccionadas .form-control {
+    background-color: #f8f9fa;
+}
+
+/* Quitar flechas del select de instituciones */
+#selectInstitucion {
+    background-image: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Quitar flechas de cualquier select en el formulario de instituciones */
+#instituciones select {
+    background-image: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Personalizar el select para que se vea bien sin flechas */
+#selectInstitucion {
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    color: #495057;
+}
+
+#selectInstitucion:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>
+
+<style>
+/* Quitar flechas del select de instituciones en crear */
+#selectInstitucion {
+    background-image: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Quitar flechas del select de instituciones en editar */
+[id^="selectInstitucionEditar-"] {
+    background-image: none !important;
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+}
+
+/* Personalizar los selects para que se vean bien sin flechas */
+#selectInstitucion,
+[id^="selectInstitucionEditar-"] {
+    background-color: white;
+    border: 1px solid #ced4da;
+    border-radius: 0.375rem;
+    padding: 0.375rem 0.75rem;
+    color: #495057;
+}
+
+#selectInstitucion:focus,
+[id^="selectInstitucionEditar-"]:focus {
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
 <script>
+// Variables para controlar las instituciones seleccionadas
+let institucionesSeleccionadas = [];
 
+// Función para agregar una institución
+function agregarInstitucion() {
+    const select = document.getElementById('selectInstitucion');
+    
+    if (!select) {
+        return;
+    }
+    
+    const institucionId = select.value;
+    const selectedOption = select.options[select.selectedIndex];
+    const institucionNombre = selectedOption ? selectedOption.getAttribute('data-nombre') : null;
+    
+    // Validar que se haya seleccionado una institución
+    if (!institucionId) {
+        mostrarMensajeValidacion('Por favor seleccione una institución');
+        return;
+    }
+    
+    // Verificar que no esté ya agregada
+    if (institucionesSeleccionadas.some(inst => inst.id === institucionId)) {
+        mostrarMensajeValidacion('Esta institución ya ha sido agregada');
+        return;
+    }
+    
+    // Agregar a la lista
+    institucionesSeleccionadas.push({
+        id: institucionId,
+        nombre: institucionNombre
+    });
+    
+    // Actualizar la vista
+    actualizarVista();
+    
+    // Limpiar selección
+    select.value = '';
+    
+    // Ocultar mensaje de validación
+    ocultarMensajeValidacion();
+}
 
+// Función para quitar una institución
+function quitarInstitucion(institucionId) {
+    institucionesSeleccionadas = institucionesSeleccionadas.filter(inst => inst.id !== institucionId);
+    actualizarVista();
+}
 
+// Función para actualizar la vista de instituciones seleccionadas
+function actualizarVista() {
+    const container = document.getElementById('institucionesSeleccionadas');
+    
+    if (!container) {
+        return;
+    }
+    
+    container.innerHTML = '';
+    
+    institucionesSeleccionadas.forEach(institucion => {
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        div.innerHTML = `
+            <input type="hidden" name="institucion_id[]" value="${institucion.id}">
+            <input type="text" class="form-control" value="${institucion.nombre}" readonly>
+            <button type="button" class="btn btn-outline-danger" onclick="quitarInstitucion('${institucion.id}')">
+                <i class="bi bi-dash"></i>
+            </button>
+        `;
+        container.appendChild(div);
+    });
+}
 
+// Función para mostrar mensaje de validación
+function mostrarMensajeValidacion(mensaje) {
+    const mensajeDiv = document.getElementById('mensajeValidacionInstitucion');
+    const textoSpan = document.getElementById('textoMensajeInstitucion');
+    textoSpan.textContent = mensaje;
+    mensajeDiv.classList.remove('d-none');
+}
 
+// Función para ocultar mensaje de validación
+function ocultarMensajeValidacion() {
+    const mensajeDiv = document.getElementById('mensajeValidacionInstitucion');
+    mensajeDiv.classList.add('d-none');
+}
+
+// Variables para controlar las instituciones seleccionadas en editar
+let institucionesSeleccionadasEditar = {};
+
+// Función para agregar una institución en modal de editar
+function agregarInstitucionEditar(recintoId) {
+    const select = document.getElementById(`selectInstitucionEditar-${recintoId}`);
+    
+    if (!select) {
+        return;
+    }
+    
+    const institucionId = select.value;
+    const selectedOption = select.options[select.selectedIndex];
+    const institucionNombre = selectedOption ? selectedOption.getAttribute('data-nombre') : null;
+    
+    // Validar que se haya seleccionado una institución
+    if (!institucionId) {
+        mostrarMensajeValidacionEditar('Por favor seleccione una institución', recintoId);
+        return;
+    }
+    
+    // Inicializar array para este recinto si no existe
+    if (!institucionesSeleccionadasEditar[recintoId]) {
+        institucionesSeleccionadasEditar[recintoId] = [];
+    }
+    
+    // Verificar que no esté ya agregada
+    if (institucionesSeleccionadasEditar[recintoId].some(inst => inst.id === institucionId)) {
+        mostrarMensajeValidacionEditar('Esta institución ya ha sido agregada', recintoId);
+        return;
+    }
+    
+    // Verificar que no esté ya en el DOM
+    const container = document.getElementById(`institucionesSeleccionadasEditar-${recintoId}`);
+    const existingInputs = container.querySelectorAll('input[name="institucion_id[]"]');
+    for (let input of existingInputs) {
+        if (input.value === institucionId) {
+            mostrarMensajeValidacionEditar('Esta institución ya ha sido agregada', recintoId);
+            return;
+        }
+    }
+    
+    // Agregar a la lista
+    institucionesSeleccionadasEditar[recintoId].push({
+        id: institucionId,
+        nombre: institucionNombre
+    });
+    
+    // Actualizar la vista
+    actualizarVistaEditar(recintoId);
+    
+    // Limpiar selección
+    select.value = '';
+    
+    // Ocultar mensaje de validación
+    ocultarMensajeValidacionEditar(recintoId);
+}
+
+// Función para quitar una institución en modal de editar
+function quitarInstitucionEditar(institucionId, recintoId) {
+    // Quitar del array
+    if (institucionesSeleccionadasEditar[recintoId]) {
+        institucionesSeleccionadasEditar[recintoId] = institucionesSeleccionadasEditar[recintoId].filter(inst => inst.id !== institucionId);
+    }
+    
+    // Quitar del DOM
+    const container = document.getElementById(`institucionesSeleccionadasEditar-${recintoId}`);
+    const inputs = container.querySelectorAll('input[name="institucion_id[]"]');
+    inputs.forEach(input => {
+        if (input.value === institucionId) {
+            input.parentElement.remove();
+        }
+    });
+}
+
+// Función para actualizar la vista de instituciones seleccionadas en editar
+function actualizarVistaEditar(recintoId) {
+    if (!institucionesSeleccionadasEditar[recintoId]) return;
+    
+    const container = document.getElementById(`institucionesSeleccionadasEditar-${recintoId}`);
+    
+    if (!container) {
+        return;
+    }
+    
+    institucionesSeleccionadasEditar[recintoId].forEach(institucion => {
+        const div = document.createElement('div');
+        div.className = 'input-group mb-2';
+        div.innerHTML = `
+            <input type="hidden" name="institucion_id[]" value="${institucion.id}">
+            <input type="text" class="form-control" value="${institucion.nombre}" readonly>
+            <button type="button" class="btn btn-outline-danger" onclick="quitarInstitucionEditar('${institucion.id}', '${recintoId}')">
+                <i class="bi bi-dash"></i>
+            </button>
+        `;
+        container.appendChild(div);
+    });
+    
+    // Limpiar el array después de agregar al DOM
+    institucionesSeleccionadasEditar[recintoId] = [];
+}
+
+// Función para mostrar mensaje de validación en editar
+function mostrarMensajeValidacionEditar(mensaje, recintoId) {
+    const mensajeDiv = document.getElementById(`mensajeValidacionInstitucionEditar-${recintoId}`);
+    const textoSpan = document.getElementById(`textoMensajeInstitucionEditar-${recintoId}`);
+    if (textoSpan && mensajeDiv) {
+        textoSpan.textContent = mensaje;
+        mensajeDiv.classList.remove('d-none');
+    }
+}
+
+// Función para ocultar mensaje de validación en editar
+function ocultarMensajeValidacionEditar(recintoId) {
+    const mensajeDiv = document.getElementById(`mensajeValidacionInstitucionEditar-${recintoId}`);
+    if (mensajeDiv) {
+        mensajeDiv.classList.add('d-none');
+    }
+}
 
 const inputBusqueda = document.getElementById('inputBusqueda');
 const recintosList = document.getElementById('recintos-list');

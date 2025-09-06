@@ -17,7 +17,6 @@ class Recinto extends Model
 
 
     protected $fillable = [
-        'institucion_id',
         'llave_id',
         'nombre',
         'tiporecinto_id',
@@ -25,13 +24,13 @@ class Recinto extends Model
         'condicion',
     ];
 
-
-    // Un recinto pertenece a una institución via institucion_id
-    public function institucion()
-    {
-        return $this->belongsTo(Institucione::class);
+    public function instituciones(){
+        return $this->belongsToMany(Institucione::class, 'recinto_institucion', 'recinto_id', 'institucion_id')
+            ->withPivot('condicion')
+            ->withTimestamps();
     }
-   
+
+
     public function llave()
     {
         return $this->belongsTo(Llave::class);
@@ -63,9 +62,6 @@ class Recinto extends Model
     }
 
 
-    /**
-     * Boot method para eventos del modelo
-     */
     protected static function boot()
     {
         parent::boot();
