@@ -31,7 +31,7 @@ class Evento extends Model
 
     public function bitacora()
     {
-        return $this->belongsTo(Bitacora::class);
+        return $this->belongsTo(Bitacora::class, 'id_bitacora');
     }
 
      public function seccion()
@@ -55,9 +55,7 @@ class Evento extends Model
     
     public function horario()
     {
-    
         return $this->belongsTo(Horario::class, 'id_horario');
-    
     }
 
     public function leccion()

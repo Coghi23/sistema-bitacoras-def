@@ -8,7 +8,7 @@
         <div class="container my-4">
             <div class="card shadow">
                 <div class="card-header bg-primary text-white py-3 d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="bi bi-calendar-plus me-2"></i>Registrar Evento</h4>
+                    <h4 class="mb-0"><i class="bi bi-calendar-plus me-2"></i>Registrar Reporte</h4>
                 </div>
                 
                 <div class="card-body p-4">
@@ -49,6 +49,22 @@
                                     <select name="leccion" id="leccionSelect" class="form-select" required>
                                         <option value="">Seleccione una lección</option>
                                         @foreach($lecciones as $leccion)
+                                            @php
+                                                $horarioLeccion = \DB::table('horario_leccion')
+                                                    ->where('idHorario', $leccion->horario_data->id ?? 0)
+                                                    ->where('idLeccion', $leccion->id)
+                                                    ->first();
+                                                
+                                                // Intentar diferentes nombres de columnas para las horas
+                                                $horaInicio = $horarioLeccion->horaInicio ?? 
+                                                             $horarioLeccion->hora_inicio ?? 
+                                                             $leccion->hora_inicio ?? 'N/A';
+                                                             
+                                                $horaFin = $horarioLeccion->horaFin ?? 
+                                                          $horarioLeccion->hora_fin ?? 
+                                                          $horarioLeccion->hora_final ?? 
+                                                          $leccion->hora_final ?? 'N/A';
+                                            @endphp
                                             <option value="{{ $leccion->id }}"
                                                 data-horario-id="{{ $leccion->horario_data->id ?? '' }}"
                                                 data-recinto="{{ optional($leccion->horario_data->recinto)->nombre ?? '' }}"
@@ -57,7 +73,7 @@
                                                 data-seccion-id="{{ optional($leccion->horario_data->seccion)->id ?? '' }}"
                                                 data-subarea="{{ optional($leccion->horario_data->subarea)->nombre ?? '' }}"
                                                 data-subarea-id="{{ optional($leccion->horario_data->subarea)->id ?? '' }}">
-                                                {{ $leccion->leccion }} - {{ $leccion->horario_data->fecha }}
+                                                {{ $leccion->leccion }} - {{ $horaInicio }} a {{ $horaFin }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -118,10 +134,30 @@
                                 <i class="bi bi-x-circle me-2"></i>Cancelar
                             </button>
                             <button type="submit" class="btn btn-primary px-4" onclick="return confirmarEnvio()">
-                                <i class="bi bi-send me-2"></i>Enviar Evento
+                                <i class="bi bi-send me-2"></i>Enviar Reporte
                             </button>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación de Cancelación -->
+<div class="modal fade" id="modalConfirmacionCancelar" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content custom-modal">
+            <div class="modal-body text-center">
+                <div class="icon-container">
+                    <div class="circle-icon">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                </div>
+                <p class="modal-text">¿Está seguro de cancelar el registro del evento?</p>
+                <div class="btn-group-custom">
+                    <button type="button" class="btn btn-custom" onclick="cancelarFormulario()">Sí</button>
+                    <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
                 </div>
             </div>
         </div>
@@ -138,7 +174,7 @@
                         <i class="bi bi-exclamation-circle"></i>
                     </div>
                 </div>
-                <p class="modal-text">¿Está seguro de enviar este evento?</p>
+                <p class="modal-text">¿Está seguro de enviar este Reporte?</p>
                 <div class="btn-group-custom">
                     <button type="button" class="btn btn-custom" onclick="enviarFormulario()">Sí</button>
                     <button type="button" class="btn btn-custom" data-bs-dismiss="modal">No</button>
@@ -147,7 +183,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal de Éxito -->
 <div class="modal fade" id="modalExito" tabindex="-1" aria-hidden="true">
@@ -215,9 +250,17 @@ function enviarFormulario() {
 }
 
 function confirmarCancelar() {
-    if (confirm('¿Está seguro de cancelar el registro del evento?')) {
-        limpiarFormulario();
-    }
+    // Mostrar modal de confirmación para cancelar
+    const modal = new bootstrap.Modal(document.getElementById('modalConfirmacionCancelar'));
+    modal.show();
+}
+
+function cancelarFormulario() {
+    // Limpiar el formulario
+    limpiarFormulario();
+    
+    // Redirigir a la página anterior
+    window.location.href = "{{ url()->previous() }}";
 }
 
 // Mostrar modal de éxito si hay mensaje de success

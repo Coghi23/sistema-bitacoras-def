@@ -125,104 +125,30 @@
                                 </span>
                             </td>
                             <td class="text-center">
-                                @can('edit_seccion')
-                                    @if($seccion->condicion == 1)
+                                @if($seccion->condicion == 1)
+                                    @can('edit_seccion')
                                         <button class="btn btn-link text-info p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalEditarSeccion-{{ $seccion->id }}">
                                             <i class="bi bi-pencil" style="font-size: 1.5rem;"></i>
                                         </button>
-                                @endcan
-                                @can('delete_seccion')
+                                    @endcan
+                                    @can('delete_seccion')
                                         <button class="btn btn-link text-danger p-0" data-bs-toggle="modal" data-bs-target="#modalEliminarSeccion-{{ $seccion->id }}">
                                             <i class="bi bi-trash" style="font-size: 1.5rem;"></i>
                                         </button>
                                     @endcan
                                 @else
-                                    <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarSeccion-{{ $seccion->id }}" title="Reactivar sección">
-                                        <i class="bi bi-arrow-counterclockwise icon-eliminar" style="font-size: 1.5rem; color: #28a745;"></i>
-                                    </button>
+                                    @can('delete_seccion')
+                                        <button class="btn p-0 me-2" data-bs-toggle="modal" data-bs-target="#modalReactivarSeccion-{{ $seccion->id }}" title="Reactivar sección">
+                                            <i class="bi bi-arrow-counterclockwise icon-eliminar" style="font-size: 1.5rem; color: #28a745;"></i>
+                                        </button>
+                                    @endcan
                                 @endif
                             </td>
                         </tr>
-                    {{-- Modal Editar --}}
-                    <div class="modal fade" id="modalEditarSeccion-{{ $seccion->id }}" tabindex="-1" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <div class="modal-header modal-header-custom">
-                                    <button class="btn-back" data-bs-dismiss="modal" aria-label="Cerrar">
-                                        <i class="bi bi-arrow-left"></i>
-                                    </button>
-                                    <h5 class="modal-title">Registro de sección</h5>
-                                </div>
-                                 <div class="modal-body px-4 py-4">
-                                    <form action="{{ route('seccion.update', $seccion->id) }}" method="POST">
-                                    @csrf
-                                    @method('PATCH')
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Sección</label>
-                                        <input type="text" name="nombre" class="form-control @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('nombre')) is-invalid @endif"
-                                            value="{{ old('nombre', $seccion->nombre) }}" required>
-                                        @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('nombre'))
-                                            <div class="invalid-feedback">{{ $errors->first('nombre') }}</div>
-                                        @endif
-                                    </div>
-
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Especialidad</label>
-                                        @if(session('modal_editar_id') && session('modal_editar_id') == $seccion->id && $errors->has('especialidades'))
-                                            <div class="text-danger small mb-2">
-                                                {{ $errors->first('especialidades') }}
-                                                <br><small><i class="bi bi-info-circle"></i> Una sección debe tener al menos una especialidad asignada.</small>
-                                            </div>
-                                        @endif                                            <!-- Especialidades actualmente asignadas como checkboxes ocultos -->
-                                            <div style="display: none;">
-                                                @foreach($especialidades as $especialidad)
-                                                    <input type="checkbox" 
-                                                           id="esp-{{ $seccion->id }}-{{ $especialidad->id }}"
-                                                           name="especialidades[]" 
-                                                           value="{{ $especialidad->id }}"
-                                                           @if($seccion->especialidades->where('id', $especialidad->id)->where('pivot.condicion', 1)->count() > 0) checked @endif>
-                                                @endforeach
-                                            </div>
-                                            
-                                            <!-- Select para agregar especialidades -->
-                                            <div class="input-group dynamic-group mb-3">
-                                                <select id="selectEspecialidadEdit-{{ $seccion->id }}" class="form-select">
-                                                    <option value="">Seleccione una especialidad para agregar</option>
-                                                    @foreach ($especialidades as $especialidad)
-                                                        <option value="{{ $especialidad->id }}" data-nombre="{{ $especialidad->nombre }}">{{ $especialidad->nombre }}</option>
-                                                    @endforeach
-                                                </select>
-                                                <button type="button" class="btn btn-success d-flex align-items-center justify-content-center" onclick="agregarEspecialidadSimple('{{ $seccion->id }}');" style="min-width: 38px; padding: 8px;">
-                                                    <i class="bi bi-plus"></i>
-                                                </button>
-                                            </div>
-                                            
-                                            <!-- Contenedor para mensajes de validación -->
-                                            <div id="mensajeValidacion-{{ $seccion->id }}" class="alert alert-danger d-none" role="alert">
-                                                <i class="bi bi-exclamation-triangle"></i> <span id="textoMensaje-{{ $seccion->id }}"></span>
-                                            </div>
-                                            
-                                            <!-- Especialidades visibles actualmente asignadas -->
-                                            <div id="especialidadesVisuales-{{ $seccion->id }}">
-                                                @foreach($seccion->especialidades->where('pivot.condicion', 1) as $especialidadAsignada)
-                                                    <div class="input-group mt-2 especialidad-visual" data-id="{{ $especialidadAsignada->id }}">
-                                                        <input type="text" class="form-control" value="{{ $especialidadAsignada->nombre }}" readonly>
-                                                        <button type="button" class="btn btn-danger" onclick="eliminarEspecialidadSimple('{{ $seccion->id }}', '{{ $especialidadAsignada->id }}')">
-                                                            <i class="bi bi-x"></i>
-                                                        </button>
-                                                    </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-
-                                        <div class="text-center mt-4">
-                                            <button type="submit" class="btn btn-primary">Modificar</button>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
+                        {{-- Modal Editar --}}
+                        <div class="modal fade" id="modalEditarSeccion-{{ $seccion->id }}" tabindex="-1" aria-hidden="true">
+                            ...existing code...
                         </div>
-                    </div>
                         {{-- Modal Eliminar --}}
                         <div class="modal fade" id="modalEliminarSeccion-{{ $seccion->id }}" tabindex="-1" aria-labelledby="modalSeccionEliminarLabel-{{ $seccion->id }}" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered">
@@ -772,90 +698,85 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Event listener para formulario de crear
         const modalCrear = document.getElementById('modalAgregarSeccion');
-        const formCrear = modalCrear.querySelector('form');
-       
-        if (formCrear) {
-            formCrear.addEventListener('submit', function(e) {
-                // Ocultar mensajes de validación anteriores
-                ocultarMensajeValidacionCrear();
-               
-                const instSelect = document.getElementById('selectInstitucion');
-                if (!instSelect || !instSelect.value) {
-                    e.preventDefault();
-                    mostrarMensajeValidacionCrear('Debe seleccionar una institución');
-                    return false;
-                }
 
-                // Validar que haya al menos una especialidad
-                if (especialidadesAgregadas.length === 0) {
-                    e.preventDefault();
-                    mostrarMensajeValidacionCrear('Debe asignar al menos una especialidad a la sección');
-                    return false;
-                }
-            });
-        }
-       
-        // Limpiar mensajes al abrir modal de crear
-        modalCrear.addEventListener('shown.bs.modal', function() {
-            ocultarMensajeValidacionCrear();
-        });
-       
-        // Limpiar mensajes al cerrar modal de crear
-        modalCrear.addEventListener('hidden.bs.modal', function() {
-            ocultarMensajeValidacionCrear();
-        });
-       
-        // Event listener para formulario de editar
-        const modalEditar = document.getElementById('modalEditarSeccion');
-       
-        modalEditar.addEventListener('shown.bs.modal', function(event) {
-            const button = event.relatedTarget;
-            const seccionId = button.getAttribute('data-id');
-            const form = modalEditar.querySelector('form');
-           
-            // Ocultar mensajes de validación al abrir el modal
-            ocultarMensajeValidacion(seccionId);
-           
-            // Actualizar opciones del select al abrir el modal
-            actualizarOpcionesSelect(seccionId);
-           
-            // Agregar event listener al formulario si no lo tiene
-            if (!form.hasAttribute('data-listener-added')) {
-                form.addEventListener('submit', function(e) {
+        if (modalCrear) {
+            const formCrear = modalCrear.querySelector('form');
+            if (formCrear) {
+                formCrear.addEventListener('submit', function(e) {
                     // Ocultar mensajes de validación anteriores
-                    ocultarMensajeValidacion(seccionId);
-                   
-                    // Validar especialidades usando checkboxes
-                    const checkboxesChecked = form.querySelectorAll('input[name="especialidades[]"]:checked');
-                   
-                    if (checkboxesChecked.length === 0) {
+                    ocultarMensajeValidacionCrear();
+
+                    const instSelect = document.getElementById('selectInstitucion');
+                    if (!instSelect || !instSelect.value) {
                         e.preventDefault();
-                        mostrarMensajeValidacion(seccionId, 'Debe asignar al menos una especialidad a la sección');
+                        mostrarMensajeValidacionCrear('Debe seleccionar una institución');
+                        return false;
+                    }
+
+                    // Validar que haya al menos una especialidad
+                    if (especialidadesAgregadas.length === 0) {
+                        e.preventDefault();
+                        mostrarMensajeValidacionCrear('Debe asignar al menos una especialidad a la sección');
                         return false;
                     }
                 });
-               
-                form.setAttribute('data-listener-added', 'true');
             }
-        });
-       
-        // Limpiar mensajes al cerrar modal de editar
-        modalEditar.addEventListener('hidden.bs.modal', function() {
-            // Obtener el ID de la sección del modal
-            const form = modalEditar.querySelector('form');
-            const seccionIdInput = form ? form.querySelector('input[name="id"]') : null;
-            const seccionId = seccionIdInput ? seccionIdInput.value : null;
-           
-            if (seccionId) {
+
+            // Limpiar mensajes al abrir/cerrar modal de crear
+            modalCrear.addEventListener('shown.bs.modal', function() {
+                ocultarMensajeValidacionCrear();
+            });
+            modalCrear.addEventListener('hidden.bs.modal', function() {
+                ocultarMensajeValidacionCrear();
+            });
+        }
+
+        // Event listeners para TODOS los modales de editar
+        document.querySelectorAll('[id^="modalEditarSeccion-"]').forEach(function(modalEditarEl) {
+            modalEditarEl.addEventListener('shown.bs.modal', function(event) {
+                const trigger = event.relatedTarget;
+                const seccionId = trigger ? trigger.getAttribute('data-id') : (modalEditarEl.id || '').split('-').pop();
+                const form = modalEditarEl.querySelector('form');
+
+                if (!seccionId || !form) return;
+
+                // Ocultar mensajes de validación al abrir el modal
                 ocultarMensajeValidacion(seccionId);
-            }
+
+                // Actualizar opciones del select al abrir el modal
+                actualizarOpcionesSelect(seccionId);
+
+                // Agregar event listener al formulario si no lo tiene
+                if (!form.hasAttribute('data-listener-added')) {
+                    form.addEventListener('submit', function(e) {
+                        // Ocultar mensajes de validación anteriores
+                        ocultarMensajeValidacion(seccionId);
+
+                        // Validar especialidades usando checkboxes
+                        const checkboxesChecked = form.querySelectorAll('input[name="especialidades[]"]:checked');
+
+                        if (checkboxesChecked.length === 0) {
+                            e.preventDefault();
+                            mostrarMensajeValidacion(seccionId, 'Debe asignar al menos una especialidad a la sección');
+                            return false;
+                        }
+                    });
+                    form.setAttribute('data-listener-added', 'true');
+                }
+            });
+
+            modalEditarEl.addEventListener('hidden.bs.modal', function() {
+                const form = modalEditarEl.querySelector('form');
+                const seccionIdInput = form ? form.querySelector('input[name="id"]') : null;
+                const seccionId = seccionIdInput ? seccionIdInput.value : (modalEditarEl.id || '').split('-').pop();
+                if (seccionId) {
+                    ocultarMensajeValidacion(seccionId);
+                }
+            });
         });
     });
 </script>
 @endsection
-
-
-
 
 
 

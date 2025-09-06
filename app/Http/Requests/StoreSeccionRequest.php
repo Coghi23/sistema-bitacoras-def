@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 use App\Models\Especialidade;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+
 class StoreSeccionRequest extends FormRequest
 {
     /**
@@ -24,7 +28,8 @@ class StoreSeccionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:55|unique:seccione,nombre',
+            // Unicidad solo entre secciones activas (condicion = 1)
+            'nombre' => 'required|string|max:55|unique:seccione,nombre,NULL,id,condicion,1',
             'id_institucion' => 'required|exists:institucione,id',
             'especialidades' => 'required|array|min:1',
             'especialidades.*' => 'required|exists:especialidad,id',
@@ -63,12 +68,28 @@ class StoreSeccionRequest extends FormRequest
                 return;
             }
 
-            $countMismatched = Especialidade::whereIn('id', $especialidades)
-                ->where('id_institucion', '!=', $institucionId)
-                ->count();
 
-            if ($countMismatched > 0) {
-                $v->errors()->add('especialidades', 'Las especialidades seleccionadas deben pertenecer a la institución elegida.');
+            // Si existe una tabla pivote many-to-many, validar contra ella.
+            if (Schema::hasTable('especialidad_institucion')) {
+                // Contar cuántas especialidades seleccionadas están vinculadas a la institución dada.
+                $vinculadas = DB::table('especialidad_institucion')
+                    ->whereIn('especialidad_id', $especialidades)
+                    ->where('institucion_id', $institucionId)
+                    ->distinct()
+                    ->count('especialidad_id');
+
+                if ($vinculadas < count($especialidades)) {
+                    $v->errors()->add('especialidades', 'Las especialidades seleccionadas deben pertenecer a la institución elegida.');
+                }
+            } else {
+                // Fallback al esquema actual 1:N (columna id_institucion en especialidad)
+                $countMismatched = Especialidade::whereIn('id', $especialidades)
+                    ->where('id_institucion', '!=', $institucionId)
+                    ->count();
+
+                if ($countMismatched > 0) {
+                    $v->errors()->add('especialidades', 'Las especialidades seleccionadas deben pertenecer a la institución elegida.');
+                }
             }
         });
     }

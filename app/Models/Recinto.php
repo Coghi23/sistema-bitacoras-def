@@ -62,6 +62,18 @@ class Recinto extends Model
     }
 
 
+    public function institucion()
+    {
+        return $this->belongsTo(Institucion::class);
+    }
+
+
+    public function horarios()
+    {
+        return $this->hasMany(Horario::class, 'idRecinto');
+    }
+
+
     protected static function boot()
     {
         parent::boot();

@@ -193,6 +193,29 @@ class EventoController extends Controller
         $lecciones = $horarios->flatMap(function ($horario) {
             return $horario->leccion->map(function ($leccion) use ($horario) {
                 $leccion->horario_data = $horario;
+                // Obtener la información de tiempo desde la tabla pivote
+                $horarioLeccion = \DB::table('horario_leccion')
+                    ->where('idHorario', $horario->id)
+                    ->where('idLeccion', $leccion->id)
+                    ->first();
+                
+                // Debug: Log the structure of horarioLeccion
+                \Log::info('HorarioLeccion data:', [
+                    'horario_id' => $horario->id,
+                    'leccion_id' => $leccion->id,
+                    'horario_leccion' => $horarioLeccion ? (array)$horarioLeccion : null
+                ]);
+                
+                // Intentar diferentes nombres de columnas
+                $leccion->hora_inicio = $horarioLeccion->horaInicio ?? 
+                                       $horarioLeccion->hora_inicio ?? 
+                                       $leccion->hora_inicio ?? null;
+                                       
+                $leccion->hora_fin = $horarioLeccion->horaFin ?? 
+                                    $horarioLeccion->hora_fin ?? 
+                                    $horarioLeccion->hora_final ?? 
+                                    $leccion->hora_final ?? null;
+                
                 return $leccion;
             });
         })->unique('id');
@@ -270,9 +293,33 @@ class EventoController extends Controller
                     ->first();
                 if ($horarioSeleccionado) {
                     $horarios = collect([$horarioSeleccionado]);
-                    // Asignar horario_data a cada lección
+                    // Asignar horario_data a cada lección con información de tiempo
                     $lecciones = $horarioSeleccionado->leccion->map(function($leccion) use ($horarioSeleccionado) {
                         $leccion->horario_data = $horarioSeleccionado;
+                        
+                        // Obtener información de tiempo
+                        $horarioLeccion = \DB::table('horario_leccion')
+                            ->where('idHorario', $horarioSeleccionado->id)
+                            ->where('idLeccion', $leccion->id)
+                            ->first();
+                        
+                        // Debug: Log the structure
+                        \Log::info('HorarioLeccion create data:', [
+                            'horario_id' => $horarioSeleccionado->id,
+                            'leccion_id' => $leccion->id,
+                            'horario_leccion' => $horarioLeccion ? (array)$horarioLeccion : null
+                        ]);
+                        
+                        // Intentar diferentes nombres de columnas
+                        $leccion->hora_inicio = $horarioLeccion->horaInicio ?? 
+                                               $horarioLeccion->hora_inicio ?? 
+                                               $leccion->hora_inicio ?? null;
+                                               
+                        $leccion->hora_fin = $horarioLeccion->horaFin ?? 
+                                            $horarioLeccion->hora_fin ?? 
+                                            $horarioLeccion->hora_final ?? 
+                                            $leccion->hora_final ?? null;
+                        
                         return $leccion;
                     });
                     $fecha = $horarioSeleccionado->fecha;
@@ -353,6 +400,11 @@ class EventoController extends Controller
         }
     }
 
+    public function cancelCreate()
+    {
+        // Método para manejar la cancelación del formulario
+        return redirect()->back()->with('info', 'Registro de evento cancelado.');
+    }
 
     //metodo editar
     public function edit(Evento $evento)

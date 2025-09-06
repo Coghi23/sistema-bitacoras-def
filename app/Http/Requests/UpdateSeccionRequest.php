@@ -6,6 +6,10 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Validator;
 use App\Models\Especialidade;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+
 class UpdateSeccionRequest extends FormRequest
 {
     /**
@@ -60,22 +64,50 @@ class UpdateSeccionRequest extends FormRequest
             }
 
             if ($institucionId) {
-                $countMismatched = Especialidade::whereIn('id', $especialidades)
-                    ->where('id_institucion', '!=', $institucionId)
-                    ->count();
+                if (Schema::hasTable('especialidad_institucion')) {
+                    // Validar vía pivote: todas deben estar vinculadas a la institución enviada
+                    $vinculadas = DB::table('especialidad_institucion')
+                        ->whereIn('especialidad_id', $especialidades)
+                        ->where('institucion_id', $institucionId)
+                        ->distinct()
+                        ->count('especialidad_id');
 
-                if ($countMismatched > 0) {
-                    $v->errors()->add('especialidades', 'Las especialidades seleccionadas deben pertenecer a la institución elegida.');
+                    if ($vinculadas < count($especialidades)) {
+                        $v->errors()->add('especialidades', 'Las especialidades seleccionadas deben pertenecer a la institución elegida.');
+                    }
+                } else {
+                    // Fallback 1:N
+                    $countMismatched = Especialidade::whereIn('id', $especialidades)
+                        ->where('id_institucion', '!=', $institucionId)
+                        ->count();
+
+                    if ($countMismatched > 0) {
+                        $v->errors()->add('especialidades', 'Las especialidades seleccionadas deben pertenecer a la institución elegida.');
+                    }
                 }
             } else {
-                // Validar que todas las especialidades pertenezcan a la misma institución entre sí
-                $distinctInstituciones = Especialidade::whereIn('id', $especialidades)
-                    ->select('id_institucion')
-                    ->distinct()
-                    ->count();
+                // Cuando no se especifica institución, exigir coherencia entre especialidades
+                if (Schema::hasTable('especialidad_institucion')) {
+                    // Debe existir al menos una institución común a todas las especialidades seleccionadas
+                    $existeComun = DB::table('especialidad_institucion')
+                        ->whereIn('especialidad_id', $especialidades)
+                        ->groupBy('institucion_id')
+                        ->havingRaw('COUNT(DISTINCT especialidad_id) = ?', [count($especialidades)])
+                        ->exists();
 
-                if ($distinctInstituciones > 1) {
-                    $v->errors()->add('especialidades', 'No puede seleccionar especialidades de diferentes instituciones.');
+                    if (!$existeComun) {
+                        $v->errors()->add('especialidades', 'No puede seleccionar especialidades de diferentes instituciones sin una institución en común.');
+                    }
+                } else {
+                    // Fallback 1:N: todas deben tener el mismo id_institucion
+                    $distinctInstituciones = Especialidade::whereIn('id', $especialidades)
+                        ->select('id_institucion')
+                        ->distinct()
+                        ->count();
+
+                    if ($distinctInstituciones > 1) {
+                        $v->errors()->add('especialidades', 'No puede seleccionar especialidades de diferentes instituciones.');
+                    }
                 }
             }
         });
