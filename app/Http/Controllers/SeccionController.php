@@ -6,10 +6,12 @@ use DB;
 use Illuminate\Http\Request;
 use App\Models\Seccione; 
 use App\Models\Especialidade;
+use App\Models\Institucione;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreSeccionRequest;
 use App\Http\Requests\UpdateSeccionRequest;
 use Exception; 
+use Illuminate\Support\Facades\Schema;
 
 class SeccionController extends Controller
 {
@@ -30,11 +32,49 @@ class SeccionController extends Controller
         }
         
         $secciones = $query->get();
-        
-        // Obtener todas las especialidades activas para el dropdown
-        $especialidades = Especialidade::where('condicion', 1)->get();
-        
-        return view('Seccion.index', compact('secciones', 'especialidades'));
+
+        // Detectar esquema disponible
+        $hasPivot = Schema::hasTable('especialidad_institucion');
+        $hasIdInstitucionColumn = Schema::hasColumn('especialidad', 'id_institucion');
+
+        // Obtener todas las especialidades activas para el dropdown (old repoblado)
+        $especialidades = Especialidade::where('condicion', 1)
+            ->select($hasIdInstitucionColumn ? ['id', 'nombre', 'id_institucion'] : ['id', 'nombre'])
+            ->get();
+
+        // Obtener instituciones para el select de creación
+        $instituciones = Institucione::select('id','nombre')->get();
+
+        // Catálogo de especialidades por institución (soporta M2M si existe pivote)
+        if ($hasPivot) {
+            $rows = DB::table('especialidad_institucion')
+                ->join('especialidad', 'especialidad.id', '=', 'especialidad_institucion.especialidad_id')
+                ->select('especialidad_institucion.institucion_id as institucion_id', 'especialidad.id as id', 'especialidad.nombre as nombre')
+                ->where('especialidad.condicion', 1)
+                ->get();
+
+            $especialidadesPorInstitucion = $rows
+                ->groupBy('institucion_id')
+                ->map(function ($items) {
+                    return $items->map(function ($r) {
+                        return ['id' => $r->id, 'nombre' => $r->nombre];
+                    })->values();
+                });
+        } elseif ($hasIdInstitucionColumn) {
+            // Fallback 1:N por columna id_institucion
+            $especialidadesPorInstitucion = $especialidades
+                ->groupBy('id_institucion')
+                ->map(function ($items) {
+                    return $items->map(function ($e) {
+                        return ['id' => $e->id, 'nombre' => $e->nombre];
+                    })->values();
+                });
+        } else {
+            // Sin pivote ni columna id_institucion: no se puede construir el mapa, devolver vacío
+            $especialidadesPorInstitucion = collect();
+        }
+
+        return view('Seccion.index', compact('secciones', 'especialidades', 'instituciones', 'especialidadesPorInstitucion'));
     }
 
     /**

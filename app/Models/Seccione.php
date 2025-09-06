@@ -23,5 +23,9 @@ class Seccione extends Model
             ->withTimestamps();
     }
 
-    protected $fillable =['nombre'];
+    protected $fillable = [
+        'nombre',
+        'id_institucion',
+        'condicion',
+    ];
 }
