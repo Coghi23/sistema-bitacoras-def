@@ -181,6 +181,9 @@ Route::get('/eventos/load', [EventoController::class, 'loadEventos'])->name('eve
 Route::get('/eventos/profesor/load', [EventoController::class, 'loadEventosProfesor'])->name('eventos.profesor.load');
 Route::get('/eventos/soporte/load', [EventoController::class, 'loadEventosSoporte'])->name('eventos.soporte.load');
 
+// Ruta para obtener detalles de evento
+Route::get('/evento/{id}/details', [EventoController::class, 'getEventoDetails'])->name('evento.details');
+
 // Rutas para actualizar y desactivar eventos
 Route::patch('/evento/{id}', [EventoController::class, 'update'])->name('evento.update');
 Route::get('/evento', [EventoController::class, 'index'])->name('evento.index');

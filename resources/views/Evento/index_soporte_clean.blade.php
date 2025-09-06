@@ -71,6 +71,13 @@
                                 Más antiguos
                             </a>
                         </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item" href="#" id="limpiarFiltros" style="color: #dc3545;">
+                                <i class="bi bi-x-circle me-2"></i>
+                                Limpiar todo
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -125,6 +132,80 @@
         </div>
     </div>
 </div>
+
+
+<!-- ================= MODALES DE DETALLE Y EDICIÓN ================= -->
+@foreach ($eventos as $evento)
+    <!-- Modal de edición para cada evento -->
+    <div id="modalDetalles-{{ $evento->id }}" class="modal">
+        <div class="modal-contenido">
+            <div class="modal-encabezado">
+                <span class="icono-atras" onclick="cerrarModal({{ $evento->id }})">
+                    <i>
+                        <img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="icono volver"/>
+                    </i>
+                </span>
+                <h1 class="titulo">Detalles</h1>
+            </div>
+
+            <div class="modal-cuerpo">
+                <div class="row">
+                    <div class="col">
+                        <!-- Datos del docente y evento -->
+                        <label>Docente:</label>
+                        <input type="text" value="{{ $evento->usuario->name ?? 'N/A' }}" disabled>
+
+                        <label>Institución:</label>
+                        <input type="text" value="{{ $evento->horario->recinto->institucion->nombre ?? '' }}" disabled>
+
+                        <label>SubÁrea:</label>
+                        <input type="text" value="{{ $evento->subarea->nombre ?? '' }}" disabled>
+
+                        <label>Sección:</label>
+                        <input type="text" value="{{ $evento->seccion->nombre ?? '' }}" disabled>
+
+                        <label>Especialidad:</label>
+                        <input type="text" value="{{ $evento->subarea->especialidad->nombre ?? '' }}" disabled>
+                    </div>
+
+                    <div class="col">
+                        <!-- Datos de fecha, hora, prioridad y estado -->
+                        <label>Fecha:</label>
+                        <input type="text" value="{{ \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y') }}" disabled>
+                        
+                        <label>Hora:</label>
+                        <input type="text" value="{{ \Carbon\Carbon::parse($evento->hora_envio)->format('H:i') }}" disabled>
+                        
+                        <label>Recinto:</label>
+                        <input type="text" value="{{ $evento->horario->recinto->nombre ?? '' }}" disabled>
+
+                        <label>Prioridad:</label>
+                        <input type="text" value="{{ ucfirst($evento->prioridad) }}" disabled>
+
+                        <label>Estado:</label>
+                        <select class="form-select mb-3" id="estado-{{ $evento->id }}">
+                            <option value="en_espera" @if($evento->estado == 'en_espera') selected @endif>En espera</option>
+                            <option value="en_proceso" @if($evento->estado == 'en_proceso') selected @endif>En proceso</option>
+                            <option value="completado" @if($evento->estado == 'completado') selected @endif>Completado</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="observaciones mt-3">
+                    <label>Observaciones:</label>
+                    <textarea disabled>{{ $evento->observacion }}</textarea>
+                </div>
+
+                <!-- Botón guardar cambios centrado y pequeño -->
+                <div class="mt-4 d-flex justify-content-center">
+                    <button type="button" class="btn btn-primary px-4 py-2" style="background-color:#134496; min-width:150px;" onclick="guardarEstado({{ $evento->id }})">
+                        <i class="bi bi-save me-2"></i>Guardar cambios
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+@endforeach
 
 @endsection
 
@@ -299,104 +380,16 @@ const intervalId = setInterval(cargarEventos, 3000);
 
 // Función para abrir modal
 function abrirModal(id) {
-    // Buscar el evento específico en los datos
-    fetch(`/evento/${id}/details`, {
-        method: 'GET',
-        headers: {
-            'Accept': 'application/json',
-            'X-Requested-With': 'XMLHttpRequest',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+    Swal.fire({
+        html: document.getElementById('modalDetalles-' + id).innerHTML,
+        width: '80%',
+        showConfirmButton: false, // 🚫 Oculta el botón "Confirmar"
+        showCloseButton: false,   // 🚫 Oculta el botón de cerrar (X), cámbialo a true si lo quieres
+        customClass: {
+            container: 'modal-detalles-container',
+            popup: 'bg-transparent',
+            content: 'bg-transparent'
         }
-    })
-    .then(response => response.json())
-    .then(evento => {
-        const estadoOptions = {
-            'en_espera': 'En espera',
-            'en_proceso': 'En proceso', 
-            'completado': 'Completado'
-        };
-        
-        const modalHTML = `
-            <div class="modal-contenido">
-                <div class="modal-encabezado">
-                    <span class="icono-atras" onclick="Swal.close()">
-                        <i>
-                            <img width="40" height="40" src="https://img.icons8.com/external-solid-adri-ansyah/64/FAB005/external-ui-basic-ui-solid-adri-ansyah-26.png" alt="icono volver"/>
-                        </i>
-                    </span>
-                    <h1 class="titulo">Detalles</h1>
-                </div>
-
-                <div class="modal-cuerpo">
-                    <div class="row">
-                        <div class="col">
-                            <label>Docente:</label>
-                            <input type="text" value="${evento.docente}" disabled>
-
-                            <label>Institución:</label>
-                            <input type="text" value="${evento.institucion}" disabled>
-
-                            <label>SubÁrea:</label>
-                            <input type="text" value="${evento.subarea}" disabled>
-
-                            <label>Sección:</label>
-                            <input type="text" value="${evento.seccion}" disabled>
-
-                            <label>Especialidad:</label>
-                            <input type="text" value="${evento.especialidad}" disabled>
-                        </div>
-
-                        <div class="col">
-                            <label>Fecha:</label>
-                            <input type="text" value="${evento.fecha}" disabled>
-                            
-                            <label>Hora:</label>
-                            <input type="text" value="${evento.hora}" disabled>
-                            
-                            <label>Recinto:</label>
-                            <input type="text" value="${evento.recinto}" disabled>
-
-                            <label>Prioridad:</label>
-                            <input type="text" value="${evento.prioridad}" disabled>
-
-                            <label>Estado:</label>
-                            <select class="form-select mb-3" id="estado-${id}">
-                                ${Object.entries(estadoOptions).map(([key, value]) => 
-                                    `<option value="${key}" ${evento.estado === key ? 'selected' : ''}>${value}</option>`
-                                ).join('')}
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="observaciones mt-3">
-                        <label>Observaciones:</label>
-                        <textarea disabled>${evento.observaciones || ''}</textarea>
-                    </div>
-
-                    <div class="mt-4 d-flex justify-content-center">
-                        <button type="button" class="btn btn-primary px-4 py-2" style="background-color:#134496; min-width:150px;" onclick="guardarEstado(${id})">
-                            <i class="bi bi-save me-2"></i>Guardar cambios
-                        </button>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        Swal.fire({
-            html: modalHTML,
-            width: '80%',
-            showConfirmButton: false,
-            showCloseButton: false,
-            customClass: {
-                container: 'modal-detalles-container',
-                popup: 'bg-transparent',
-                content: 'bg-transparent'
-            }
-        });
-    })
-    .catch(error => {
-        console.error('Error al cargar detalles:', error);
-        Swal.fire('Error', 'No se pudieron cargar los detalles del evento', 'error');
     });
 }
 
@@ -471,11 +464,13 @@ function initializeFilters() {
     const filtrosDropdown = document.getElementById('filtrosDropdown');
     const inputBusqueda = document.getElementById('inputBusqueda');
     const busquedaForm = document.getElementById('busquedaForm');
+    const limpiarFiltros = document.getElementById('limpiarFiltros');
     
     console.log('Elementos encontrados:', {
         filtrosDropdown: !!filtrosDropdown,
         inputBusqueda: !!inputBusqueda,
-        busquedaForm: !!busquedaForm
+        busquedaForm: !!busquedaForm,
+        limpiarFiltros: !!limpiarFiltros
     });
     
     // Event listeners para filtros del dropdown
@@ -509,6 +504,14 @@ function initializeFilters() {
             e.preventDefault();
             filtrosActivos.busqueda = document.getElementById('inputBusqueda').value;
             aplicarFiltros();
+        });
+    }
+    
+    // Event listener para limpiar filtros
+    if (limpiarFiltros) {
+        limpiarFiltros.addEventListener('click', function(e) {
+            e.preventDefault();
+            limpiarTodosFiltros();
         });
     }
 }
