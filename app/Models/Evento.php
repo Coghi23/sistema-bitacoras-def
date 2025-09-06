@@ -24,6 +24,11 @@ class Evento extends Model
         'confirmacion'
     ];
 
+    protected $attributes = [
+        'estado' => 'en_espera',
+        'prioridad' => 'media'
+    ];
+
     public function bitacora()
     {
         return $this->belongsTo(Bitacora::class);

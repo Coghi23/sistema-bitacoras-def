@@ -22,15 +22,54 @@ class EventoController extends Controller
 
     public function index(Request $request)
     {
-        $eventos = Evento::with([
+        $query = Evento::with([
             'bitacora',
             'usuario',
             'seccion',
             'subarea.especialidad',
             'horario.recinto.institucion'
-        ])
-            ->orderBy('created_at', 'desc')
-            ->get();
+        ]);
+
+        // Aplicar filtro por estado si se proporciona
+        if ($request->has('estado') && $request->estado !== '') {
+            $query->where('estado', $request->estado);
+        }
+
+        // Aplicar filtro de búsqueda si se proporciona
+        if ($request->has('busqueda') && $request->busqueda !== '') {
+            $busqueda = $request->busqueda;
+            $query->where(function($q) use ($busqueda) {
+                $q->whereHas('usuario', function($userQuery) use ($busqueda) {
+                    $userQuery->where('name', 'LIKE', "%{$busqueda}%");
+                })
+                ->orWhereHas('horario.recinto', function($recintoQuery) use ($busqueda) {
+                    $recintoQuery->where('nombre', 'LIKE', "%{$busqueda}%");
+                })
+                ->orWhereHas('horario.recinto.institucion', function($institucionQuery) use ($busqueda) {
+                    $institucionQuery->where('nombre', 'LIKE', "%{$busqueda}%");
+                })
+                ->orWhere('observacion', 'LIKE', "%{$busqueda}%")
+                ->orWhere('prioridad', 'LIKE', "%{$busqueda}%");
+            });
+        }
+
+        // Aplicar ordenamiento
+        $orden = $request->get('orden', 'desc');
+        if ($orden === 'asc') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $eventos = $query->get();
+
+        // Asegurar que todos los eventos tengan un estado válido
+        foreach ($eventos as $evento) {
+            if (empty($evento->estado) || is_null($evento->estado)) {
+                $evento->estado = 'en_espera';
+                $evento->save();
+            }
+        }
 
         if ($request->ajax()) {
             try {
@@ -53,35 +92,78 @@ class EventoController extends Controller
 
     public function index_soporte(Request $request)
     {
-        $eventos = Evento::with([
+        $query = Evento::with([
             'bitacora',
             'usuario',
             'seccion',
             'subarea.especialidad',
             'horario.recinto.institucion'
-        ])
-            ->where('condicion', 1)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        ])->where('condicion', 1);
+
+        // Aplicar filtro por recinto si se proporciona
+        if ($request->has('recinto') && $request->recinto !== '') {
+            $query->whereHas('horario.recinto', function($recintoQuery) use ($request) {
+                $recintoQuery->where('id', $request->recinto);
+            });
+        }
+
+        // Aplicar filtro de búsqueda si se proporciona
+        if ($request->has('busqueda') && $request->busqueda !== '') {
+            $busqueda = $request->busqueda;
+            $query->where(function($q) use ($busqueda) {
+                $q->whereHas('usuario', function($userQuery) use ($busqueda) {
+                    $userQuery->where('name', 'LIKE', "%{$busqueda}%");
+                })
+                ->orWhereHas('horario.recinto', function($recintoQuery) use ($busqueda) {
+                    $recintoQuery->where('nombre', 'LIKE', "%{$busqueda}%");
+                })
+                ->orWhereHas('horario.recinto.institucion', function($institucionQuery) use ($busqueda) {
+                    $institucionQuery->where('nombre', 'LIKE', "%{$busqueda}%");
+                })
+                ->orWhere('observacion', 'LIKE', "%{$busqueda}%");
+            });
+        }
+
+        // Aplicar ordenamiento
+        if ($request->has('orden') && $request->orden === 'asc') {
+            $query->orderBy('created_at', 'asc');
+        } else {
+            $query->orderBy('created_at', 'desc');
+        }
+
+        $eventos = $query->get();
+
+        // Asegurar que todos los eventos tengan un estado válido
+        foreach ($eventos as $evento) {
+            if (empty($evento->estado) || is_null($evento->estado)) {
+                $evento->estado = 'en_espera';
+                $evento->save();
+            }
+        }
+
+        // Obtener todos los recintos para el dropdown (sin filtro de condición por ahora)
+        $recintos = \App\Models\Recinto::orderBy('nombre')->get();
+        
+        // Debug: verificar si se están cargando los recintos
+        \Log::info('Recintos cargados para soporte: ' . $recintos->count());
 
         if ($request->ajax()) {
             try {
-                $html = view('Evento.index.soporte', compact('eventos'))->renderSections()['content'];
+                $view = view('Evento.partials.eventos-lista-soporte', compact('eventos'))->render();
                 return response()->json([
                     'success' => true,
-                    'hasNewData' => true,
-                    'html' => $html,
-                    'timestamp' => $eventos->max('updated_at')
+                    'html' => $view
                 ]);
             } catch (\Exception $e) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Error al cargar los eventos'
+                    'message' => 'Error al cargar los eventos',
+                    'error' => $e->getMessage()
                 ], 500);
             }
         }
 
-        return view('Evento.index_soporte', compact('eventos'));
+        return view('Evento.index_soporte', compact('eventos', 'recintos'));
     }
 
         public function index_profesor(Request $request)
@@ -498,6 +580,37 @@ class EventoController extends Controller
                 'success' => false,
                 'message' => 'Error al cargar los eventos'
             ], 500);
+        }
+    }
+
+    public function getEventoDetails($id)
+    {
+        try {
+            $evento = Evento::with([
+                'usuario', 
+                'horario.recinto.institucion', 
+                'subarea.especialidad', 
+                'seccion'
+            ])->findOrFail($id);
+
+            return response()->json([
+                'id' => $evento->id,
+                'docente' => $evento->usuario->name ?? 'N/A',
+                'institucion' => $evento->horario->recinto->institucion->nombre ?? '',
+                'subarea' => $evento->subarea->nombre ?? '',
+                'seccion' => $evento->seccion->nombre ?? '',
+                'especialidad' => $evento->subarea->especialidad->nombre ?? '',
+                'fecha' => \Carbon\Carbon::parse($evento->fecha)->format('d/m/Y'),
+                'hora' => \Carbon\Carbon::parse($evento->hora_envio)->format('H:i'),
+                'recinto' => $evento->horario->recinto->nombre ?? '',
+                'prioridad' => ucfirst($evento->prioridad),
+                'estado' => $evento->estado,
+                'observaciones' => $evento->observacion ?? ''
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Evento no encontrado'
+            ], 404);
         }
     }
 }
