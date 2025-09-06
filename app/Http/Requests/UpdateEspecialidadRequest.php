@@ -21,9 +21,17 @@ class UpdateEspecialidadRequest extends FormRequest
      */
     public function rules(): array
     {
+        $id = is_object($this->route('especialidad')) ? $this->route('especialidad')->id : $this->route('especialidad');
+
         return [
-            'nombre' => 'required|string|max:50|unique:especialidad,nombre,' . $this->route('especialidad'),
-            'id_institucion' => 'required|exists:institucione,id'
+            'nombre' => [
+                'required',
+                'string',
+                'max:50',
+                \Illuminate\Validation\Rule::unique('especialidad', 'nombre')->ignore($id, 'id'),
+            ],
+            'instituciones' => 'nullable|array',
+            'instituciones.*' => 'integer|exists:institucione,id'
         ];
     }
 
@@ -38,8 +46,18 @@ class UpdateEspecialidadRequest extends FormRequest
             'nombre.required' => 'El nombre de la especialidad es obligatorio.',
             'nombre.unique' => 'Ya existe una especialidad con este nombre.',
             'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
-            'id_institucion.required' => 'Debe seleccionar una institución.',
-            'id_institucion.exists' => 'La institución seleccionada no existe.'
+            'instituciones.array' => 'El formato de instituciones no es válido.',
+            'instituciones.*.exists' => 'Alguna institución seleccionada no existe.'
         ];
+    }
+
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        $response = redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('modal_editar_id', $this->route('especialidad'));
+
+        throw new \Illuminate\Validation\ValidationException($validator, $response);
     }
 }
