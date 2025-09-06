@@ -23,7 +23,8 @@ class StoreEspecialidadRequest extends FormRequest
     {
         return [
             'nombre' => 'required|string|max:50|unique:especialidad,nombre',
-            'id_institucion' => 'required|exists:institucione,id'
+            'instituciones' => 'required|array|min:1',
+            'instituciones.*' => 'integer|exists:institucione,id'
         ];
     }
 
@@ -38,8 +39,20 @@ class StoreEspecialidadRequest extends FormRequest
             'nombre.required' => 'El nombre de la especialidad es obligatorio.',
             'nombre.unique' => 'Ya existe una especialidad con este nombre.',
             'nombre.max' => 'El nombre no puede exceder los 50 caracteres.',
-            'id_institucion.required' => 'Debe seleccionar una institución.',
-            'id_institucion.exists' => 'La institución seleccionada no existe.'
+            'instituciones.required' => 'Debe seleccionar al menos una institución.',
+            'instituciones.array' => 'El formato de instituciones no es válido.',
+            'instituciones.min' => 'Debe seleccionar al menos una institución.',
+            'instituciones.*.exists' => 'Alguna institución seleccionada no existe.'
         ];
+    }
+
+    protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
+    {
+        $response = redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('modal_crear', true);
+
+        throw new \Illuminate\Validation\ValidationException($validator, $response);
     }
 }
