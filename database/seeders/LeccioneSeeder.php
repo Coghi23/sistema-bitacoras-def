@@ -178,6 +178,48 @@ class LeccioneSeeder extends Seeder
                 'hora_final' => '04:20',
                 'hora_final_periodo' => 'PM',
             ],
+
+            //lecciones tecnicas nocturnos
+            [
+                'tipoLeccion' => 'Tecnica',
+                'leccion' => 'Lección 1',
+                'hora_inicio' => '05:50',
+                'hora_inicio_periodo' => 'PM',
+                'hora_final' => '06:35',
+                'hora_final_periodo' => 'PM',
+            ],
+            [
+                'tipoLeccion' => 'Tecnica',
+                'leccion' => 'Lección 2',
+                'hora_inicio' => '06:35',
+                'hora_inicio_periodo' => 'PM',
+                'hora_final' => '07:20',
+                'hora_final_periodo' => 'PM',
+            ],
+            [
+                'tipoLeccion' => 'Tecnica',
+                'leccion' => 'Lección 3',
+                'hora_inicio' => '07:40',
+                'hora_inicio_periodo' => 'PM',
+                'hora_final' => '08:25',
+                'hora_final_periodo' => 'PM',
+            ],
+            [
+                'tipoLeccion' => 'Tecnica',
+                'leccion' => 'Lección 4',
+                'hora_inicio' => '08:25',
+                'hora_inicio_periodo' => 'PM',
+                'hora_final' => '09:10',
+                'hora_final_periodo' => 'PM',
+            ],
+            [
+                'tipoLeccion' => 'Tecnica',
+                'leccion' => 'Lección 5',
+                'hora_inicio' => '09:10',
+                'hora_inicio_periodo' => 'PM',
+                'hora_final' => '09:55',
+                'hora_final_periodo' => 'PM',
+            ],
         ]);
     }
 }
