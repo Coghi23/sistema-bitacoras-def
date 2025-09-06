@@ -2,6 +2,23 @@
 
 @section('content')
 <style>
+    /* Estilos adicionales para los checkboxes */
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .form-check-input:focus {
+        border-color: #86b7fe;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    .form-check-label {
+        cursor: pointer;
+    }
+</style>
+<style>
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .main-content {
@@ -125,11 +142,11 @@
         @can('view_usuarios')
             {{-- Botones para mostrar/ocultar usuarios inactivos --}}
             <div class="d-flex flex-wrap gap-2 mb-3">
-                <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn btn-warning">
-                    Mostrar inactivos
-                </a>
-                <a href="{{ route('usuario.index') }}" class="btn btn-primary">
+                <a href="{{ route('usuario.index') }}" class="btn {{ !request('inactivos') ? 'btn-primary' : 'btn-outline-primary' }}">
                     Mostrar activos
+                </a>
+                <a href="{{ route('usuario.index', ['inactivos' => 1]) }}" class="btn {{ request('inactivos') ? 'btn-warning' : 'btn-outline-warning' }}">
+                    Mostrar inactivos
                 </a>
             </div>
 
@@ -196,7 +213,7 @@
 
     {{-- Modal Crear Usuario --}}
     <div class="modal fade" id="modalUsuario" tabindex="-1" aria-labelledby="modalUsuarioLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
                 <form method="POST" action="{{ route('usuario.store') }}">
                     @csrf
@@ -251,7 +268,7 @@
                                 <i class="fas fa-user-tag text-success me-2"></i>Rol:
                             </label>
                             <div class="position-relative w-50">
-                                <select name="role" class="form-control rounded-4" required>
+                                <select name="role" id="selectRolCrear" class="form-control rounded-4" required>
                                     <option value="">Seleccione un rol</option>
                                     @foreach($roles as $rol)
                                         <option value="{{ $rol->name }}">{{ ucfirst($rol->name) }}</option>
@@ -259,38 +276,50 @@
                                 </select>
                             </div>
                         </div>
-                        
-                        {{-- Institución (temporalmente desactivada)
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-building text-primary me-2"></i>Institución:
-                            </label>
-                            <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione una institución" data-live-search="true" name="id_institucion" id="id_institucion" class="form-control selectpicker show-tick" required>
-                                    <option value="">Seleccione una institución</option>
-                                    @foreach ($instituciones as $institucion)
-                                        <option value="{{$institucion->id}}" {{ old('id_institucion') == $institucion->id ? 'selected' : '' }}>{{$institucion->nombre}}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                        --}}
-                        
-                        {{-- Especialidad (temporalmente desactivada)
-                        <div class="mb-3 d-flex align-items-center justify-content-between">
-                            <label class="fw-bold me-3 w-50 text-start">
-                                <i class="fas fa-graduation-cap text-success me-2"></i>Especialidad:
-                            </label>
-                            <div class="position-relative w-50">
-                                <select data-size="4" title="Seleccione una especialidad" data-live-search="true" name="id_especialidad" id="id_especialidad" class="form-control selectpicker show-tick" required>
-                                        <option value="">Seleccione una institución</option>
-                                        @foreach ($especialidades as $especialidad)
-                                            <option value="{{$especialidad->id}}" {{ old('id_especialidad') == $especialidad->id ? 'selected' : '' }}>{{$especialidad->nombre}}</option>
+
+                        {{-- Instituciones (para todos los roles excepto admin) --}}
+                        <div class="mb-3" id="institucionesSectionCrear" style="display: none;">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <label class="fw-bold me-3 w-50 text-start">
+                                    <i class="fas fa-building text-primary me-2"></i>Instituciones:
+                                </label>
+                                <div class="position-relative w-50">
+                                    <div class="border rounded-4 p-3" style="background-color: #f8f9fa; min-height: 100px; max-height: 150px; overflow-y: auto;">
+                                        @foreach($instituciones as $institucion)
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input instituciones-checkbox" type="checkbox" 
+                                                       name="instituciones[]" value="{{ $institucion->id }}" 
+                                                       id="institucion{{ $institucion->id }}">
+                                                <label class="form-check-label small" for="institucion{{ $institucion->id }}">
+                                                    {{ $institucion->nombre }}
+                                                </label>
+                                            </div>
                                         @endforeach
-                                </select>
+                                    </div>
+                                    <small class="form-text text-muted">Seleccione las instituciones correspondientes</small>
+                                </div>
                             </div>
                         </div>
-                        --}}
+
+                        {{-- Especialidades (SOLO para profesor) --}}
+                        <div class="mb-3" id="especialidadesSectionCrear" style="display: none;">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <label class="fw-bold me-3 w-50 text-start">
+                                    <i class="fas fa-graduation-cap text-success me-2"></i>Especialidades:
+                                </label>
+                                <div class="position-relative w-50">
+                                    <div class="border rounded-4 p-3" style="background-color: #f8f9fa; min-height: 100px; max-height: 150px; overflow-y: auto;">
+                                        <div id="especialidadesContainer">
+                                            <div class="text-muted text-center py-3">
+                                                <i class="fas fa-info-circle me-2"></i>
+                                                Primero seleccione instituciones
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Se mostrarán las especialidades de las instituciones seleccionadas</small>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer px-4 pb-3 d-flex justify-content-end">
                         <button type="submit" class="btn btn-primary btn-crear w-100 w-md-auto">Registrar</button>
@@ -304,7 +333,7 @@
     @foreach($usuarios as $usuario)
     {{-- Modal Editar Usuario --}}
     <div class="modal fade" id="modalEditarUsuario{{ $usuario->id }}" tabindex="-1" aria-labelledby="modalEditarUsuarioLabel{{ $usuario->id }}" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-md">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content rounded-4 shadow-lg">
                 <form method="POST" action="{{ route('usuario.update', $usuario->id) }}">
                     @csrf
@@ -353,11 +382,11 @@
                                 <i class="fas fa-user-tag text-success me-2"></i>Rol:
                             </label>
                             <div class="position-relative w-50">
-                                <select name="role" class="form-control rounded-4" required>
+                                <select name="role" id="selectRolEditar{{ $usuario->id }}" class="form-control rounded-4" required>
                                     <option value="">Seleccione un rol</option>
                                     @if(isset($roles) && $roles)
                                         @foreach ($roles as $rol)
-                                            <option value="{{ $rol->name }}">{{ ucfirst($rol->name) }}</option>
+                                            <option value="{{ $rol->name }}" {{ $usuario->getRoleNames()->first() == $rol->name ? 'selected' : '' }}>{{ ucfirst($rol->name) }}</option>
                                         @endforeach
                                     @else
                                         <option value="profesor">Profesor</option>
@@ -366,6 +395,72 @@
                                         <option value="director">Director</option>
                                     @endif
                                 </select>
+                            </div>
+                        </div>
+
+                        {{-- Instituciones (para todos los roles excepto admin) --}}
+                        @php
+                            $currentRole = $usuario->getRoleNames()->first();
+                            $showInstituciones = $currentRole && $currentRole !== 'admin';
+                            $showEspecialidades = $currentRole === 'profesor';
+                        @endphp
+                        <div class="mb-3" id="institucionesSectionEditar{{ $usuario->id }}" style="display: {{ $showInstituciones ? 'block' : 'none' }};">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <label class="fw-bold me-3 w-50 text-start">
+                                    <i class="fas fa-building text-primary me-2"></i>Instituciones:
+                                </label>
+                                <div class="position-relative w-50">
+                                    <div class="border rounded-4 p-3" style="background-color: #f8f9fa; min-height: 100px; max-height: 150px; overflow-y: auto;">
+                                        @foreach($instituciones as $institucion)
+                                            <div class="form-check mb-2">
+                                                <input class="form-check-input instituciones-checkbox-{{ $usuario->id }}" type="checkbox" 
+                                                       name="instituciones[]" value="{{ $institucion->id }}" 
+                                                       id="institucionEditar{{ $usuario->id }}_{{ $institucion->id }}"
+                                                       {{ $usuario->instituciones->contains($institucion->id) ? 'checked' : '' }}>
+                                                <label class="form-check-label small" for="institucionEditar{{ $usuario->id }}_{{ $institucion->id }}">
+                                                    {{ $institucion->nombre }}
+                                                </label>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <small class="form-text text-muted">Seleccione las instituciones correspondientes</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Especialidades (SOLO para profesor) --}}
+                        <div class="mb-3" id="especialidadesSectionEditar{{ $usuario->id }}" style="display: {{ $showEspecialidades ? 'block' : 'none' }};">
+                            <div class="d-flex align-items-start justify-content-between">
+                                <label class="fw-bold me-3 w-50 text-start">
+                                    <i class="fas fa-graduation-cap text-success me-2"></i>Especialidades:
+                                </label>
+                                <div class="position-relative w-50">
+                                    <div class="border rounded-4 p-3" style="background-color: #f8f9fa; min-height: 100px; max-height: 150px; overflow-y: auto;">
+                                        <div id="especialidadesContainerEditar{{ $usuario->id }}">
+                                            @if($showEspecialidades && $usuario->instituciones->count() > 0)
+                                                @foreach($especialidades as $especialidad)
+                                                    @if($usuario->instituciones->contains($especialidad->id_institucion))
+                                                        <div class="form-check mb-2">
+                                                            <input class="form-check-input" type="checkbox" 
+                                                                   name="especialidades[]" value="{{ $especialidad->id }}" 
+                                                                   id="especialidadEditar{{ $usuario->id }}_{{ $especialidad->id }}"
+                                                                   {{ $usuario->especialidades->contains($especialidad->id) ? 'checked' : '' }}>
+                                                            <label class="form-check-label small" for="especialidadEditar{{ $usuario->id }}_{{ $especialidad->id }}">
+                                                                {{ $especialidad->nombre }}
+                                                            </label>
+                                                        </div>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                <div class="text-muted text-center py-3">
+                                                    <i class="fas fa-info-circle me-2"></i>
+                                                    Primero seleccione instituciones
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <small class="form-text text-muted">Se muestran especialidades de las instituciones seleccionadas</small>
+                                </div>
                             </div>
                         </div>
                         
@@ -545,6 +640,313 @@
             }
         });
         @endif
+
+        /////////////////// JavaScript para mostrar/ocultar campos de profesor /////////////////
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Para el formulario de creación
+            const selectRolCrear = document.getElementById('selectRolCrear');
+            const institucionesSectionCrear = document.getElementById('institucionesSectionCrear');
+            const especialidadesSectionCrear = document.getElementById('especialidadesSectionCrear');
+            const institucionesCheckboxes = document.querySelectorAll('.instituciones-checkbox');
+            const especialidadesContainer = document.getElementById('especialidadesContainer');
+
+            function mostrarOcultarCamposCrear() {
+                if (selectRolCrear && selectRolCrear.value) {
+                    if (selectRolCrear.value === 'admin') {
+                        // Admin no necesita instituciones ni especialidades
+                        institucionesSectionCrear.style.display = 'none';
+                        especialidadesSectionCrear.style.display = 'none';
+                    } else if (selectRolCrear.value === 'profesor') {
+                        // SOLO profesor necesita instituciones y especialidades
+                        institucionesSectionCrear.style.display = 'block';
+                        especialidadesSectionCrear.style.display = 'block';
+                    } else {
+                        // Otros roles (director, soporte) SOLO necesitan instituciones
+                        institucionesSectionCrear.style.display = 'block';
+                        especialidadesSectionCrear.style.display = 'none';
+                    }
+                } else {
+                    // No hay rol seleccionado, ocultar todo
+                    institucionesSectionCrear.style.display = 'none';
+                    especialidadesSectionCrear.style.display = 'none';
+                }
+                
+                // Limpiar selecciones cuando se ocultan los campos
+                if (institucionesSectionCrear.style.display === 'none') {
+                    institucionesCheckboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                }
+                if (especialidadesSectionCrear.style.display === 'none') {
+                    // Limpiar especialidades cuando se oculta la sección
+                    especialidadesContainer.innerHTML = `
+                        <div class="text-muted text-center py-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Primero seleccione instituciones
+                        </div>
+                    `;
+                }
+            }
+
+            // Función para cargar especialidades basadas en instituciones seleccionadas
+            function cargarEspecialidades() {
+                const institucionesSeleccionadas = Array.from(institucionesCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+                
+                if (institucionesSeleccionadas.length === 0) {
+                    especialidadesContainer.innerHTML = `
+                        <div class="text-muted text-center py-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Primero seleccione instituciones
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Mostrar loading
+                especialidadesContainer.innerHTML = `
+                    <div class="text-center py-3">
+                        <i class="fas fa-spinner fa-spin me-2"></i>
+                        Cargando especialidades...
+                    </div>
+                `;
+
+                // Hacer petición AJAX
+                fetch('{{ route("usuario.especialidades-por-instituciones") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        instituciones: institucionesSeleccionadas
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        especialidadesContainer.innerHTML = `
+                            <div class="text-muted text-center py-3">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                No hay especialidades disponibles
+                            </div>
+                        `;
+                    } else {
+                        let html = '';
+                        data.forEach(especialidad => {
+                            html += `
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" 
+                                           name="especialidades[]" value="${especialidad.id}" 
+                                           id="especialidad${especialidad.id}">
+                                    <label class="form-check-label small" for="especialidad${especialidad.id}">
+                                        ${especialidad.nombre}
+                                    </label>
+                                </div>
+                            `;
+                        });
+                        especialidadesContainer.innerHTML = html;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    especialidadesContainer.innerHTML = `
+                        <div class="text-danger text-center py-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error al cargar especialidades
+                        </div>
+                    `;
+                });
+            }
+
+            if (selectRolCrear) {
+                selectRolCrear.addEventListener('change', mostrarOcultarCamposCrear);
+                mostrarOcultarCamposCrear();
+            }
+
+            // Agregar event listeners a los checkboxes de instituciones
+            institucionesCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', cargarEspecialidades);
+            });
+
+            // Para los formularios de edición (dinámicos)
+            @foreach($usuarios as $usuario)
+            const selectRolEditar{{ $usuario->id }} = document.getElementById('selectRolEditar{{ $usuario->id }}');
+            const institucionesSectionEditar{{ $usuario->id }} = document.getElementById('institucionesSectionEditar{{ $usuario->id }}');
+            const especialidadesSectionEditar{{ $usuario->id }} = document.getElementById('especialidadesSectionEditar{{ $usuario->id }}');
+            const institucionesCheckboxesEditar{{ $usuario->id }} = document.querySelectorAll('.instituciones-checkbox-{{ $usuario->id }}');
+            const especialidadesContainerEditar{{ $usuario->id }} = document.getElementById('especialidadesContainerEditar{{ $usuario->id }}');
+
+            function mostrarOcultarCamposEditar{{ $usuario->id }}() {
+                if (selectRolEditar{{ $usuario->id }} && selectRolEditar{{ $usuario->id }}.value) {
+                    if (selectRolEditar{{ $usuario->id }}.value === 'admin') {
+                        // Admin no necesita instituciones ni especialidades
+                        institucionesSectionEditar{{ $usuario->id }}.style.display = 'none';
+                        especialidadesSectionEditar{{ $usuario->id }}.style.display = 'none';
+                    } else if (selectRolEditar{{ $usuario->id }}.value === 'profesor') {
+                        // SOLO profesor necesita instituciones y especialidades
+                        institucionesSectionEditar{{ $usuario->id }}.style.display = 'block';
+                        especialidadesSectionEditar{{ $usuario->id }}.style.display = 'block';
+                    } else {
+                        // Otros roles (director, soporte) SOLO necesitan instituciones
+                        institucionesSectionEditar{{ $usuario->id }}.style.display = 'block';
+                        especialidadesSectionEditar{{ $usuario->id }}.style.display = 'none';
+                    }
+                } else {
+                    // No hay rol seleccionado, ocultar todo
+                    institucionesSectionEditar{{ $usuario->id }}.style.display = 'none';
+                    especialidadesSectionEditar{{ $usuario->id }}.style.display = 'none';
+                }
+            }
+
+            function cargarEspecialidadesEditar{{ $usuario->id }}() {
+                if (!especialidadesContainerEditar{{ $usuario->id }}) return;
+                
+                const institucionesSeleccionadas = Array.from(institucionesCheckboxesEditar{{ $usuario->id }})
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value);
+                
+                const especialidadesActuales = Array.from(especialidadesContainerEditar{{ $usuario->id }}.querySelectorAll('input[type="checkbox"]:checked'))
+                    .map(checkbox => checkbox.value);
+                
+                if (institucionesSeleccionadas.length === 0) {
+                    especialidadesContainerEditar{{ $usuario->id }}.innerHTML = `
+                        <div class="text-muted text-center py-3">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Primero seleccione instituciones
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Mostrar loading
+                especialidadesContainerEditar{{ $usuario->id }}.innerHTML = `
+                    <div class="text-center py-3">
+                        <i class="fas fa-spinner fa-spin me-2"></i>
+                        Cargando especialidades...
+                    </div>
+                `;
+
+                // Hacer petición AJAX
+                fetch('{{ route("usuario.especialidades-por-instituciones") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        instituciones: institucionesSeleccionadas
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length === 0) {
+                        especialidadesContainerEditar{{ $usuario->id }}.innerHTML = `
+                            <div class="text-muted text-center py-3">
+                                <i class="fas fa-exclamation-circle me-2"></i>
+                                No hay especialidades disponibles
+                            </div>
+                        `;
+                    } else {
+                        let html = '';
+                        data.forEach(especialidad => {
+                            const isChecked = especialidadesActuales.includes(especialidad.id.toString()) ? 'checked' : '';
+                            html += `
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="checkbox" 
+                                           name="especialidades[]" value="${especialidad.id}" 
+                                           id="especialidadEditar{{ $usuario->id }}_${especialidad.id}" ${isChecked}>
+                                    <label class="form-check-label small" for="especialidadEditar{{ $usuario->id }}_${especialidad.id}">
+                                        ${especialidad.nombre}
+                                    </label>
+                                </div>
+                            `;
+                        });
+                        especialidadesContainerEditar{{ $usuario->id }}.innerHTML = html;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    especialidadesContainerEditar{{ $usuario->id }}.innerHTML = `
+                        <div class="text-danger text-center py-3">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Error al cargar especialidades
+                        </div>
+                    `;
+                });
+            }
+
+            if (selectRolEditar{{ $usuario->id }}) {
+                selectRolEditar{{ $usuario->id }}.addEventListener('change', mostrarOcultarCamposEditar{{ $usuario->id }});
+                mostrarOcultarCamposEditar{{ $usuario->id }}();
+            }
+
+            // Agregar event listeners a los checkboxes de instituciones
+            if (institucionesCheckboxesEditar{{ $usuario->id }}) {
+                institucionesCheckboxesEditar{{ $usuario->id }}.forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        // Solo cargar especialidades si es profesor
+                        if (selectRolEditar{{ $usuario->id }} && selectRolEditar{{ $usuario->id }}.value === 'profesor') {
+                            cargarEspecialidadesEditar{{ $usuario->id }}();
+                        }
+                    });
+                });
+            }
+            @endforeach
+        });
+
+        // Función para reenviar configuración de contraseña
+        function reenviarConfiguracionPassword(usuarioId) {
+            if (confirm('¿Está seguro de que desea reenviar el correo de configuración de contraseña?')) {
+                const btn = event.target.closest('button');
+                const originalContent = btn.innerHTML;
+                
+                // Mostrar loading
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                btn.disabled = true;
+                
+                fetch(`/usuario/${usuarioId}/resend-password-setup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Mostrar mensaje de éxito
+                        const alert = document.createElement('div');
+                        alert.className = 'alert alert-success alert-dismissible fade show';
+                        alert.innerHTML = `
+                            <i class="fas fa-check-circle me-2"></i>
+                            ${data.message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        `;
+                        document.querySelector('.container-fluid').insertBefore(alert, document.querySelector('#tabla-usuarios'));
+                        
+                        // Auto-hide alert after 5 seconds
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 5000);
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al reenviar el correo. Por favor, intente nuevamente.');
+                })
+                .finally(() => {
+                    // Restaurar botón
+                    btn.innerHTML = originalContent;
+                    btn.disabled = false;
+                });
+            }
+        }
+
     </script>
 
 </div>
